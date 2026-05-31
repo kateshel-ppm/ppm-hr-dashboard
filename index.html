@@ -3,6 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Auth gate: @platipomiru.com only -->
+<style>
+#auth-gate{
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(135deg,#1a1f36 0%,#0f1322 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Inter',sans-serif;
+}
+#auth-gate.hidden{display:none}
+.auth-card{
+  background:#fff;border-radius:20px;padding:44px 44px 40px;
+  width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,.4);
+  text-align:center;
+}
+.auth-logo{
+  width:52px;height:52px;background:#3B6FE0;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 20px;font-size:22px;font-weight:800;color:#fff;letter-spacing:-1px;
+}
+.auth-title{font-size:22px;font-weight:800;color:#0A0B0D;margin-bottom:6px}
+.auth-sub{font-size:14px;color:#6B7280;margin-bottom:28px;line-height:1.5}
+.auth-input{
+  width:100%;padding:13px 16px;border:1.5px solid #E5E7EB;border-radius:10px;
+  font-size:14px;font-family:'Inter',sans-serif;outline:none;
+  transition:border .15s;box-sizing:border-box;
+}
+.auth-input:focus{border-color:#3B6FE0;}
+.auth-btn{
+  width:100%;margin-top:12px;padding:14px;
+  background:#3B6FE0;color:#fff;border:none;border-radius:10px;
+  font-size:15px;font-weight:700;font-family:'Inter',sans-serif;
+  cursor:pointer;transition:background .15s;
+}
+.auth-btn:hover{background:#2A58C8}
+.auth-error{
+  margin-top:10px;padding:10px 14px;background:#FEE4E2;color:#F04438;
+  border-radius:8px;font-size:13px;font-weight:500;display:none;
+}
+.auth-footer{margin-top:20px;font-size:12px;color:#9CA3AF}
+</style>
+<script>
+(function(){
+  const DOMAIN = '@platipomiru.com';
+  const KEY = 'ppm_auth_v1';
+  function showGate(){ document.getElementById('auth-gate').classList.remove('hidden'); }
+  function hideGate(){ document.getElementById('auth-gate').classList.add('hidden'); }
+  function check(){
+    const saved = sessionStorage.getItem(KEY);
+    if(saved && saved.endsWith(DOMAIN)) hideGate();
+  }
+  window.addEventListener('DOMContentLoaded', function(){
+    check();
+    var btn = document.getElementById('auth-submit');
+    var inp = document.getElementById('auth-email');
+    var err = document.getElementById('auth-error');
+    function attempt(){
+      var email = inp.value.trim().toLowerCase();
+      if(email.endsWith(DOMAIN)){
+        sessionStorage.setItem(KEY, email);
+        hideGate();
+      } else {
+        err.style.display='block';
+        err.textContent = email.includes('@')
+          ? 'Доступ разрешён только для @platipomiru.com'
+          : 'Введите корпоративный email';
+        inp.style.borderColor='#F04438';
+        setTimeout(()=>{ inp.style.borderColor=''; },1500);
+      }
+    }
+    btn.addEventListener('click', attempt);
+    inp.addEventListener('keydown', function(e){ if(e.key==='Enter') attempt(); });
+  });
+})();
+</script>
 <title>HR Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -237,6 +311,20 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 </style>
 </head>
 <body>
+
+<!-- ── Auth gate overlay ── -->
+<div id="auth-gate">
+  <div class="auth-card">
+    <div class="auth-logo">HR</div>
+    <div class="auth-title">HR Dashboard</div>
+    <div class="auth-sub">Введите корпоративный email<br>для доступа к данным</div>
+    <input id="auth-email" class="auth-input" type="email"
+           placeholder="name@platipomiru.com" autocomplete="email" />
+    <div id="auth-error" class="auth-error"></div>
+    <button id="auth-submit" class="auth-btn">Войти →</button>
+    <div class="auth-footer">Доступ только для @platipomiru.com</div>
+  </div>
+</div>
 
 <!-- ── Period bar ── -->
 <div class="period-bar">

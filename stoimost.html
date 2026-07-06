@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="auth-gate.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Executive · Стоимость найма — Плати по миру</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F2F3F7; --card:#FFFFFF;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-hover:0 4px 16px rgba(0,0,0,.1),0 2px 4px rgba(0,0,0,.06);
+  --primary:#3B6FE0; --primary-light:#EBF1FD;
+  --success:#12B76A; --success-light:#DCFAE6;
+  --warning:#F79009; --warning-light:#FEF6E7;
+  --danger:#F04438;  --danger-light:#FEE4E2;
+  --border:#E5E7EB; --text:#0A0B0D; --muted:#6B7280; --micro:#9CA3AF; --radius:14px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 48px}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(242,243,247,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:12px 24px}
+.topbar-in{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-size:16px;font-weight:800;letter-spacing:-.2px}
+.brand .accent{color:var(--primary)}
+.tag{font-size:11px;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--border);padding:3px 10px;border-radius:20px}
+.tag.live{color:var(--success);border-color:var(--success-light);background:var(--success-light)}
+.who{font-size:11px;color:var(--micro)}
+.spacer{flex:1}
+.tabs{display:flex;gap:3px;background:#EBEBF0;border-radius:9px;padding:3px}
+.tab{border:none;background:transparent;font-family:inherit;font-size:12px;font-weight:600;color:var(--muted);padding:6px 13px;border-radius:7px;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center}
+.tab.active{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tab:not(.active):hover{color:var(--text)}
+.main{max-width:1280px;margin:0 auto;padding:18px 24px 0}
+.section-cap{display:flex;align-items:baseline;gap:10px;margin:2px 0 12px;flex-wrap:wrap}
+.section-cap h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text)}
+.section-cap .hint{font-size:11.5px;color:var(--micro)}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:1060px){.kpi-row{grid-template-columns:repeat(8,1fr)}}
+@media(max-width:560px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+.kpi-card{background:var(--card);border-radius:var(--radius);padding:14px 14px 12px;box-shadow:var(--shadow);transition:box-shadow .18s;position:relative;overflow:hidden}
+.kpi-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--micro)}
+.kpi-card.s-success::before{background:var(--success)}
+.kpi-card.s-warning::before{background:var(--warning)}
+.kpi-card.s-danger::before{background:var(--danger)}
+.kpi-card.s-primary::before{background:var(--primary)}
+.kpi-card:hover{box-shadow:var(--shadow-hover)}
+.kpi-lbl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--micro);margin-bottom:7px;line-height:1.35;min-height:25px}
+.kpi-val{font-size:23px;font-weight:800;line-height:1;color:var(--text);margin-bottom:5px}
+.kpi-val .u{font-size:13px;font-weight:700;color:var(--muted)}
+.kpi-sub{font-size:10.5px;color:var(--micro);margin-top:6px;line-height:1.4}
+.grid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;transition:box-shadow .18s}
+.card:hover{box-shadow:var(--shadow-hover)}
+.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.ch h3{font-size:13.5px;font-weight:700}
+.badge{font-size:11px;font-weight:600;color:var(--muted);background:#F3F4F6;padding:2px 9px;border-radius:20px}
+.chart-box{position:relative;height:250px}
+table.t{width:100%;border-collapse:collapse;font-size:12.5px}
+table.t th,table.t td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+table.t th:first-child,table.t td:first-child{text-align:left}
+table.t th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--micro)}
+table.t tr.tot td{font-weight:800;border-top:2px solid var(--border);border-bottom:none}
+table.t tbody tr:hover{background:#FAFAFB}
+.foot{max-width:1280px;margin:16px auto 0;padding:0 24px;font-size:11px;color:var(--micro);line-height:1.6}
+.note{background:var(--warning-light);border-radius:10px;padding:10px 13px;font-size:11.5px;color:#7A4E08;line-height:1.5;margin-bottom:14px}
+.overlay{position:fixed;inset:0;background:rgba(242,243,247,.97);display:flex;align-items:center;justify-content:center;z-index:1000}
+.gatebox{background:#fff;border:1px solid var(--border);border-radius:16px;padding:30px 32px;box-shadow:var(--shadow-hover);max-width:390px;text-align:center}
+.gatebox h1{font-size:18px;margin-bottom:8px}
+.gatebox p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5}
+.btn{font-family:inherit;font-size:13px;font-weight:600;padding:9px 16px;border-radius:9px;border:1px solid var(--border);background:#fff;color:var(--text);cursor:pointer}
+.btn.pri{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn:hover{box-shadow:var(--shadow)}
+.btn.sm{font-size:11px;padding:5px 11px;border-radius:7px}
+.imp{margin-top:6px}
+.imp textarea{width:100%;min-height:120px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;border:1px solid var(--border);border-radius:10px;padding:10px;resize:vertical;outline:none}
+.imp textarea:focus{border-color:var(--primary)}
+.imp-row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.imp-msg{font-size:11.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand">HR&nbsp;Executive · <span class="accent">Плати по миру</span></div>
+    <span class="tag live" id="datatag">● закрытый раздел</span>
+    <span class="who" id="who"></span>
+    <div class="spacer"></div>
+    <div class="tabs">
+      <a class="tab" href="index.html">Обзор</a>
+      <a class="tab" href="detali.html">Детали</a>
+      <a class="tab" href="struktura.html">Структура 2.0</a>
+      <a class="tab active" href="stoimost.html">Стоимость</a>
+      <a class="tab" href="backlog.html">Гипотезы</a>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"><div class="gatebox" id="gatebox">Загрузка…</div></div>
+
+<div class="main" id="main" style="display:none">
+
+  <div class="section-cap">
+    <h2>Стоимость найма</h2>
+    <span class="hint" id="caphint">—</span>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card s-primary"><div class="kpi-lbl">Закрыто вакансий · YTD</div><div class="kpi-val" id="v-closed">—</div><div class="kpi-sub" id="s-closed">&nbsp;</div></div>
+    <div class="kpi-card s-primary"><div class="kpi-lbl">Расходы рекрутмента · YTD</div><div class="kpi-val" id="v-total">—</div><div class="kpi-sub" id="s-total">&nbsp;</div></div>
+    <div class="kpi-card s-warning"><div class="kpi-lbl">Cost per Hire · всего</div><div class="kpi-val" id="v-cphall">—</div><div class="kpi-sub" id="s-cphall">&nbsp;</div></div>
+    <div class="kpi-card s-warning"><div class="kpi-lbl">Cost per Hire · агентства</div><div class="kpi-val" id="v-cphag">—</div><div class="kpi-sub" id="s-cphag">&nbsp;</div></div>
+    <div class="kpi-card"><div class="kpi-lbl">ФОТ HR · YTD</div><div class="kpi-val" id="v-fot">—</div><div class="kpi-sub" id="s-fot">&nbsp;</div></div>
+    <div class="kpi-card"><div class="kpi-lbl">Агентства · YTD</div><div class="kpi-val" id="v-ag">—</div><div class="kpi-sub" id="s-ag">&nbsp;</div></div>
+    <div class="kpi-card"><div class="kpi-lbl">Сервисы · YTD</div><div class="kpi-val" id="v-serv">—</div><div class="kpi-sub" id="s-serv">&nbsp;</div></div>
+    <div class="kpi-card s-warning"><div class="kpi-lbl">TTO · ср. до оффера</div><div class="kpi-val" id="v-tto">—</div><div class="kpi-sub" id="s-tto">&nbsp;</div></div>
+  </div>
+
+  <div class="note" id="cphnote"></div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="ch"><h3>Расходы рекрутмента по месяцам</h3><span class="badge">₽ · агентства / ФОТ / сервисы</span></div>
+      <div class="chart-box"><canvas id="cExp"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><h3>Структура расходов · YTD</h3><span class="badge">доли</span></div>
+      <div class="chart-box"><canvas id="cStruct"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="ch"><h3>Закрытия и скорость найма</h3><span class="badge">закрыто · TTO, дн</span></div>
+      <div class="chart-box"><canvas id="cSpeed"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><h3>CPH по месяцам</h3><span class="badge">₽ за найм</span></div>
+      <div class="chart-box"><canvas id="cCph"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="ch"><h3>Помесячная детализация</h3><span class="badge" id="tblsrc">—</span></div>
+    <div style="overflow-x:auto">
+      <table class="t">
+        <thead><tr><th>Месяц</th><th>Закрыто</th><th>Агентства ₽</th><th>ФОТ HR ₽</th><th>Сервисы ₽</th><th>Итого ₽</th><th>CPH ₽</th><th>TTO дн</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="ch"><h3>⚙ Данные</h3><button class="btn sm" id="impToggle">Обновить / импорт</button></div>
+    <div class="imp" id="impPanel" style="display:none">
+      <p class="kpi-sub" style="margin:0 0 6px">Вставь JSON со стоимостью найма и нажми «Сохранить». Данные пишутся в Firebase (за логином), в публичном файле их нет.</p>
+      <textarea id="impTa" placeholder='{ "updated":"2026-06-23", "months":[ ... ] }' spellcheck="false"></textarea>
+      <div class="imp-row">
+        <button class="btn pri sm" id="impSave">Сохранить в Firebase</button>
+        <button class="btn sm" id="impExport">Скопировать текущие</button>
+        <span class="imp-msg" id="impMsg"></span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="foot" id="foot"></div>
+
+<script>
+const FB = {
+  apiKey: "AIzaSyBTBIdgtIahYX-nz8DwVuZvD5V1Gng69qs",
+  authDomain: "orgchart-firebase.firebaseapp.com",
+  databaseURL: "https://orgchart-firebase-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "orgchart-firebase",
+  appId: "1:551069785535:web:241cb4548815e909ca950a"
+};
+const ALLOWED_DOMAINS=['platipomiru.com'], ALLOWED_EMAILS=['kateshelenkova@gmail.com'];
+let auth=null,db=null,me=null,costRef=null,CUR=null;
+const charts={};
+const overlay=document.getElementById('overlay'),gatebox=document.getElementById('gatebox'),main=document.getElementById('main');
+function esc(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+const fmt=n=>new Intl.NumberFormat('ru-RU').format(Math.round(n||0));
+const rub=n=>fmt(n)+' ₽';
+const mln=n=>(Math.round((n||0)/1e4)/100).toLocaleString('ru-RU')+' млн ₽';
+const pct=(a,b)=>b? Math.round(a/b*100):0;
+
+function gate(state,info){
+  if(state==='hide'){overlay.style.display='none';main.style.display='block';return;}
+  overlay.style.display='flex';main.style.display='none';
+  if(state==='denied'){gatebox.innerHTML=`<h1>Нет доступа</h1><p>Аккаунт <code>${esc(info)}</code> не разрешён. Обратись к HRD.</p><button class="btn" onclick="auth.signOut()">Выйти</button>`;return;}
+  gatebox.innerHTML=`<h1>Стоимость найма · Плати по миру</h1><p>Закрытый раздел с финансовыми данными. Войди рабочим Google-аккаунтом.</p><button class="btn pri" id="signin">Войти через Google</button>`;
+  document.getElementById('signin').onclick=()=>auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>alert(e.message));
+}
+const configured=FB.apiKey&&!/PASTE/.test(FB.apiKey);
+if(!configured){gatebox.innerHTML='<h1>Не настроено</h1>';}
+else{firebase.initializeApp(FB);auth=firebase.auth();db=firebase.database();
+  auth.onAuthStateChanged(u=>{if(!u){gate('in');return;}const email=(u.email||'').toLowerCase();
+    const ok=ALLOWED_EMAILS.map(x=>x.toLowerCase()).includes(email)||ALLOWED_DOMAINS.some(d=>email.endsWith('@'+d.toLowerCase()));
+    if(!ok){gate('denied',email);return;}me=u;document.getElementById('who').textContent=u.email+' · ';gate('hide');start();});}
+
+function start(){
+  costRef=db.ref('orgchart/cost');
+  costRef.on('value',s=>render(s.exists()?s.val():null));
+  document.getElementById('impToggle').onclick=()=>{const p=document.getElementById('impPanel');p.style.display=p.style.display==='none'?'block':'none';};
+  document.getElementById('impSave').onclick=saveImport;
+  document.getElementById('impExport').onclick=()=>{document.getElementById('impTa').value=JSON.stringify(CUR||{},null,1);msg('Текущие данные в поле — скопируй.');};
+}
+function msg(t){document.getElementById('impMsg').textContent=t;}
+function saveImport(){
+  let o;try{o=JSON.parse(document.getElementById('impTa').value);}catch(e){msg('Ошибка JSON: '+e.message);return;}
+  if(!o||!Array.isArray(o.months)){msg('Нужен объект с массивом months.');return;}
+  costRef.set(o).then(()=>{msg('Сохранено ✓');document.getElementById('impPanel').style.display='none';}).catch(e=>msg('Ошибка записи: '+e.message));
+}
+
+function setk(id,v,sub){document.getElementById('v-'+id).innerHTML=v;if(sub!==undefined)document.getElementById('s-'+id).textContent=sub;}
+
+function render(d){
+  CUR=d;
+  if(!d||!Array.isArray(d.months)||!d.months.length){
+    document.getElementById('caphint').textContent='данных пока нет — открой «⚙ Данные» и импортируй';
+    document.getElementById('impPanel').style.display='block';
+    ['closed','total','cphall','cphag','fot','ag','serv','tto'].forEach(k=>setk(k,'—',' '));
+    document.getElementById('cphnote').style.display='none';
+    document.getElementById('foot').textContent='';
+    return;
+  }
+  const M=d.months;
+  const T={closed:0,agency:0,fot:0,serv:0};
+  M.forEach(m=>{T.closed+=+m.closed||0;T.agency+=+m.agency||0;T.fot+=+m.fot||0;T.serv+=+m.serv||0;});
+  const grand=T.agency+T.fot+T.serv;
+  const cphGross=T.closed?grand/T.closed:0;
+  const ttoW=T.closed?M.reduce((a,m)=>a+(+m.tto||0)*(+m.closed||0),0)/T.closed:0;
+  const ttoMax=Math.max(...M.map(m=>+m.tto||0));
+  const cphAg=d.cphAgency||0, plac=d.agencyPlacements||0;
+
+  document.getElementById('caphint').textContent='Янв–Май 2026 · обновлено '+(d.updated||'—');
+  setk('closed',fmt(T.closed),'Янв–Май 2026');
+  setk('total',mln(grand),'агентства+ФОТ+сервисы');
+  setk('cphall',rub(cphGross),'по полному ФОТ HR');
+  setk('cphag',cphAg?rub(cphAg):'—',plac?plac+' размещения':'');
+  setk('fot',mln(T.fot),pct(T.fot,grand)+'% расходов');
+  setk('ag',mln(T.agency),pct(T.agency,grand)+'% расходов');
+  setk('serv',mln(T.serv),pct(T.serv,grand)+'% расходов');
+  setk('tto',(Math.round(ttoW*10)/10).toLocaleString('ru-RU')+'<span class="u"> дн</span>','пик '+ttoMax+' дн (Май)');
+
+  document.getElementById('cphnote').style.display='block';
+  document.getElementById('cphnote').innerHTML='⚠️ <b>CPH «всего»</b> здесь = полный ФОТ HR-отдела + сервисы + агентства ÷ закрытые ('+fmt(cphGross)+' ₽). В исходной таблице фигурирует и более низкая оценка (~32 000 ₽) — она учитывает только долю ФОТ «к учёту на рекрутмент». Методику зафиксируем отдельно.';
+
+  const lbl=M.map(m=>m.m);
+  // расходы по месяцам (stacked)
+  draw('cExp','bar',{labels:lbl,datasets:[
+    {label:'Агентства',data:M.map(m=>+m.agency||0),backgroundColor:'#F59E0B'},
+    {label:'ФОТ HR',data:M.map(m=>+m.fot||0),backgroundColor:'#3B6FE0'},
+    {label:'Сервисы',data:M.map(m=>+m.serv||0),backgroundColor:'#14B8A6'}]},
+    {plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11}}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>(v/1e6)+'М'}}}});
+  // структура (doughnut)
+  draw('cStruct','doughnut',{labels:['ФОТ HR','Агентства','Сервисы'],datasets:[{data:[T.fot,T.agency,T.serv],backgroundColor:['#3B6FE0','#F59E0B','#14B8A6'],borderWidth:0}]},
+    {cutout:'62%',plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11}}},tooltip:{callbacks:{label:c=>c.label+': '+rub(c.parsed)+' ('+pct(c.parsed,grand)+'%)'}}}});
+  // закрытия + TTO
+  draw('cSpeed','bar',{labels:lbl,datasets:[
+    {type:'bar',label:'Закрыто',data:M.map(m=>+m.closed||0),backgroundColor:'#3B6FE0',yAxisID:'y',order:2},
+    {type:'line',label:'TTO, дн',data:M.map(m=>+m.tto||0),borderColor:'#F04438',backgroundColor:'#F04438',tension:.3,yAxisID:'y1',order:1}]},
+    {plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11}}}},scales:{x:{grid:{display:false}},y:{position:'left',grid:{display:false},title:{display:true,text:'закрыто'}},y1:{position:'right',grid:{display:false},title:{display:true,text:'дн'}}}});
+  // cph по месяцам
+  draw('cCph','bar',{labels:lbl,datasets:[{label:'CPH, ₽',data:M.map(m=>{const t=(+m.agency||0)+(+m.fot||0)+(+m.serv||0);return m.closed?Math.round(t/m.closed):0;}),backgroundColor:M.map(m=>(+m.closed||0)<10?'#F04438':'#6366F1')}]},
+    {plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>rub(c.parsed.y)}}},scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>(v/1e3)+'К'}}}});
+
+  // таблица
+  const tb=document.getElementById('tbody');tb.innerHTML='';
+  M.forEach(m=>{const t=(+m.agency||0)+(+m.fot||0)+(+m.serv||0);const cph=m.closed?t/m.closed:0;
+    tb.insertAdjacentHTML('beforeend',`<tr><td>${m.m}</td><td>${m.closed||0}</td><td>${m.agency?fmt(m.agency):'—'}</td><td>${fmt(m.fot)}</td><td>${fmt(m.serv)}</td><td>${fmt(t)}</td><td>${cph?fmt(cph):'—'}</td><td>${m.tto??'—'}</td></tr>`);});
+  tb.insertAdjacentHTML('beforeend',`<tr class="tot"><td>ИТОГО</td><td>${fmt(T.closed)}</td><td>${fmt(T.agency)}</td><td>${fmt(T.fot)}</td><td>${fmt(T.serv)}</td><td>${fmt(grand)}</td><td>${fmt(cphGross)}</td><td>—</td></tr>`);
+  document.getElementById('tblsrc').textContent=d.source||'';
+  document.getElementById('foot').innerHTML='Источник: '+esc(d.source||'таблица стоимости найма')+' · обновлено '+(d.updated||'—')+'. Закрытый раздел: данные хранятся в Firebase за Google-входом и не попадают в публичный HTML.';
+}
+function draw(id,type,data,options){
+  const ctx=document.getElementById(id);if(!ctx)return;
+  if(charts[id])charts[id].destroy();
+  charts[id]=new Chart(ctx,{type,data,options:Object.assign({responsive:true,maintainAspectRatio:false},options)});
+}
+</script>
+<script src="refresh-button.js"></script>
+</body>
+</html>

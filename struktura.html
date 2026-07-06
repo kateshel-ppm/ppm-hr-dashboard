@@ -1,0 +1,1972 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="auth-gate.js"></script>
+<script src="secure-data.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Структура 2.0 — Плати по миру</title>
+<!-- Шрифты Google убраны: системный шрифт, без зависимости от сети (раньше блокировал отрисовку на ограниченной сети) -->
+<!-- Firebase отключён: структура строится напрямую из org_structure.json (без входа и обращений к сети, кроме самого файла) -->
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F4F5F7;--card:#fff;--ink:#0F172A;--muted:#64748B;--micro:#94A3B8;--line:#E2E8F0;--accent:#2F6BFF;--accent-soft:#EEF3FF;
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 2px 8px rgba(15,23,42,.05);--shadow-h:0 6px 22px rgba(15,23,42,.13);--danger:#E0454B;--ok:#12B76A;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.topbar{flex-shrink:0;background:#fff;border-bottom:1px solid var(--line);padding:9px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-size:15px;font-weight:800;letter-spacing:-.2px}.brand .a{color:var(--accent)}
+.tabs{display:flex;gap:3px;background:#EEF0F3;border-radius:9px;padding:3px}
+.tab{font-size:12px;font-weight:600;color:var(--muted);padding:6px 12px;border-radius:7px;text-decoration:none;white-space:nowrap}
+.tab.active{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.who{font-size:11px;color:var(--micro);margin-left:auto}
+.metrics{flex-shrink:0;display:flex;gap:10px;padding:10px 18px;background:#fff;border-bottom:1px solid var(--line);overflow-x:auto}
+.mc{background:var(--bg);border-radius:10px;padding:8px 14px;min-width:118px}
+.mc .l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--micro)}
+.mc .v{font-size:20px;font-weight:800;line-height:1.1;margin-top:2px}.mc .v .u{font-size:12px;color:var(--muted);font-weight:600}
+.mc.warn .v{color:var(--danger)}
+.toolbar{flex-shrink:0;display:flex;gap:8px;align-items:center;padding:9px 18px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.srch{position:relative}.srch input{width:230px;height:34px;border:1px solid var(--line);border-radius:9px;padding:0 12px 0 32px;font-family:inherit;font-size:13px;outline:none}
+.srch input:focus{border-color:var(--accent)}.srch::before{content:"🔍";position:absolute;left:10px;top:8px;font-size:13px;opacity:.5}
+.btn{height:34px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:0 13px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--bg)}.btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+.seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{height:34px;border:none;background:#fff;padding:0 13px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--accent);color:#fff}
+.chips{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:4px}
+.chip{font-size:11.5px;font-weight:600;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:4px 11px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.chip .dot{width:8px;height:8px;border-radius:50%}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip .c{opacity:.6;font-weight:700}
+.stage{flex:1;position:relative;overflow:hidden;cursor:grab}.stage.pan{cursor:grabbing}
+.world{position:absolute;left:0;top:0;transform-origin:0 0}
+.edges{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.node{position:absolute;width:248px;background:var(--card);border-radius:14px;box-shadow:var(--shadow);border:1px solid var(--line);transition:box-shadow .15s,transform .15s;cursor:default}
+.node:hover{box-shadow:var(--shadow-h)}
+.node.mgr{border-color:#D7E0EE}
+.node.sel{box-shadow:0 0 0 2px var(--accent),var(--shadow-h)}
+.node.dim{opacity:.32}
+.node.hit{box-shadow:0 0 0 2px var(--ok),var(--shadow-h)}
+.node::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:6px;border-radius:5px;background:var(--nc,#CBD5E1)}
+.nbody{display:flex;gap:11px;padding:12px 13px 12px 16px;align-items:center}
+.av{width:46px;height:46px;border-radius:11px;flex-shrink:0;background:#E8EDF4 center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#7C90AC}
+.ntx{flex:1;min-width:0}
+.nrole{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nname{font-size:15px;font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;outline:none}
+.nrole.edit:focus,.nname.edit:focus{background:var(--accent-soft);border-radius:4px;overflow:visible;white-space:normal}
+.nmeta{display:flex;gap:6px;align-items:center;padding:0 13px 10px 16px;flex-wrap:wrap}
+.pill{font-size:10.5px;font-weight:700;border-radius:20px;padding:3px 8px;display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.pill.team{background:#EFF4FB;color:#3B5C86}
+.pill.tot{background:#F1F0FB;color:#5B4FB0}
+.pill.vac{background:#FDECEC;color:var(--danger)}
+.foot{border-top:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:6px;height:30px;font-size:11.5px;font-weight:700;user-select:none}
+.fbtn{color:var(--accent);cursor:pointer;padding:2px 7px;border-radius:6px}.fbtn:hover{background:var(--accent-soft)}
+.fbtn.sub{color:#64748B}.fbtn.sub:hover{background:#F1F5F9}
+.fsep{color:var(--micro)}
+.node.vac{border-style:dashed;border-color:#CBD5E1;background:#FAFBFC;box-shadow:none}
+.node.vac::before{background:#CBD5E1}
+.node.vac .av{background:#EEF1F5;color:#AAB4C2}
+.node.vac .nname{color:var(--muted);font-weight:600}
+.del{position:absolute;top:6px;right:8px;border:none;background:transparent;color:var(--micro);font-size:13px;cursor:pointer;opacity:0;border-radius:5px;line-height:1;padding:2px 4px}
+.node:hover .del{opacity:1}.del:hover{background:#F1F5F9;color:var(--danger)}
+.zone{position:absolute;border:1.5px solid;border-radius:20px;pointer-events:none}
+.zlbl{position:absolute;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.zlbl .zc{font-size:11px;font-weight:700;opacity:.7}
+.zoomc{position:absolute;right:16px;bottom:16px;display:flex;gap:6px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:11px;padding:5px 7px;box-shadow:var(--shadow);z-index:20}
+.zoomc button{border:none;background:#F1F5F9;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;font-weight:700;color:var(--ink)}.zoomc button:hover{background:#E2E8F0}
+.zoomc .zl{font-size:12px;font-weight:700;color:var(--muted);min-width:42px;text-align:center}
+.legend{position:absolute;left:14px;top:14px;background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:11px;padding:9px 11px;box-shadow:var(--shadow);z-index:10;font-size:12px}
+.legend .lt{font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--micro);letter-spacing:.05em;margin-bottom:6px}
+.legend .lr{display:flex;align-items:center;gap:7px;padding:2px 0;cursor:pointer;min-width:132px}
+.legend .lr .ls{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+.legend .lr .lc{margin-left:auto;color:var(--micro);font-weight:700;padding-left:10px}
+.legend .lr.off{opacity:.35}.legend .lr:hover{color:var(--accent)}
+.overlay{position:fixed;inset:0;background:rgba(244,245,247,.97);display:flex;align-items:center;justify-content:center;z-index:1000}
+.gate{background:#fff;border:1px solid var(--line);border-radius:18px;padding:32px 34px;box-shadow:var(--shadow-h);max-width:400px;text-align:center}
+.gate h1{font-size:19px;margin-bottom:8px}.gate p{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.5}
+.empty{position:absolute;left:50%;top:80px;transform:translateX(-50%);text-align:center;color:var(--muted);font-size:14px}
+.det{position:absolute;right:0;top:0;bottom:0;width:300px;background:#fff;border-left:1px solid var(--line);box-shadow:-4px 0 18px rgba(15,23,42,.06);transform:translateX(100%);transition:transform .2s;z-index:15;overflow-y:auto;padding:18px}
+.det.open{transform:none}
+.det .x{position:absolute;top:12px;right:14px;cursor:pointer;color:var(--micro);font-size:18px}
+.det h3{font-size:17px;margin-bottom:2px}.det .dr{font-size:12px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin-bottom:14px}
+.det .stat{display:flex;gap:10px;margin-bottom:16px}.det .stat .s{flex:1;background:var(--bg);border-radius:10px;padding:9px 11px}
+.det .stat .s .n{font-size:19px;font-weight:800}.det .stat .s .l{font-size:10px;color:var(--micro);text-transform:uppercase;font-weight:600}
+.det .sect{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--micro);letter-spacing:.04em;margin:6px 0 7px}
+.det .rrow{display:flex;align-items:center;gap:9px;padding:6px 0;border-top:1px solid var(--line);font-size:13px}
+.det .rrow .ra{width:26px;height:26px;border-radius:7px;background:#E8EDF4;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#7C90AC}
+.det .rrow .rn{font-weight:600;line-height:1.15}.det .rrow .rr{font-size:11px;color:var(--muted)}
+.det .rrow.v .ra{background:#EEF1F5;color:#AAB4C2;border:1px dashed #CBD5E1}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">HR&nbsp;Executive · <span class="a">Плати по миру</span></div>
+  <div class="tabs">
+    <a class="tab" href="index.html">Обзор</a>
+    <a class="tab" href="detali.html">Детали</a>
+    <a class="tab active" href="struktura.html">Структура 2.0</a>
+    <a class="tab" href="stoimost.html">Стоимость</a>
+    <a class="tab" href="backlog.html">Гипотезы</a>
+  </div>
+  <span class="who" id="who"></span>
+</div>
+
+<div class="metrics" id="metrics" style="display:none">
+  <div class="mc"><div class="l">Сотрудников</div><div class="v" id="m-emp">—</div></div>
+  <div class="mc"><div class="l">Руководителей</div><div class="v" id="m-mgr">—</div></div>
+  <div class="mc warn"><div class="l">Открытых вакансий</div><div class="v" id="m-vac">—</div></div>
+  <div class="mc"><div class="l">Уровней</div><div class="v" id="m-lvl">—</div></div>
+  <div class="mc"><div class="l">Ср. охват</div><div class="v" id="m-span">—</div></div>
+  <div class="mc"><div class="l">Отделов</div><div class="v" id="m-dep">—</div></div>
+</div>
+
+<div class="toolbar" id="toolbar" style="display:none">
+  <div class="srch"><input id="search" placeholder="Поиск по имени или должности…"></div>
+  <div class="seg"><button id="v-tree" class="on">Дерево</button><button id="v-flat">Список</button></div>
+  <button class="btn" id="b-expand">Развернуть всё</button>
+  <button class="btn" id="b-collapse">Свернуть всё</button>
+  <button class="btn on" id="b-vac">Вакансии</button>
+  <button class="btn on" id="b-zones">Зоны отделов</button>
+  <button class="btn" id="b-fit">По экрану</button>
+  <button class="btn" id="b-seed" title="Перестроить из ШТАТКИ">↻ из ШТАТКИ</button>
+  <div class="chips" id="chips"></div>
+</div>
+
+<div class="overlay" id="overlay"><div class="gate" id="gate">Загрузка…</div></div>
+
+<div class="stage" id="stage" style="display:none">
+  <div class="world" id="world"><svg class="edges" id="edges"></svg></div>
+  <div class="legend" id="legend"></div>
+  <div class="zoomc"><button id="zout">−</button><input class="zl" id="zl" value="100" style="width:40px;border:none;background:transparent;font-family:inherit"><button id="zin">+</button><button id="zfit" style="width:auto;padding:0 10px;font-size:12px;font-weight:600">⤢</button></div>
+  <div class="det" id="det"></div>
+</div>
+
+<script>window.ORGDATA=[
+{
+"n": "Абдулганиева Зарема",
+"r": "Финансовый менеджер",
+"d": "Финансовый отдел",
+"udept": "Финансовый отдел",
+"boss": "Зеленцов Александр",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/abdulganievazarema.jpg"
+},
+{
+"n": "Абдуллаев Магамед",
+"r": "Руководитель проектов",
+"d": "Отдел продукта",
+"udept": "Отдел продукта",
+"boss": "Головко Илья",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/abdullaevmagamed.jpg"
+},
+{
+"n": "Абрамов Николай",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Гладков Александр",
+"fmt": "Удаленно",
+"city": "Рязань",
+"photo": null
+},
+{
+"n": "Барбашов Александр",
+"r": "Маркетинговый менеджер",
+"d": "Отдел маркетинга",
+"udept": "Отдел маркетинга",
+"boss": "Борецкий Илья",
+"fmt": "Гибрид",
+"city": "Москва",
+"photo": "photos/barbashovaleksandr.jpg"
+},
+{
+"n": "Ворохта Артем",
+"r": "Frontend-разработчик (middle)",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Александр Иванов",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/vorohtaartem.jpg"
+},
+{
+"n": "Анашкина Дарья",
+"r": "офис-менеджер Мск",
+"d": "Отдел HR",
+"udept": "Отдел HR",
+"boss": "Шеленкова Екатерина",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/anashkinadarya.jpg"
+},
+{
+"n": "Анашкина Дарья Сергеевна",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Божко Анастасия",
+"fmt": "Офис",
+"city": "Москва",
+"photo": null
+},
+{
+"n": "Аникин Дмитрий",
+"r": "Специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Божко Анастасия",
+"fmt": "Удаленно",
+"city": "Калининград",
+"photo": "photos/anikindmitrii.jpg"
+},
+{
+"n": "Асауляк Никита",
+"r": "Frontend-разработчик (middle+)",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Иванов Александр",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/asaulyaknikita.jpg"
+},
+{
+"n": "Бабурин Александр",
+"r": "Главный специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Силифонтова Наталья",
+"fmt": "Удаленно",
+"city": "Томск",
+"photo": "photos/baburinaleksandr.jpg"
+},
+{
+"n": "Борецкий Илья",
+"r": "Руководитель отдела маркетинга",
+"d": "Отдел маркетинга",
+"udept": "Отдел маркетинга",
+"boss": "Носенко Вячеслав",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/boreckiiilya.jpg"
+},
+{
+"n": "Белов Павел",
+"r": "Директор по развитию",
+"d": "Отдел PR",
+"udept": "Отдел PR",
+"boss": "Мартыненко Алексей",
+"fmt": "Гибрид",
+"city": "Москва",
+"photo": "photos/belovpavel.jpg"
+},
+{
+"n": "Белоглазов Данил",
+"r": "Специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Толмачева Александра",
+"fmt": "Удаленно",
+"city": "Санкт-Петербург",
+"photo": "photos/beloglazovdanil.jpg"
+},
+{
+"n": "Белых Данил",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Зайнулина Залина",
+"fmt": "Удаленно",
+"city": "Саратов",
+"photo": "photos/belyhdanil.jpg"
+},
+{
+"n": "Божко Анастасия",
+"r": "Тимлид 1 линии",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Панин Александр",
+"fmt": "Удаленно",
+"city": "Вологда",
+"photo": "photos/bozhkoanastasiya.jpg"
+},
+{
+"n": "Бондарь Дарья",
+"r": "Специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Новикова Екатерина",
+"fmt": "Удаленно",
+"city": "Луганск",
+"photo": "photos/bondardarya.jpg"
+},
+{
+"n": "Берлов Илья",
+"r": "Ведущий менеджер по продукту",
+"d": "Отдел продукта",
+"udept": "Отдел продукта",
+"boss": "Головко Илья",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/berlovilya.jpg"
+},
+{
+"n": "Горбашёва Алёна",
+"r": "Менеджер по работе с блогерами",
+"d": "Отдел маркетинга",
+"udept": "Отдел маркетинга",
+"boss": "Носенко Вячеслав",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/gorbashevaalena.jpg"
+},
+{
+"n": "Борисова Яна",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Божко Анастасия",
+"fmt": "Удаленно",
+"city": "Краснодар",
+"photo": "photos/borisovayana.jpg"
+},
+{
+"n": "Бугакова Екатерина",
+"r": "Специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Новикова Екатерина",
+"fmt": "Удаленно",
+"city": "Воронеж",
+"photo": null
+},
+{
+"n": "Сумароков Дмитрий",
+"r": "QA Engineer (middle)",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Дуров Дмитрий",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/sumarokovdmitrii.jpg"
+},
+{
+"n": "Дуров Дмитрий",
+"r": "QA Engineer (middle) ТЕХЛИД",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Мустафин Марат",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/durovdmitrii.jpg"
+},
+{
+"n": "Волкова Алина",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Божко Анастасия",
+"fmt": "Удаленно",
+"city": "Пермь",
+"photo": "photos/volkovaalina.jpg"
+},
+{
+"n": "Кириллова Юлия",
+"r": "Младший менеджер по работе с блогерами",
+"d": "Отдел маркетинга",
+"udept": "Отдел маркетинга",
+"boss": "Горбашёва Алёна",
+"fmt": "Удаленно",
+"city": "Кузнецк",
+"photo": "photos/kirillovayuliya.jpg"
+},
+{
+"n": "Иванов Александр",
+"r": "Frontend-разработчик (senior) ТЕХЛИД",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Мустафин Марат",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/ivanovaleksandr.jpg"
+},
+{
+"n": "Гайдуков Никита",
+"r": "Старший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Силифонтова Наталья",
+"fmt": "Удаленно",
+"city": "Санкт-Петербург",
+"photo": "photos/gaidukovnikita.jpg"
+},
+{
+"n": "Гладкова Елена",
+"r": "Финансовый контролер",
+"d": "Финансовый отдел",
+"udept": "Финансовый отдел",
+"boss": "Зеленцов Александр",
+"fmt": "Офис",
+"city": "Москва",
+"photo": null
+},
+{
+"n": "Гладков Александр",
+"r": "Тимлид 1 линия",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Панин Александр",
+"fmt": "Удаленно",
+"city": "Томск",
+"photo": "photos/gladkovaleksandr.jpg"
+},
+{
+"n": "Гниломёдов Александр",
+"r": "Старший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Зайнулина Залина",
+"fmt": "Удаленно",
+"city": "Санкт-Петербург",
+"photo": "photos/gnilomedovaleksandr.jpg"
+},
+{
+"n": "Головко Илья",
+"r": "Директор по продукту",
+"d": "Отдел продукта",
+"udept": "Отдел продукта",
+"boss": "Чермошенцев Вадим",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/golovkoilya.jpg"
+},
+{
+"n": "Кирюхин Артем",
+"r": "Менеджер по социальным сетям",
+"d": "Отдел маркетинга",
+"udept": "Отдел маркетинга",
+"boss": "Носенко Вячеслав",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/kiryuhinartem.jpg"
+},
+{
+"n": "Горошников Николай",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Новикова Екатерина",
+"fmt": "Удаленно",
+"city": "Екатеринбург",
+"photo": "photos/goroshnikovnikolai.jpg"
+},
+{
+"n": "Калабин Илья",
+"r": "Руководитель перфоманс маркетинга",
+"d": "Отдел маркетинга",
+"udept": "Отдел маркетинга",
+"boss": "Носенко Вячеслав",
+"fmt": "Офис",
+"city": "Москва",
+"photo": null
+},
+{
+"n": "Григорьев Александр",
+"r": "Старший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Зайнулина Залина",
+"fmt": "Удаленно",
+"city": "Екатеринбург",
+"photo": "photos/grigorevaleksandr.jpg"
+},
+{
+"n": "Довнар Павел",
+"r": "Продуктовый дизайнер",
+"d": "Отдел продукта",
+"udept": "Отдел продукта",
+"boss": "Головко Илья",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/dovnarpavel.jpg"
+},
+{
+"n": "Малюков Чингиз",
+"r": "QA Engineer (junior)",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Мустафин Марат",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/malyukovchingiz.jpg"
+},
+{
+"n": "Носенко Вячеслав",
+"r": "Директор по маркетингу",
+"d": "Отдел маркетинга",
+"udept": "Отдел маркетинга",
+"boss": "Платохин Александр",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/nosenkovyacheslav.jpg"
+},
+{
+"n": "Петрунина Наталия",
+"r": "Дизайнер",
+"d": "Отдел маркетинга",
+"udept": "Отдел маркетинга",
+"boss": "Носенко Вячеслав",
+"fmt": "Удаленно",
+"city": "Саратов",
+"photo": "photos/petruninanataliya.jpg"
+},
+{
+"n": "Ермакова Алёна",
+"r": "Специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Новикова Екатерина",
+"fmt": "Удаленно",
+"city": "Петрозаводск",
+"photo": "photos/ermakovaalena.jpg"
+},
+{
+"n": "Ефанова Марина",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Ягупов Иван",
+"fmt": "Удаленно",
+"city": "Челябинск",
+"photo": "photos/efanovamarina.jpg"
+},
+{
+"n": "Зайнулина Залина",
+"r": "Тимлид 1,5 линии",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Панин Александр",
+"fmt": "Удаленно",
+"city": "Набережные Челны",
+"photo": "photos/zainulinazalina.jpg"
+},
+{
+"n": "Зеленцов Александр",
+"r": "Финансовый директор",
+"d": "Финансовый отдел",
+"udept": "Финансовый отдел",
+"boss": "Чермошенцев Вадим",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/zelencovaleksandr.jpg"
+},
+{
+"n": "Зинатулин Артем",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Гладков Александр",
+"fmt": "Удаленно",
+"city": "Новосибирск",
+"photo": "photos/zinatulinartem.jpg"
+},
+{
+"n": "Судьбин Данила",
+"r": "Team Lead",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Мустафин Марат",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/sudbindanila.jpg"
+},
+{
+"n": "Иванов Иван",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Ягупов Иван",
+"fmt": "Удаленно",
+"city": "Курган",
+"photo": null
+},
+{
+"n": "Калгин Иван",
+"r": "L0 Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Ягупов Иван",
+"fmt": "Удаленно",
+"city": "Санкт-Петербург",
+"photo": "photos/kalginivan.jpg"
+},
+{
+"n": "Камков Дмитрий",
+"r": "Старший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Божко Анастасия",
+"fmt": "Удаленно",
+"city": "Санкт-Петербург",
+"photo": "photos/kamkovdmitrii.jpg"
+},
+{
+"n": "Капуста Илья",
+"r": "Специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Крайнова Светлана",
+"fmt": "Удаленно",
+"city": "Москва",
+"photo": "photos/kapustailya.jpg"
+},
+{
+"n": "Шачнева Милада",
+"r": "Менеджер по работе с блогерами",
+"d": "Отдел маркетинга",
+"udept": "Отдел маркетинга",
+"boss": "Горбашёва Алёна",
+"fmt": "Удаленно",
+"city": "Краснодар",
+"photo": "photos/shachnevamilada.jpg"
+},
+{
+"n": "Кирш Даниил",
+"r": "Младший аналитик данных",
+"d": "Отдел продукта",
+"udept": "Отдел продукта",
+"boss": "Павлова Мария",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/kirshdaniil.jpg"
+},
+{
+"n": "Шевченко Любовь",
+"r": "Дизайнер",
+"d": "Отдел маркетинга",
+"udept": "Отдел маркетинга",
+"boss": "Носенко Вячеслав",
+"fmt": "Удаленно",
+"city": "Москва",
+"photo": "photos/shevchenkolyubov.jpg"
+},
+{
+"n": "Кирячёк Ирина",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Новикова Екатерина",
+"fmt": "Удаленно",
+"city": "Краснодар",
+"photo": null
+},
+{
+"n": "Кожухова Татьяна",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Гладков Александр",
+"fmt": "Удаленно",
+"city": "Краснодар",
+"photo": null
+},
+{
+"n": "Юнчик Владимир",
+"r": "Руководитель направления",
+"d": "MICE",
+"udept": "MICE",
+"boss": "Платохин Александр",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/yunchikvladimir.jpg"
+},
+{
+"n": "Конев Олег",
+"r": "Специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Ягупов Иван",
+"fmt": "Удаленно",
+"city": "Краснодар",
+"photo": "photos/konevoleg.jpg"
+},
+{
+"n": "Конюхов Владислав",
+"r": "Эксперт отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Силифонтова Наталья",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/konyuhovvladislav.jpg"
+},
+{
+"n": "Коробова Диана",
+"r": "Бизнес-ассистент Вадима",
+"d": "АУП",
+"udept": "АУП",
+"boss": "Чермошенцев Вадим",
+"fmt": "Удаленно",
+"city": "Санкт-Петербург",
+"photo": "photos/korobovadiana.jpg"
+},
+{
+"n": "Коротенко Денис",
+"r": "Специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Толмачева Александра",
+"fmt": "Удаленно",
+"city": "Санкт-Петербург",
+"photo": "photos/korotenkodenis.jpg"
+},
+{
+"n": "Кравченко Арина",
+"r": "Ведущий специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Зайнулина Залина",
+"fmt": "Удаленно",
+"city": "Астрахань",
+"photo": "photos/kravchenkoarina.jpg"
+},
+{
+"n": "Крайнова Светлана",
+"r": "Тимлид 1 линии",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Панин Александр",
+"fmt": "Удаленно",
+"city": "Санкт-Петербург",
+"photo": "photos/krainovasvetlana.jpg"
+},
+{
+"n": "Леденкова Ирина",
+"r": "L1 день Специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Гладков Александр",
+"fmt": "Удаленно",
+"city": "Красноярск",
+"photo": "photos/ledenkovairina.jpg"
+},
+{
+"n": "Лексютин Егор",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Ягупов Иван",
+"fmt": "Удаленно",
+"city": "Санкт-Петербург",
+"photo": "photos/leksyutinegor.jpg"
+},
+{
+"n": "Авдеенко Анастасия",
+"r": "Младший аккаунт-менеджер",
+"d": "Отдел партнёрских программ",
+"udept": "Отдел партнёрских программ",
+"boss": "Волкова Екатерина",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/avdeenkoanastasiya.jpg"
+},
+{
+"n": "Чирцов Олег",
+"r": "Backend-разработчик (senior) ТЕХЛИД",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Мустафин Марат",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/chircovoleg.jpg"
+},
+{
+"n": "Мартыненко Алексей",
+"r": "Операционный директор",
+"d": "АУП",
+"udept": "АУП",
+"boss": "Чермошенцев Вадим",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/martynenkoaleksei.jpg"
+},
+{
+"n": "Матвеева Ольга",
+"r": "офис-менеджер Спб",
+"d": "Отдел HR",
+"udept": "Отдел HR",
+"boss": "Шеленкова Екатерина",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/matveevaolga.jpg"
+},
+{
+"n": "Мелькин Александр",
+"r": "Специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Ягупов Иван",
+"fmt": "Удаленно",
+"city": "Новороссийск",
+"photo": "photos/melkinaleksandr.jpg"
+},
+{
+"n": "Мендель София",
+"r": "Младший специалист по подбору персонала",
+"d": "Отдел HR",
+"udept": "Отдел HR",
+"boss": "Федин Семён",
+"fmt": "Удаленно",
+"city": "Краснодар",
+"photo": "photos/mendelsofiya.jpg"
+},
+{
+"n": "Михайлова Кристина",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Крайнова Светлана",
+"fmt": "Удаленно",
+"city": "Пенза",
+"photo": null
+},
+{
+"n": "Молитвин Леонид",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Толмачева Александра",
+"fmt": "Удаленно",
+"city": "Нижний Новгород",
+"photo": "photos/molitvinleonid.jpg"
+},
+{
+"n": "Мусийчук Валерия",
+"r": "Специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Новикова Екатерина",
+"fmt": "Удаленно",
+"city": "Обнинск",
+"photo": null
+},
+{
+"n": "Чумало Данила",
+"r": "Инженер техподдержки",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Мустафин Марат",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": null
+},
+{
+"n": "Надрин Дмитрий",
+"r": "Служба безопасности",
+"d": "Отдел HR",
+"udept": "Отдел HR",
+"boss": "Шеленкова Екатерина",
+"fmt": "Удаленно",
+"city": "Москва",
+"photo": null
+},
+{
+"n": "Новикова Екатерина",
+"r": "Тимлид 1 линии",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Панин Александр",
+"fmt": "Удаленно",
+"city": "Кемерово",
+"photo": "photos/novikovaekaterina.jpg"
+},
+{
+"n": "Волкова Екатерина",
+"r": "Руководитель по работе с ключевыми партнерами",
+"d": "Отдел партнёрских программ",
+"udept": "Отдел партнёрских программ",
+"boss": "Платохин Александр",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/volkovaekaterina.jpg"
+},
+{
+"n": "Нургалеев Тимур",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Крайнова Светлана",
+"fmt": "Удаленно",
+"city": "Уфа",
+"photo": "photos/nurgaleevtimur.jpg"
+},
+{
+"n": "Оболонин Владимир",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Гладков Александр",
+"fmt": "Удаленно",
+"city": "Волгоград",
+"photo": null
+},
+{
+"n": "Овсепян Максим",
+"r": "Специалист контроля качества",
+"d": "Отдел контроля качества",
+"udept": "Отдел контроля качества",
+"boss": "Очкаленко Вероника",
+"fmt": "Удаленно",
+"city": "Санкт-Петербург",
+"photo": "photos/ovsepyanmaksim.jpg"
+},
+{
+"n": "Оглезнев Никита",
+"r": "Старший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Крайнова Светлана",
+"fmt": "Удаленно",
+"city": "Ангарск",
+"photo": "photos/ogleznevnikita.jpg"
+},
+{
+"n": "Олейников Дмитрий",
+"r": "L1 Cпециалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Крайнова Светлана",
+"fmt": "Удаленно",
+"city": "Пушкино",
+"photo": "photos/oleinikovdmitrii.jpg"
+},
+{
+"n": "Орлова Юлия",
+"r": "офис-менеджер Мск",
+"d": "Отдел HR",
+"udept": "Отдел HR",
+"boss": "Шеленкова Екатерина",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/orlovayuliya.jpg"
+},
+{
+"n": "Орловская Татьяна",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Крайнова Светлана",
+"fmt": "Удаленно",
+"city": "Краснодар",
+"photo": "photos/orlovskayatatyana.jpg"
+},
+{
+"n": "Очкаленко Вероника",
+"r": "Руководитель отдела контроля качества",
+"d": "Отдел контроля качества",
+"udept": "Отдел контроля качества",
+"boss": "Мартыненко Алексей",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/ochkalenkoveronika.jpg"
+},
+{
+"n": "Павлова Мария",
+"r": "Discovery Рroject manager",
+"d": "Отдел продукта",
+"udept": "Отдел продукта",
+"boss": "Головко Илья",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/pavlovamariya.jpg"
+},
+{
+"n": "Пагутяк Юлия",
+"r": "Ведущий специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Силифонтова Наталья",
+"fmt": "Удаленно",
+"city": "Ростов-на-Дону",
+"photo": "photos/pagutyakyuliya.jpg"
+},
+{
+"n": "Панин Александр",
+"r": "Руководитель клиенсткого сервиса",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Мартыненко Алексей",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/paninaleksandr.jpg"
+},
+{
+"n": "Шавернев Олег",
+"r": "DevOps",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Мустафин Марат",
+"fmt": "Гибрид",
+"city": "Москва",
+"photo": "photos/shavernevoleg.jpg"
+},
+{
+"n": "Пасхин Иван",
+"r": "Системный аналитик",
+"d": "Отдел продукта",
+"udept": "Отдел продукта",
+"boss": "Головко Илья",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/pashinivan.jpg"
+},
+{
+"n": "Петров Александр",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Гладков Александр",
+"fmt": "Удаленно",
+"city": "Архангельск",
+"photo": "photos/petrovaleksandr.jpg"
+},
+{
+"n": "Мустафин Марат",
+"r": "Team Lead",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Печенев Андрей",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/mustafinmarat.jpg"
+},
+{
+"n": "Егорова Римма",
+"r": "Бизнес-девелопер",
+"d": "Отдел партнёрских программ",
+"udept": "Отдел партнёрских программ",
+"boss": "Волкова Екатерина",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/egorovarimma.jpg"
+},
+{
+"n": "Печенев Андрей",
+"r": "Директор по цифровым технологиям",
+"d": "АУП",
+"udept": "АУП",
+"boss": "Чермошенцев Вадим",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/pechenevandrei.jpg"
+},
+{
+"n": "Писцова Татьяна",
+"r": "Специалист контроля качества",
+"d": "Отдел контроля качества",
+"udept": "Отдел контроля качества",
+"boss": "Очкаленко Вероника",
+"fmt": "Удаленно",
+"city": "Санкт-Петербург",
+"photo": "photos/piscovatatyana.jpg"
+},
+{
+"n": "Платохин Александр",
+"r": "Коммерческий директор",
+"d": "АУП",
+"udept": "АУП",
+"boss": "Чермошенцев Вадим",
+"fmt": "Гибрид",
+"city": "Москва",
+"photo": "photos/platohinaleksandr.jpg"
+},
+{
+"n": "Полещуков Михаил",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Толмачева Александра",
+"fmt": "Удаленно",
+"city": "Краснодар",
+"photo": "photos/poleschukovmihail.jpg"
+},
+{
+"n": "Сарсенбаева Аяна",
+"r": "L1 Специалист отдела заботы (ночь)",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Силифонтова Наталья",
+"fmt": "Удаленно",
+"city": "Омск",
+"photo": "photos/sarsenbaevaayana.jpg"
+},
+{
+"n": "Сергеева Елена",
+"r": "Менеджер по подбору персонала",
+"d": "Отдел HR",
+"udept": "Отдел HR",
+"boss": "Федин Семен",
+"fmt": "Удаленно",
+"city": "Серпухов",
+"photo": "photos/sergeevaelena.jpg"
+},
+{
+"n": "Силифонтова Наталья",
+"r": "L2 Team Lead отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Панин Александр",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/silifontovanatalya.jpg"
+},
+{
+"n": "Емельянов Максим",
+"r": "Аккаунт-менеджер",
+"d": "Отдел партнёрских программ",
+"udept": "Отдел партнёрских программ",
+"boss": "Волкова Екатерина",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/emelyanovmaksim.jpg"
+},
+{
+"n": "Макаренков Никита",
+"r": "Бизнес-девелопер",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Волкова Екатерина",
+"fmt": "Удаленно",
+"city": "Санкт-Петербург",
+"photo": "photos/makarenkovnikita.jpg"
+},
+{
+"n": "Смелова Наталья",
+"r": "Руководитель отдела кадров",
+"d": "Отдел HR",
+"udept": "Отдел HR",
+"boss": "Шеленкова Екатерина",
+"fmt": "Гибрид",
+"city": "Москва",
+"photo": "photos/smelovanatalya.jpg"
+},
+{
+"n": "Степанов Максим",
+"r": "Бизнес-аналитик",
+"d": "Отдел продукта",
+"udept": "Отдел продукта",
+"boss": "Павлова Мария",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/stepanovmaksim.jpg"
+},
+{
+"n": "Алабугин Михаил",
+"r": "Мобильный разработчик",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Судьбин Данила",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/alabuginmihail.jpg"
+},
+{
+"n": "Васильев Антон",
+"r": "Старший специалист по тестированию",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Судьбин Данила",
+"fmt": "Офис",
+"city": "Москва",
+"photo": null
+},
+{
+"n": "Толмачева Александра",
+"r": "Тимлид 1-ой линии",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Панин Александр",
+"fmt": "Удаленно",
+"city": "Санкт-Петербург",
+"photo": "photos/tolmachevaaleksandra.jpg"
+},
+{
+"n": "Топчий Анастасия",
+"r": "Главный бухгалтер",
+"d": "Финансовый отдел",
+"udept": "Финансовый отдел",
+"boss": "Зеленцов Александр",
+"fmt": "Гибрид",
+"city": "Москва",
+"photo": "photos/topchiianastasiya.jpg"
+},
+{
+"n": "Углянская Дарья",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Ягупов Иван",
+"fmt": "Удаленно",
+"city": "Москва",
+"photo": null
+},
+{
+"n": "Участкина Ирина",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Гладков Александр",
+"fmt": "Удаленно",
+"city": "Иркутск",
+"photo": null
+},
+{
+"n": "Федин Семен",
+"r": "Руководитель отдела по подбору персонала",
+"d": "Отдел HR",
+"udept": "Отдел HR",
+"boss": "Шеленкова Екатерина",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/fedinsemen.jpg"
+},
+{
+"n": "Филимонов Александр",
+"r": "L1 Специалист отдела заботы",
+"d": "Отдел контроля качества",
+"udept": "Отдел контроля качества",
+"boss": "Очкаленко Вероника",
+"fmt": "Удаленно",
+"city": "Пенза",
+"photo": "photos/filimonovaleksandr.jpg"
+},
+{
+"n": "Форталева Валерия",
+"r": "Специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Крайнова Светлана",
+"fmt": "Удаленно",
+"city": "Саратов",
+"photo": "photos/fortalevavaleriya.jpg"
+},
+{
+"n": "Верескля Владислав",
+"r": "Ведущий инженер-разработчик",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Судьбин Данила",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/veresklyavladislav.jpg"
+},
+{
+"n": "Храмогина Анастасия",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Крайнова Светлана",
+"fmt": "Удаленно",
+"city": "Смоленск",
+"photo": "photos/hramoginaanastasiya.jpg"
+},
+{
+"n": "Чепелев Павел",
+"r": "Ведущий специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Силифонтова Наталья",
+"fmt": "Удаленно",
+"city": "Пушкино",
+"photo": "photos/chepelevpavel.jpg"
+},
+{
+"n": "Череда Александра",
+"r": "Специалист по подбору персонала",
+"d": "Отдел HR",
+"udept": "Отдел HR",
+"boss": "Федин Семен",
+"fmt": "Удаленно",
+"city": "Ростов-на-Дону",
+"photo": "photos/cheredaaleksandra.jpg"
+},
+{
+"n": "Чермошенцев Вадим",
+"r": "Генеральный директор",
+"d": "АУП",
+"udept": "АУП",
+"boss": "-",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/chermoshencevvadim.jpg"
+},
+{
+"n": "Чернова Олеся",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Божко Анастасия",
+"fmt": "Удаленно",
+"city": "Томск",
+"photo": "photos/chernovaolesya.jpg"
+},
+{
+"n": "Петров Александр Д.",
+"r": "Ведущий разработчик",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Судьбин Данила",
+"fmt": "Офис",
+"city": "Москва",
+"photo": null
+},
+{
+"n": "Фурсин Владимир",
+"r": "Backend-разработчик (senior)",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Чирцов Олег",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/fursinvladimir.jpg"
+},
+{
+"n": "Чуфирина София",
+"r": "Рекрутер",
+"d": "Отдел HR",
+"udept": "Отдел HR",
+"boss": "Федин Семен",
+"fmt": "Удаленно",
+"city": "Москва",
+"photo": "photos/chufirinasofiya.jpg"
+},
+{
+"n": "Юрченко Владислав",
+"r": "Backend-разработчик (middle)",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Чирцов Олег",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/yurchenkovladislav.jpg"
+},
+{
+"n": "Шайкин Сергей",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Божко Анастасия",
+"fmt": "Удаленно",
+"city": "Волгоград",
+"photo": "photos/shaikinsergei.jpg"
+},
+{
+"n": "Шапиро Даниил",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Божко Анастасия",
+"fmt": "Удаленно",
+"city": "Москва",
+"photo": "photos/shapirodaniil.jpg"
+},
+{
+"n": "Слёзка Дмитрий",
+"r": "Аккаунт-менеджер",
+"d": "Отдел партнёрских программ",
+"udept": "Отдел партнёрских программ",
+"boss": "Волкова Екатерина",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/slezkadmitrii.jpg"
+},
+{
+"n": "Коломиец Даниил",
+"r": "Руководитель реферальной программы",
+"d": "Отдел привлечения",
+"udept": "Отдел привлечения",
+"boss": "Платохин Александр",
+"fmt": "Офис",
+"city": "Москва",
+"photo": "photos/kolomiecdaniil.jpg"
+},
+{
+"n": "Слёзка Ирина",
+"r": "Менеджер по блогерам",
+"d": "Отдел привлечения",
+"udept": "Отдел привлечения",
+"boss": "Коломиец Даниил",
+"fmt": "Удаленно",
+"city": "Санкт-Петербург",
+"photo": "photos/slezkairina.jpg"
+},
+{
+"n": "Шеленкова Екатерина",
+"r": "HRD",
+"d": "Отдел HR",
+"udept": "Отдел HR",
+"boss": "Мартыненко Алексей",
+"fmt": "Гибрид",
+"city": "Москва",
+"photo": "photos/shelenkovaekaterina.jpg"
+},
+{
+"n": "Шигабиева Лиана",
+"r": "Ведущий специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Зайнулина Залина",
+"fmt": "Удаленно",
+"city": "Казань",
+"photo": "photos/shigabievaliana.jpg"
+},
+{
+"n": "Шмелев Руслан",
+"r": "Специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Толмачева Александра",
+"fmt": "Удаленно",
+"city": "Новочебоксарск",
+"photo": "photos/shmelevruslan.jpg"
+},
+{
+"n": "Шачнев Никита",
+"r": "Менеджер по работе с амбассадорами",
+"d": "Отдел привлечения",
+"udept": "Отдел привлечения",
+"boss": "Коломиец Даниил",
+"fmt": "Удаленно",
+"city": "Краснодар",
+"photo": "photos/shachnevnikita.jpg"
+},
+{
+"n": "Партс Владислав",
+"r": "Backend-разработчик (middle)",
+"d": "Отдел ИТ",
+"udept": "Отдел ИТ",
+"boss": "Чирцов Олег",
+"fmt": "Офис",
+"city": "Санкт-Петербург",
+"photo": "photos/partsvladislav.jpg"
+},
+{
+"n": "Ягупов Иван",
+"r": "Тимлид 1 линии",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Панин Александр",
+"fmt": "Удаленно",
+"city": "Астрахань",
+"photo": "photos/yagupovivan.jpg"
+},
+{
+"n": "Янина Анжелика",
+"r": "Младший специалист отдела заботы",
+"d": "Отдел заботы",
+"udept": "Отдел заботы",
+"boss": "Божко Анастасия",
+"fmt": "Удаленно",
+"city": "Екатеринбург",
+"photo": "photos/yaninaanzhelika.jpg"
+},
+{
+"n": "Вакансия",
+"r": "Senior Backend Developer (СПБ)",
+"d": "ИТ",
+"udept": "ИТ",
+"boss": "Чирцов Олег",
+"vac": true,
+"city": "СПБ",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Manual QA",
+"d": "ИТ",
+"udept": "ИТ",
+"boss": "Данила Судьбин",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Manual QA",
+"d": "ИТ",
+"udept": "ИТ",
+"boss": "Данила Судьбин",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Manual QA (СПБ)",
+"d": "ИТ",
+"udept": "ИТ",
+"boss": "Марат Мустафин",
+"vac": true,
+"city": "СПБ",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Главный юрист",
+"d": "Юристы",
+"udept": "Юристы",
+"boss": "Чермошенцев Вадим",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "DevOps",
+"d": "ИТ",
+"udept": "ИТ",
+"boss": "Марат Мустафин",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Senior Backend Developer",
+"d": "ИТ",
+"udept": "ИТ",
+"boss": "Данила Судьбин",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Senior Backend Developer",
+"d": "ИТ",
+"udept": "ИТ",
+"boss": "Данила Судьбин",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Support Engineer L3 / Junior Devops",
+"d": "Забота",
+"udept": "Забота",
+"boss": "Марат Мустафин",
+"vac": true,
+"city": "Удаленно",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Support Engineer L3 / Junior Devops",
+"d": "Забота",
+"udept": "Забота",
+"boss": "Марат Мустафин",
+"vac": true,
+"city": "Удаленно",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Support Engineer L3 / Junior Devops",
+"d": "Забота",
+"udept": "Забота",
+"boss": "Марат Мустафин",
+"vac": true,
+"city": "Удаленно",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Support Engineer L3 / Junior Devops",
+"d": "Забота",
+"udept": "Забота",
+"boss": "Марат Мустафин",
+"vac": true,
+"city": "Удаленно",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Старший специалист отдела заботы L2",
+"d": "Забота",
+"udept": "Забота",
+"boss": "Александр Панин",
+"vac": true,
+"city": "Удаленно",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Системный Аналитик",
+"d": "Продукт",
+"udept": "Продукт",
+"boss": "Илья Головко",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Team Lead (новые проекты)",
+"d": "ИТ",
+"udept": "ИТ",
+"boss": "Андрей Печенев",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Продуктовый Lead дизайнер UX/UI мск",
+"d": "Продукт",
+"udept": "Продукт",
+"boss": "Илья Головко",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "AI Product manager",
+"d": "Продукт",
+"udept": "Продукт",
+"boss": "Андрей Печенев",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "CTO",
+"d": "ИТ",
+"udept": "ИТ",
+"boss": "Андрей Печенев",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Head of Security",
+"d": "Продукт",
+"udept": "Продукт",
+"boss": "Андрей Печенев",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Senior Frontend Developer",
+"d": "ИТ",
+"udept": "ИТ",
+"boss": "Александр Иванов",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Head of PR",
+"d": "Маркетинг",
+"udept": "Маркетинг",
+"boss": "Вячеслав Носенко",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Заместитель руководителя партнёрского отдела",
+"d": "Коммерческий",
+"udept": "Коммерческий",
+"boss": "Екатерина Волкова",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "BDM",
+"d": "Коммерческий",
+"udept": "Коммерческий",
+"boss": "Екатерина Волкова",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+},
+{
+"n": "Вакансия",
+"r": "Старший контент-менеджер",
+"d": "Маркетинг",
+"udept": "Маркетинг",
+"boss": "Артем Кирюхин",
+"vac": true,
+"city": "Мск",
+"fmt": ""
+}
+];</script>
+<script>
+const FB={apiKey:"AIzaSyBTBIdgtIahYX-nz8DwVuZvD5V1Gng69qs",authDomain:"orgchart-firebase.firebaseapp.com",databaseURL:"https://orgchart-firebase-default-rtdb.europe-west1.firebasedatabase.app",projectId:"orgchart-firebase",appId:"1:551069785535:web:241cb4548815e909ca950a"};
+const ALLOWED_DOMAINS=['platipomiru.com'],ALLOWED_EMAILS=['kateshelenkova@gmail.com'];
+const DEPTC={'Отдел заботы':'#0F9D74','Отдел ИТ':'#2F6BFF','Отдел HR':'#5FA315','Отдел маркетинга':'#E0673A','Отдел продукта':'#7C5BE0','Отдел партнёрских программ':'#C08A1E','Финансовый отдел':'#1668B5','Отдел контроля качества':'#64748B','Отдел привлечения':'#0E9BB5','Коммерческий отдел':'#4F46C6','Отдел PR':'#C03B6B','MICE':'#8A8A86','АУП':'#475569'};
+const DPAL=['#0F9D74','#2F6BFF','#7C5BE0','#E0673A','#5FA315','#C08A1E','#0E9BB5','#4F46C6','#C03B6B','#64748B'];
+const LOC=[{k:'Мск офис',c:'#1D4ED8'},{k:'Мск гибрид',c:'#60A5FA'},{k:'Спб офис',c:'#0E7A5F'},{k:'Спб гибрид',c:'#34C79B'},{k:'Удалёнка',c:'#7C5BE0'},{k:'Офис · др.',c:'#64748B'}];
+const LOCC={};LOC.forEach(l=>LOCC[l.k]=l.c);
+function locCat(n){let f=norm(n.fmt),c=norm(n.city);if((!f||!c)&&n.title){const m=locMap[norm(n.title)];if(m){f=f||norm(m.fmt);c=c||norm(m.city);}}const msk=c.includes('мск')||c.includes('москв'),spb=c.includes('спб')||c.includes('санкт')||c.includes('петерб');
+  if(f.includes('удал'))return'Удалёнка';if(f.includes('гибрид'))return msk?'Мск гибрид':(spb?'Спб гибрид':'Офис · др.');if(msk)return'Мск офис';if(spb)return'Спб офис';return'Офис · др.';}
+function locColor(n){return LOCC[locCat(n)]||'#94A3B8';}
+function loadLocMap(){fetch('org_structure.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{const m={};d.forEach(p=>{if(!p.vac&&p.n)m[norm(p.n)]={fmt:p.fmt,city:p.city,photo:p.photo};});locMap=m;sched();}).catch(()=>{});}
+let auth,db,me,nodesRef,linksRef;
+const NODES={},LINKS={};let kids={},par={},roll={},COL=new Set(),SUB=new Set(),HID=new Set(),sel=null,view='tree',showVac=true,showZones=true,filter=null,locFilter=null,scale=1,panX=0,panY=0,_cl=null,locMap={};
+const NW=248,gid=id=>document.getElementById(id);
+const stage=gid('stage'),world=gid('world'),edges=gid('edges');
+function esc(s){return(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function norm(s){return(s||'').replace(/ё/g,'е').replace(/Ё/g,'Е').trim().toLowerCase()}
+function initials(n){const w=(n||'').trim().split(/\s+/);return((w[0]||'')[0]||'')+((w[1]||'')[0]||'')}
+function isVac(n){return n.vac||n.title==='Вакансия'}
+function dcolor(d,i){return DEPTC[d]||DPAL[(i||0)%DPAL.length]}
+
+/* ---- auth ---- */
+function gate(state,info){const o=gid('overlay'),g=gid('gate');
+  if(state==='hide'){o.style.display='none';['metrics','toolbar','stage'].forEach(x=>gid(x).style.display='');return;}
+  o.style.display='flex';
+  if(state==='denied'){g.innerHTML=`<h1>Нет доступа</h1><p>Аккаунт <code>${esc(info)}</code> не разрешён. Обратись к HRD.</p><button class="btn" onclick="auth.signOut()">Выйти</button>`;return;}
+  g.innerHTML=`<h1>Структура 2.0 · Плати по миру</h1><p>Современная оргструктура. Войди рабочим Google-аккаунтом.</p><button class="btn pri" id="si" style="height:40px;padding:0 20px">Войти через Google</button>`;
+  gid('si').onclick=()=>auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>alert(e.message));}
+try{_cl=localStorage.getItem('struk2col');if(_cl)COL=new Set(JSON.parse(_cl));}catch(e){}
+try{const s=localStorage.getItem('struk2sub');if(s)SUB=new Set(JSON.parse(s));}catch(e){}
+
+/* ---- статичный режим: строим прямо из org_structure.json, без Firebase и без входа ---- */
+let loadT=null;
+function start(){
+  ['metrics','toolbar','stage'].forEach(x=>{const el=gid(x);if(el)el.style.display='';});
+  const ov=gid('overlay');if(ov)ov.style.display='none';
+  const who=gid('who');if(who)who.textContent='данные из ШТАТКИ';
+  try{bindUI();}catch(e){if(who)who.textContent='ошибка интерфейса';}
+  try{loadStatic();}catch(e){}
+}
+function applyPeople(people){
+  const {nodes,links}=buildOrg(people);
+  Object.keys(NODES).forEach(k=>delete NODES[k]);
+  Object.entries(nodes).forEach(([k,n])=>NODES[k]=Object.assign({},n,{id:k}));
+  Object.keys(LINKS).forEach(k=>delete LINKS[k]);
+  Object.assign(LINKS,links);
+  const m={};people.forEach(p=>{if(!p.vac&&p.n)m[norm(p.n)]={fmt:p.fmt,city:p.city,photo:p.photo};});locMap=m;
+  sched();setTimeout(fit,160);
+}
+function loadStatic(){
+  if(Array.isArray(window.ORGDATA)&&window.ORGDATA.length){applyPeople(window.ORGDATA);return;}
+  refreshFromFile();
+}
+function refreshFromFile(){
+  const b=gid('b-seed'),old=b?b.textContent:'';if(b){b.textContent='⏳ Обновляю…';b.disabled=true;}
+  const fin=function(msg){if(b){b.textContent=old;b.disabled=false;}toast(msg);};
+  const ctrl=('AbortController'in window)?new AbortController():null,tm=setTimeout(function(){ctrl&&ctrl.abort();},12000);
+  fetch('org_structure.json?v='+Date.now(),{cache:'no-store',signal:ctrl?ctrl.signal:undefined})
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(function(p){clearTimeout(tm);applyPeople(p);fin('Обновлено из ШТАТКИ: '+p.filter(function(x){return!x.vac;}).length+' чел.');})
+    .catch(function(){clearTimeout(tm);fin('Не удалось загрузить (сеть). Показаны последние данные.');});
+}
+function toast(msg){let t=gid('_toast');if(!t){t=document.createElement('div');t.id='_toast';t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99998;background:#0F172A;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 6px 24px rgba(0,0,0,.28);opacity:0;transition:opacity .2s';document.body.appendChild(t);}t.textContent=msg;t.style.opacity='1';clearTimeout(toast._t);toast._t=setTimeout(function(){t.style.opacity='0';},3800);}
+start();
+function sched(){clearTimeout(loadT);loadT=setTimeout(function(){try{rebuild();}catch(e){world.insertAdjacentHTML('beforeend','<div class="empty" id="empty" style="color:#c00;white-space:pre-wrap;max-width:680px;font-size:12px">REBUILD ОШИБКА: '+(e&&e.message)+' | '+((e&&e.stack)||'').slice(0,500)+'</div>');}},90);}
+
+/* ---- tree + rollups ---- */
+function buildTree(){kids={};par={};for(const k in LINKS){const l=LINKS[k];if(l&&NODES[l.from]&&NODES[l.to]){(kids[l.from]=kids[l.from]||[]).push(l.to);par[l.to]=l.from;}}}
+function computeRoll(){roll={};
+  function rec(id){const ch=kids[id]||[];let emp=0,vac=0,demp=0,dvac=0;
+    ch.forEach(c=>{if(isVac(NODES[c])){vac++;dvac++;}else{emp++;demp++;}const r=rec(c);emp+=r.emp;vac+=r.vac;});
+    roll[id]={demp,dvac,emp,vac};return roll[id];}
+  rootIds().forEach(rec);return roll;}
+function rootIds(){return Object.keys(NODES).filter(id=>!par[id]||!NODES[par[id]]);}
+function hasKids(id){return!!(kids[id]&&kids[id].length)}
+function leafEmps(id){return(kids[id]||[]).filter(c=>!hasKids(c)&&!isVac(NODES[c]))}
+function defaultCollapse(){COL=new Set();for(const id in kids){if((kids[id]||[]).some(c=>!hasKids(c)))COL.add(id);}saveCol();}
+function saveCol(){try{localStorage.setItem('struk2col',JSON.stringify([...COL]));localStorage.setItem('struk2sub',JSON.stringify([...SUB]))}catch(e){}}
+
+/* ---- layout (tidy: managers across, individuals stacked) ---- */
+const HGAP=34,VGAP=10,SUBGAP=58,NHc=92,NHe=72;
+function nh(id){return hasVisibleChildren(id)||roll[id]&&(roll[id].demp||roll[id].dvac)?NHc:(isVac(NODES[id])?NHe:NHe+20)}
+function hasVisibleChildren(id){return vkidsOf(id).length>0}
+function vkidsOf(id){if(SUB.has(id))return[];if(COL.has(id))return(kids[id]||[]).filter(c=>hasKids(c)&&!HID.has(c));return(kids[id]||[]).filter(c=>!HID.has(c));}
+function layout(){const POS={};
+  function lay(id,x,y){const ch=vkidsOf(id);const H=nodeH(id);
+    if(!ch.length){POS[id]={x,y,h:H};return{w:NW,h:H};}
+    const mg=ch.filter(c=>hasKids(c)),ic=ch.filter(c=>!hasKids(c));
+    const cy=y+H+SUBGAP;let cx=x,bottom=cy;const ctr=[];
+    mg.forEach(c=>{const b=lay(c,cx,cy);ctr.push(POS[c].x+NW/2);cx+=b.w+HGAP;bottom=Math.max(bottom,cy+b.h);});
+    if(ic.length){let iy=cy;ic.forEach(c=>{const h=nodeH(c);POS[c]={x:cx,y:iy,h};iy+=h+VGAP;});ctr.push(cx+NW/2);bottom=Math.max(bottom,iy-VGAP);cx+=NW+HGAP;}
+    POS[id]={x:(ctr[0]+ctr[ctr.length-1])/2-NW/2,y,h:H};return{w:Math.max(NW,cx-HGAP-x),h:bottom-y};}
+  let rx=40;const rs=rootIds().filter(id=>!HID.has(id));rs.sort((a,b)=>((kids[b]||[]).length)-((kids[a]||[]).length));
+  rs.forEach(r=>{const b=lay(r,rx,40);rx+=b.w+HGAP*2;});return POS;}
+function nodeH(id){const n=NODES[id];if(isVac(n)||!hasKids(id))return 76;return 132;}
+
+/* ---- render ---- */
+let POS={};
+function rebuild(){if(!Object.keys(NODES).length){gid('empty')||world.insertAdjacentHTML('beforeend','<div class="empty" id="empty">Пусто. Нажми «↻ из ШТАТКИ», чтобы построить из штатки.</div>');return;}
+  gid('empty')?.remove();
+  buildTree();
+  if(_cl===null){defaultCollapse();_cl='set';}
+  computeRoll();
+  computeHidden();
+  POS=layout();
+  renderNodes();renderEdges();renderZones();renderMetrics();renderChips();renderLegend();applyFilter();
+}
+function computeHidden(){HID=new Set();Object.keys(NODES).forEach(id=>{let p=par[id],sub=false;while(p){if(SUB.has(p)){sub=true;break;}p=par[p];}if(sub){HID.add(id);return;}const leaf=!hasKids(id);if(leaf&&par[id]&&COL.has(par[id]))HID.add(id);});
+  // hide vacancies if toggled off
+  if(!showVac)Object.keys(NODES).forEach(id=>{if(isVac(NODES[id]))HID.add(id);});}
+function nodeEl(id){return world.querySelector(`.node[data-id="${id}"]`)}
+function renderNodes(){
+  const seen=new Set();
+  Object.keys(NODES).forEach(id=>{const n=NODES[id];let el=nodeEl(id);
+    if(HID.has(id)||!POS[id]){el&&(el.style.display='none');return;}
+    seen.add(id);const vac=isVac(n),mgr=hasKids(id),r=roll[id]||{demp:0,dvac:0,emp:0,vac:0};
+    const col=vac?'#CBD5E1':locColor(n);
+    if(!el){el=document.createElement('div');el.dataset.id=id;world.appendChild(el);}
+    el.style.display='';el.style.left=POS[id].x+'px';el.style.top=POS[id].y+'px';
+    el.className='node'+(vac?' vac':'')+(mgr?' mgr':'')+(sel===id?' sel':'');
+    el.style.setProperty('--nc',col);el.style.background=vac?'#FAFBFC':col+'12';
+    const photo=n.photo||(locMap[norm(n.title)]||{}).photo;
+    const av=photo?`<div class="av" style="background-image:url(${esc(photo)})"></div>`:`<div class="av" style="background:${col}1f;color:${col}">${vac?'•':esc(initials(n.title))}</div>`;
+    let meta='';
+    if(mgr){const parts=[];
+      if(r.demp)parts.push(`<span class="pill team" title="прямых подчинённых">${r.demp} прям.</span>`);
+      if(r.emp>r.demp)parts.push(`<span class="pill tot" title="всего в команде">Σ ${r.emp}</span>`);
+      if(r.vac)parts.push(`<span class="pill vac" title="открытых вакансий">⬡ ${r.vac}</span>`);
+      meta=`<div class="nmeta">${parts.join('')}</div>`;}
+    let foot='';
+    if(hasKids(id)){const leafK=(kids[id]||[]).filter(c=>!hasKids(c)).length,mgrK=(kids[id]||[]).filter(c=>hasKids(c)).length,tot=r.emp+r.vac,segs=[];
+      if(SUB.has(id)){segs.push(`<span class="fbtn" data-act="subexp">▸ Показать ${tot}</span>`);}
+      else{
+        if(leafK>0){if(COL.has(id)){const hid=(kids[id]||[]).filter(c=>HID.has(c)).length||leafK;segs.push(`<span class="fbtn" data-act="exp">▸ ${hid} сотр.</span>`);}else segs.push(`<span class="fbtn" data-act="col">▾ сотрудники</span>`);}
+        if(mgrK>0)segs.push(`<span class="fbtn sub" data-act="sub">⊟ свернуть ветку</span>`);
+      }
+      if(segs.length)foot=`<div class="foot">${segs.join('<span class="fsep">·</span>')}</div>`;}
+    el.innerHTML=`<button class="del" data-act="del" title="удалить">✕</button>
+      <div class="nbody">${av}<div class="ntx"><div class="nrole edit" data-f="tag" contenteditable spellcheck="false" style="color:${vac?'#94A3B8':col}">${esc(n.tag||'')}</div><div class="nname edit" data-f="title" contenteditable spellcheck="false" style="font-weight:${vac?600:(mgr?700:500)}">${esc(n.title||'')}</div></div></div>
+      ${meta}${foot}`;
+  });
+  world.querySelectorAll('.node').forEach(el=>{if(!seen.has(el.dataset.id))el.style.display='none';});
+}
+/* счётчики «Показать N» считаются прямо в renderNodes */
+function renderEdges(){let h='';const seen=Object.keys(POS).filter(id=>!HID.has(id));
+  seen.forEach(id=>{const p=par[id];if(p===undefined||HID.has(p)||!POS[p])return;
+    const a=POS[p],b=POS[id],ah=nodeH(p),x1=a.x+NW/2,y1=a.y+ah,x2=b.x+NW/2,y2=b.y;
+    // side-bus for stacked individuals (child within parent column), else elbow
+    let d;if(b.x>=a.x-1&&b.x<=a.x+NW+1&&b.y>a.y+ah-1){const bx=a.x+18,cyc=b.y+nodeH(id)/2;d=`M${bx} ${y1} V${cyc} H${b.x}`;}
+    else{const my=(y1+y2)/2;d=`M${x1} ${y1} V${my} H${x2} V${y2}`;}
+    h+=`<path d="${d}" fill="none" stroke="#CBD5E1" stroke-width="1.6"/>`;});
+  edges.innerHTML=h;sizeWorld();}
+function sizeWorld(){let mx=0,my=0;Object.keys(POS).forEach(id=>{if(HID.has(id))return;mx=Math.max(mx,POS[id].x+NW);my=Math.max(my,POS[id].y+nodeH(id));});
+  const W=mx+200,H=my+160;world.style.width=W+'px';world.style.height=H+'px';edges.setAttribute('width',W);edges.setAttribute('height',H);}
+function renderZones(){let z=gid('zones');if(!z){z=document.createElement('div');z.id='zones';z.style.cssText='position:absolute;left:0;top:0;pointer-events:none';world.insertBefore(z,edges);}
+  if(!showZones){z.innerHTML='';return;}
+  const g={};Object.keys(POS).forEach(id=>{if(HID.has(id))return;const d=NODES[id].dept;if(!d||d==='—'||isVac(NODES[id]))return;(g[d]=g[d]||[]).push(id);});
+  let h='',i=0;for(const d in g){const ids=g[d];if(ids.length<2)continue;let a=1e9,b=1e9,c=-1e9,e=-1e9;
+    ids.forEach(id=>{a=Math.min(a,POS[id].x);b=Math.min(b,POS[id].y);c=Math.max(c,POS[id].x+NW);e=Math.max(e,POS[id].y+nodeH(id));});
+    const col='#9AA3B0',P=18,L=30,x=a-P,y=b-P-L,w=c-a+P*2,ht=e-b+P*2+L,cnt=Object.values(NODES).filter(n=>n.dept===d&&!isVac(n)).length;i++;
+    h+=`<div class="zone" style="left:${x}px;top:${y}px;width:${w}px;height:${ht}px;border-color:${col}55;background:${col}0d"></div>`+
+       `<div class="zlbl" style="left:${x+14}px;top:${y+7}px;color:${col}">${esc(d)} <span class="zc">${cnt}</span></div>`;}
+  z.innerHTML=h;}
+function renderMetrics(){const ns=Object.values(NODES);const emp=ns.filter(n=>!isVac(n)).length,vac=ns.filter(isVac).length;
+  const mgr=Object.keys(kids).filter(id=>(kids[id]||[]).some(c=>!isVac(NODES[c]))).length;
+  let depth=0;function dd(id,l){depth=Math.max(depth,l);(kids[id]||[]).forEach(c=>dd(c,l+1));}rootIds().forEach(r=>dd(r,1));
+  const spans=Object.keys(kids).map(id=>(kids[id]||[]).filter(c=>!isVac(NODES[c])).length).filter(x=>x>0);
+  const avg=spans.length?(spans.reduce((a,b)=>a+b,0)/spans.length):0;
+  const deps=new Set(ns.filter(n=>n.dept&&n.dept!=='—'&&!isVac(n)).map(n=>n.dept));
+  gid('m-emp').innerHTML=emp;gid('m-mgr').innerHTML=mgr;gid('m-vac').innerHTML=vac;gid('m-lvl').innerHTML=depth;
+  gid('m-span').innerHTML=avg.toFixed(1)+'<span class="u"> чел</span>';gid('m-dep').innerHTML=deps.size;}
+function renderChips(){const c=gid('chips');const cnt={};Object.values(NODES).forEach(n=>{if(isVac(n)||!n.dept||n.dept==='—')return;cnt[n.dept]=(cnt[n.dept]||0)+1;});
+  const arr=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);
+  c.innerHTML=arr.map(([d,n],i)=>`<span class="chip${filter===d?' on':''}" data-dep="${esc(d)}"><span class="dot" style="background:${dcolor(d,i)}"></span>${esc(d)} <span class="c">${n}</span></span>`).join('');
+  c.querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>{filter=filter===ch.dataset.dep?null:ch.dataset.dep;renderChips();applyFilter();});}
+function applyFilter(){const q=norm(gid('search').value);
+  world.querySelectorAll('.node').forEach(el=>{const id=el.dataset.id,n=NODES[id];if(!n)return;el.classList.remove('dim','hit');let dim=false;
+    if(filter&&!isVac(n)&&n.dept!==filter)dim=true;
+    if(locFilter&&!isVac(n)&&locCat(n)!==locFilter)dim=true;
+    if(q){const m=norm(n.title).includes(q)||norm(n.tag).includes(q);el.classList.toggle('hit',m);if(!m)dim=true;}
+    if(dim)el.classList.add('dim');});}
+function renderLegend(){const cnt={};Object.values(NODES).forEach(n=>{if(isVac(n))return;const k=locCat(n);cnt[k]=(cnt[k]||0)+1;});
+  let h='<div class="lt">Локация · формат</div>';LOC.filter(l=>(cnt[l.k]||0)>0||l.k!=='Офис · др.').forEach(l=>{h+=`<div class="lr${locFilter&&locFilter!==l.k?' off':''}" data-loc="${esc(l.k)}"><span class="ls" style="background:${l.c}"></span>${esc(l.k)}<span class="lc">${cnt[l.k]||0}</span></div>`;});
+  const lg=gid('legend');lg.innerHTML=h;lg.querySelectorAll('.lr').forEach(r=>r.onclick=()=>{locFilter=locFilter===r.dataset.loc?null:r.dataset.loc;renderLegend();applyFilter();});}
+
+/* ---- interactions ---- */
+function bindUI(){
+  stage.addEventListener('mousedown',e=>{
+    const act=e.target.closest('[data-act]'),node=e.target.closest('.node');
+    if(act&&node){const id=node.dataset.id,a=act.dataset.act;
+      if(a==='exp'||a==='col'){COL.has(id)?COL.delete(id):COL.add(id);saveCol();e.preventDefault();return rebuild();}
+      if(a==='sub'||a==='subexp'){SUB.has(id)?SUB.delete(id):SUB.add(id);saveCol();e.preventDefault();return rebuild();}
+      if(a==='del'){if(confirm('Скрыть блок? Вернётся после «↻ из ШТАТКИ».')){Object.keys(LINKS).forEach(lid=>{const l=LINKS[lid];if(l&&(l.from===id||l.to===id))delete LINKS[lid];});delete NODES[id];rebuild();}return;}}
+    if(e.target.classList.contains('edit')){return;}
+    if(node){sel=node.dataset.id;openDetail(sel);world.querySelectorAll('.node.sel').forEach(x=>x.classList.remove('sel'));node.classList.add('sel');e.preventDefault();return;}
+    sel=null;closeDetail();world.querySelectorAll('.node.sel').forEach(x=>x.classList.remove('sel'));
+    pan={x:e.clientX-panX,y:e.clientY-panY};stage.classList.add('pan');});
+  window.addEventListener('mousemove',e=>{if(pan){panX=e.clientX-pan.x;panY=e.clientY-pan.y;applyView();}});
+  window.addEventListener('mouseup',()=>{pan=null;stage.classList.remove('pan');});
+  stage.addEventListener('wheel',e=>{e.preventDefault();const r=stage.getBoundingClientRect(),cx=e.clientX-r.left,cy=e.clientY-r.top,wx=(cx-panX)/scale,wy=(cy-panY)/scale,ns=Math.min(3,Math.max(.12,scale*(e.deltaY<0?1.12:.89)));panX=cx-wx*ns;panY=cy-wy*ns;scale=ns;applyView();},{passive:false});
+  world.addEventListener('blur',e=>{const ed=e.target.closest('.edit');if(!ed)return;const node=e.target.closest('.node'),id=node.dataset.id,f=ed.dataset.f,val=ed.textContent.trim();if(NODES[id]&&NODES[id][f]!==val)NODES[id][f]=val;},true);
+  gid('search').oninput=()=>applyFilter();
+  gid('b-expand').onclick=()=>{COL=new Set();saveCol();rebuild();};
+  gid('b-collapse').onclick=()=>{COL=new Set();for(const id in kids){if(hasKids(id))COL.add(id);}saveCol();rebuild();};
+  gid('b-vac').onclick=()=>{showVac=!showVac;gid('b-vac').classList.toggle('on',showVac);rebuild();};
+  gid('b-zones').onclick=()=>{showZones=!showZones;gid('b-zones').classList.toggle('on',showZones);renderZones();};
+  gid('b-fit').onclick=fit;gid('zfit').onclick=fit;
+  gid('zin').onclick=()=>zoomBy(1.2);gid('zout').onclick=()=>zoomBy(1/1.2);
+  gid('v-tree').onclick=()=>setView('tree');gid('v-flat').onclick=()=>setView('flat');
+  gid('b-seed').onclick=refreshFromFile;
+  const zl=gid('zl');zl.addEventListener('keydown',e=>{if(e.key==='Enter'){const v=parseFloat(zl.value)||100;scale=Math.min(3,Math.max(.12,v/100));applyView();zl.blur();}});zl.addEventListener('mousedown',e=>e.stopPropagation());
+}
+let pan=null;
+function applyView(){world.style.transform=`translate(${panX}px,${panY}px) scale(${scale})`;gid('zl').value=Math.round(scale*100);}
+function zoomBy(f){const cx=stage.clientWidth/2,cy=stage.clientHeight/2,wx=(cx-panX)/scale,wy=(cy-panY)/scale,ns=Math.min(3,Math.max(.12,scale*f));panX=cx-wx*ns;panY=cy-wy*ns;scale=ns;applyView();}
+function fit(){let a=1e9,b=1e9,c=-1e9,e=-1e9;Object.keys(POS).forEach(id=>{if(HID.has(id))return;a=Math.min(a,POS[id].x);b=Math.min(b,POS[id].y);c=Math.max(c,POS[id].x+NW);e=Math.max(e,POS[id].y+nodeH(id));});
+  if(a>c)return;const cw=stage.clientWidth,ch=stage.clientHeight,bw=c-a+150,bh=e-b+150;scale=Math.min(1.1,Math.max(.12,Math.min(cw/bw,ch/bh)));panX=cw/2-((a+c)/2)*scale;panY=ch/2-((b+e)/2)*scale+10;applyView();}
+function setView(v){view=v;gid('v-tree').classList.toggle('on',v==='tree');gid('v-flat').classList.toggle('on',v==='flat');
+  if(v==='flat'){COL=new Set();for(const id in kids){if(hasKids(id))COL.add(id);}}else if(_cl){try{COL=new Set(JSON.parse(localStorage.getItem('struk2col')||'[]'))}catch(e){}}rebuild();}
+
+/* ---- detail panel ---- */
+function openDetail(id){const n=NODES[id],d=gid('det'),r=roll[id]||{demp:0,emp:0,vac:0};
+  const dir=(kids[id]||[]);
+  const rows=dir.map(c=>{const m=NODES[c],vac=isVac(m);return`<div class="rrow${vac?' v':''}"><div class="ra">${vac?'•':esc(initials(m.title))}</div><div><div class="rn">${esc(vac?'Вакансия':m.title)}</div><div class="rr">${esc(m.tag||'')}</div></div></div>`;}).join('')||'<div class="rr" style="color:var(--micro);padding:6px 0">Нет прямых подчинённых</div>';
+  d.innerHTML=`<span class="x" onclick="closeDetail()">✕</span><h3>${esc(isVac(n)?'Вакансия':n.title)}</h3><div class="dr">${esc(n.tag||'')}</div>
+    <div class="stat"><div class="s"><div class="n">${r.demp}</div><div class="l">прямых</div></div><div class="s"><div class="n">${r.emp}</div><div class="l">всего</div></div><div class="s"><div class="n" style="color:${r.vac?'var(--danger)':'inherit'}">${r.vac}</div><div class="l">вакансий</div></div></div>
+    ${n.dept&&n.dept!=='—'?`<div class="sect">Отдел</div><div style="font-size:13px;font-weight:600;margin-bottom:14px">${esc(n.dept)}</div>`:''}
+    <div class="sect">Прямые подчинённые (${dir.length})</div>${rows}`;
+  d.classList.add('open');}
+function closeDetail(){gid('det').classList.remove('open');sel=null;world.querySelectorAll('.node.sel').forEach(x=>x.classList.remove('sel'));}
+window.closeDetail=closeDetail;
+
+/* ---- seed from ШТАТКА (reuse builder from old tab structure) ---- */
+function seed(){if(!confirm('Перестроить структуру из ШТАТКИ (133 чел. + вакансии)? Текущая схема будет заменена.'))return;
+  fetch('org_structure.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(people=>{const {nodes,links}=buildOrg(people);
+    nodesRef.set(nodes).then(()=>linksRef.set(links)).then(()=>{defaultCollapse();setTimeout(()=>{rebuild();fit();},400);});
+  }).catch(()=>alert('Не удалось загрузить org_structure.json'));}
+function isMgrTitle(r){return /руковод|директор|head|cpo|cfo|cmo|cto|тимлид|team lead|lead/i.test(r||'')}
+function uid(){return 'n'+Math.random().toString(36).slice(2,9)}
+function colorForSeed(p){if(p.vac)return '#CBD5E1';return DEPTC[p.udept]||'#CBD5E1';}
+function buildOrg(people){const nodes={},links={},ids=new Map(),nameId={};
+  const keyset=s=>{const w=norm(s).split(/\s+/).filter(Boolean);const o=[norm(s)];if(w.length>=2){o.push(w[0]+' '+w[1]);o.push(w[1]+' '+w[0]);}return o;};
+  const findBoss=(b,self)=>{for(const k of keyset(b)){if(nameId[k]&&nameId[k]!==self)return nameId[k];}return null;};
+  const gd=people.find(p=>!p.vac&&/^\s*генеральн\S*\s+директор/i.test(p.r));
+  people.forEach(p=>{const id=uid();ids.set(p,id);if(!p.vac)keyset(p.n).forEach(k=>{if(!(k in nameId))nameId[k]=id;});
+    nodes[id]={tag:p.r,title:p.vac?'Вакансия':p.n,dept:(p.udept||p.d||''),color:colorForSeed(p),vac:!!p.vac,fmt:p.fmt||'',city:p.city||'',photo:p.photo||null,x:0,y:0};});
+  const gdId=ids.get(gd),byDept={};people.forEach(p=>{if(!p.vac)(byDept[p.d]=byDept[p.d]||[]).push(p)});
+  const headOf={};Object.entries(byDept).forEach(([dept,mem])=>{headOf[dept]=mem.slice().sort((a,b)=>(isMgrTitle(b.r)?1:0)-(isMgrTitle(a.r)?1:0))[0];});
+  people.forEach(p=>{const id=ids.get(p);let pa=null;const pb=p.boss?findBoss(p.boss,id):null;
+    if(p===gd)pa=null;else if(pb)pa=pb;else{const h=headOf[p.d];pa=(h&&h!==p)?ids.get(h):gdId;}
+    if(pa)links[uid()]={from:pa,to:id};});
+  return{nodes,links};}
+</script>
+<script src="refresh-button.js"></script>
+</body>
+</html>

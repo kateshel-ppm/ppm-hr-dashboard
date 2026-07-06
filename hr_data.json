@@ -1,0 +1,141 @@
+{
+  "as_of": "2026-07-04",
+  "headcount": {
+    "active": 135,
+    "plan": 149,
+    "staffing_pct": 90.6,
+    "managers": 32,
+    "ic": 103,
+    "on_probation": 47,
+    "by_dept": {
+      "Отдел заботы": 63,
+      "Отдел ИТ": 18,
+      "Отдел HR": 11,
+      "Отдел маркетинга": 11,
+      "Отдел продукта": 8,
+      "Отдел партнёрских программ": 5,
+      "АУП": 5,
+      "Финансовый отдел": 4,
+      "Отдел контроля качества": 4,
+      "Отдел привлечения": 3,
+      "Отдел PR": 1,
+      "Юридический отдел": 1,
+      "MICE": 1
+    },
+    "by_format": {
+      "офис": 54,
+      "удаленно": 74,
+      "гибрид": 7
+    }
+  },
+  "hires_by_month": {
+    "1": 4,
+    "2": 14,
+    "3": 17,
+    "4": 26,
+    "5": 21,
+    "6": 6,
+    "7": 2
+  },
+  "turnover": {
+    "ytd_count": 14,
+    "voluntary": 9,
+    "involuntary": 5,
+    "rate_simple_pct": 10.4,
+    "early_probation": 5,
+    "by_month": {
+      "3": 1,
+      "4": 6,
+      "5": 6,
+      "6": 1
+    }
+  },
+  "vacancies": {
+    "total_rows": 144,
+    "status_counts": {
+      "finished": 113,
+      "in progress": 26,
+      "отказ от оффера": 3,
+      "freeze": 2
+    },
+    "open": 26,
+    "open_by_priority": {
+      "Critical": 10,
+      "High": 12,
+      "Medium": 4
+    },
+    "oldest": {
+      "vac": "Продуктовый Lead дизайнер UX/UI мск",
+      "dept": "Продукт",
+      "pri": "Critical",
+      "rec": "София",
+      "open": "13.04",
+      "age": 82
+    },
+    "top_aging": [
+      {
+        "vac": "Продуктовый Lead дизайнер UX/UI мск",
+        "dept": "Продукт",
+        "pri": "Critical",
+        "rec": "София",
+        "open": "13.04",
+        "age": 82
+      },
+      {
+        "vac": "DevOps",
+        "dept": "ИТ",
+        "pri": "Critical",
+        "rec": "Лена",
+        "open": "05.05",
+        "age": 60
+      },
+      {
+        "vac": "Senior Backend Developer",
+        "dept": "ИТ",
+        "pri": "High",
+        "rec": "Лена",
+        "open": "05.05",
+        "age": 60
+      },
+      {
+        "vac": "Senior Backend Developer",
+        "dept": "ИТ",
+        "pri": "Critical",
+        "rec": "Лена",
+        "open": "05.05",
+        "age": 60
+      },
+      {
+        "vac": "Team Lead",
+        "dept": "ИТ",
+        "pri": "Critical",
+        "rec": "Семен",
+        "open": "05.05",
+        "age": 60
+      },
+      {
+        "vac": "Системный Аналитик",
+        "dept": "Продукт",
+        "pri": "Critical",
+        "rec": "София",
+        "open": "05.05",
+        "age": 60
+      }
+    ],
+    "tto_median": 6.0,
+    "tto_mean": 9.6,
+    "tth_median": null,
+    "tth_mean": null,
+    "offers_made_jo": 100,
+    "started": 107
+  },
+  "sources_top": {
+    "hh.ru": 66,
+    "реферал": 17,
+    "холодный поиск": 15,
+    "кадровое агентство": 3,
+    "закрыта заказчиком": 2,
+    "холодный": 1,
+    "внутренний рост": 1
+  }
+}

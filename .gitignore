@@ -1,0 +1,6 @@
+.claude/
+*.DS_Store
+
+# данные с именами — не публикуем (только зашифрованный secure/struktura.enc)
+org_structure.json
+people_data.json

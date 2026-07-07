@@ -3,8 +3,16 @@
 // Данные лежат в публичном репозитории — это защита ВХОДА, не самих данных.
 (function () {
   var OTP = 'https://script.google.com/macros/s/AKfycbyi2TbWlKjEWN4cm0GBEMyrpSNIWg5vVe_LPaJ4_Cd7ax15pk0hvaZxFupecgT2gxQU8w/exec';
-  var K = 'ppmAuthOtp';
-  if (sessionStorage.getItem(K)) return; // уже вошёл в этой сессии
+  var K = 'ppmAuthOtp', LK = 'ppmRemember';
+  // «Запомнить меня»: восстанавливаем вход с прошлого раза (до 30 дней), без нового кода.
+  try {
+    var rem = JSON.parse(localStorage.getItem(LK) || 'null');
+    if (rem && rem.exp > Date.now()) {
+      sessionStorage.setItem(K, rem.email);
+      if (rem.key) sessionStorage.setItem('ppmKey', rem.key);
+    } else if (rem) { localStorage.removeItem(LK); }
+  } catch (e) {}
+  if (sessionStorage.getItem(K)) return; // уже вошёл
   try { document.documentElement.style.visibility = 'hidden'; } catch (e) {}
 
   function q(params) {
@@ -33,6 +41,7 @@
       '<div id="_sub" style="color:#64748B;font-size:13px;margin:4px 0 16px">Вход по коду на рабочую почту</div>' +
       '<div id="_step1">' +
         '<input id="_em" type="email" placeholder="name@platipomiru.com" autocomplete="username" autofocus style="width:100%;height:42px;border:1px solid #E2E8F0;border-radius:10px;padding:0 12px;font-size:15px;outline:none;box-sizing:border-box">' +
+        '<label style="display:flex;align-items:center;gap:7px;margin:11px 2px 0;font-size:12px;color:#64748B;cursor:pointer;user-select:none"><input type="checkbox" id="_rem" checked style="width:15px;height:15px"> Запомнить меня на этом устройстве (30 дней)</label>' +
         '<button id="_send" style="width:100%;height:42px;margin-top:10px;border:0;border-radius:10px;background:#2F6BFF;color:#fff;font-weight:700;font-size:15px;cursor:pointer">Получить код</button>' +
       '</div>' +
       '<div id="_step2" style="display:none">' +
@@ -45,6 +54,7 @@
     document.body.appendChild(o);
     var er = document.getElementById('_err');
     var email = '';
+    try { var last = localStorage.getItem('ppmEmail'); if (last) document.getElementById('_em').value = last; } catch (e) {}
 
     function busy(btn, on, txt) { btn.disabled = on; btn.textContent = on ? '…' : txt; }
 
@@ -70,7 +80,13 @@
       var b = this; busy(b, true, 'Войти');
       q({ action: 'verify', email: email, code: code }).then(function (d) {
         if (d.ok) {
-          try { sessionStorage.setItem(K, email); if (d.key) sessionStorage.setItem('ppmKey', d.key); } catch (e) {}
+          try {
+            sessionStorage.setItem(K, email); if (d.key) sessionStorage.setItem('ppmKey', d.key);
+            localStorage.setItem('ppmEmail', email); // email подставится в следующий раз
+            var remember = document.getElementById('_rem') && document.getElementById('_rem').checked;
+            if (remember) localStorage.setItem(LK, JSON.stringify({ email: email, key: d.key || '', exp: Date.now() + 30 * 24 * 3600 * 1000 }));
+            else localStorage.removeItem(LK);
+          } catch (e) {}
           location.reload(); // перезагрузка — чтобы данные догрузились уже с ключом расшифровки
         } else { busy(b, false, 'Войти'); er.textContent = msg(d.error) + (d.attempts_left != null ? ' Осталось попыток: ' + d.attempts_left : ''); }
       }).catch(function () { busy(b, false, 'Войти'); er.textContent = 'Нет связи с сервером входа.'; });

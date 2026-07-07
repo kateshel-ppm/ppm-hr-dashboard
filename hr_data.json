@@ -1,17 +1,17 @@
 {
   "as_of": "2026-07-04",
   "headcount": {
-    "active": 136,
+    "active": 133,
     "plan": 149,
-    "staffing_pct": 91.3,
-    "managers": 33,
-    "ic": 103,
-    "on_probation": 49,
+    "staffing_pct": 89.3,
+    "managers": 32,
+    "ic": 101,
+    "on_probation": 47,
     "by_dept": {
-      "Отдел заботы": 63,
+      "Отдел заботы": 62,
       "Отдел ИТ": 18,
       "Отдел маркетинга": 12,
-      "Отдел HR": 11,
+      "Отдел HR": 10,
       "Отдел продукта": 8,
       "Отдел партнёрских программ": 5,
       "АУП": 5,
@@ -19,20 +19,19 @@
       "Отдел контроля качества": 4,
       "Отдел привлечения": 3,
       "Отдел PR": 1,
-      "MICE": 1,
       "Юридический отдел": 1
     },
     "by_format": {
-      "офис": 55,
-      "удаленно": 74,
+      "офис": 53,
+      "удаленно": 73,
       "гибрид": 7
     }
   },
   "hires_by_month": {
     "1": 4,
     "2": 14,
-    "3": 17,
-    "4": 26,
+    "3": 16,
+    "4": 25,
     "5": 21,
     "6": 6,
     "7": 3
@@ -41,7 +40,7 @@
     "ytd_count": 14,
     "voluntary": 9,
     "involuntary": 5,
-    "rate_simple_pct": 10.3,
+    "rate_simple_pct": 10.5,
     "early_probation": 5,
     "by_month": {
       "3": 1,
@@ -82,17 +81,17 @@
         "age": 82
       },
       {
-        "vac": "DevOps",
+        "vac": "Senior Backend Developer",
         "dept": "ИТ",
-        "pri": "Critical",
+        "pri": "High",
         "rec": "Лена",
         "open": "05.05",
         "age": 60
       },
       {
-        "vac": "Senior Backend Developer",
+        "vac": "DevOps",
         "dept": "ИТ",
-        "pri": "High",
+        "pri": "Critical",
         "rec": "Лена",
         "open": "05.05",
         "age": 60

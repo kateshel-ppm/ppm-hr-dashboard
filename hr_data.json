@@ -1,10 +1,10 @@
 {
   "as_of": "2026-07-14",
   "headcount": {
-    "active": 137,
+    "active": 136,
     "plan": 149,
-    "staffing_pct": 91.9,
-    "managers": 34,
+    "staffing_pct": 91.3,
+    "managers": 33,
     "ic": 103,
     "on_probation": 0,
     "by_dept": {
@@ -23,11 +23,10 @@
       "HR": 1,
       "Коммерческий отдел": 1,
       "ВЭД": 1,
-      "Юридический отдел": 1,
-      "MICE": 1
+      "Юридический отдел": 1
     },
     "by_format": {
-      "офис": 54,
+      "офис": 53,
       "удаленно": 75,
       "гибрид": 7,
       "—": 1
@@ -36,23 +35,24 @@
   "hires_by_month": {
     "1": 4,
     "2": 14,
-    "3": 17,
+    "3": 16,
     "4": 25,
     "5": 21,
     "6": 6,
     "7": 5
   },
   "turnover": {
-    "ytd_count": 14,
-    "voluntary": 9,
+    "ytd_count": 15,
+    "voluntary": 10,
     "involuntary": 5,
-    "rate_simple_pct": 10.2,
+    "rate_simple_pct": 11.0,
     "early_probation": 5,
     "by_month": {
       "3": 1,
       "4": 6,
       "5": 6,
-      "6": 1
+      "6": 1,
+      "7": 1
     }
   },
   "vacancies": {

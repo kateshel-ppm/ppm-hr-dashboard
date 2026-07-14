@@ -1,46 +1,52 @@
 {
-  "as_of": "2026-07-04",
+  "as_of": "2026-07-14",
   "headcount": {
-    "active": 133,
+    "active": 137,
     "plan": 149,
-    "staffing_pct": 89.3,
-    "managers": 32,
-    "ic": 101,
-    "on_probation": 47,
+    "staffing_pct": 91.9,
+    "managers": 34,
+    "ic": 103,
+    "on_probation": 0,
     "by_dept": {
-      "Отдел заботы": 62,
-      "Отдел ИТ": 18,
-      "Отдел маркетинга": 12,
+      "Отдел заботы": 58,
+      "Отдел ИТ": 20,
+      "Отдел маркетинга": 11,
       "Отдел HR": 10,
       "Отдел продукта": 8,
+      "Отдел контроля качества": 8,
       "Отдел партнёрских программ": 5,
-      "АУП": 5,
       "Финансовый отдел": 4,
-      "Отдел контроля качества": 4,
       "Отдел привлечения": 3,
+      "АУП": 2,
+      "-": 2,
       "Отдел PR": 1,
-      "Юридический отдел": 1
+      "HR": 1,
+      "Коммерческий отдел": 1,
+      "ВЭД": 1,
+      "Юридический отдел": 1,
+      "MICE": 1
     },
     "by_format": {
-      "офис": 53,
-      "удаленно": 73,
-      "гибрид": 7
+      "офис": 54,
+      "удаленно": 75,
+      "гибрид": 7,
+      "—": 1
     }
   },
   "hires_by_month": {
     "1": 4,
     "2": 14,
-    "3": 16,
+    "3": 17,
     "4": 25,
     "5": 21,
     "6": 6,
-    "7": 3
+    "7": 5
   },
   "turnover": {
     "ytd_count": 14,
     "voluntary": 9,
     "involuntary": 5,
-    "rate_simple_pct": 10.5,
+    "rate_simple_pct": 10.2,
     "early_probation": 5,
     "by_month": {
       "3": 1,
@@ -52,33 +58,42 @@
   "vacancies": {
     "total_rows": 144,
     "status_counts": {
-      "finished": 113,
-      "in progress": 26,
+      "finished": 115,
+      "in progress": 24,
       "отказ от оффера": 3,
       "freeze": 2
     },
-    "open": 26,
+    "open": 24,
     "open_by_priority": {
-      "Critical": 10,
-      "High": 12,
-      "Medium": 4
+      "High": 9,
+      "Critical": 7,
+      "Medium": 6,
+      "Low": 2
     },
     "oldest": {
       "vac": "Продуктовый Lead дизайнер UX/UI мск",
       "dept": "Продукт",
-      "pri": "Critical",
+      "pri": "High",
       "rec": "София",
       "open": "13.04",
-      "age": 82
+      "age": 92
     },
     "top_aging": [
       {
         "vac": "Продуктовый Lead дизайнер UX/UI мск",
         "dept": "Продукт",
-        "pri": "Critical",
+        "pri": "High",
         "rec": "София",
         "open": "13.04",
-        "age": 82
+        "age": 92
+      },
+      {
+        "vac": "DevOps",
+        "dept": "ИТ",
+        "pri": "High",
+        "rec": "Лена",
+        "open": "05.05",
+        "age": 70
       },
       {
         "vac": "Senior Backend Developer",
@@ -86,7 +101,7 @@
         "pri": "High",
         "rec": "Лена",
         "open": "05.05",
-        "age": 60
+        "age": 70
       },
       {
         "vac": "DevOps",
@@ -94,7 +109,7 @@
         "pri": "Critical",
         "rec": "Лена",
         "open": "05.05",
-        "age": 60
+        "age": 70
       },
       {
         "vac": "Senior Backend Developer",
@@ -102,7 +117,7 @@
         "pri": "Critical",
         "rec": "Лена",
         "open": "05.05",
-        "age": 60
+        "age": 70
       },
       {
         "vac": "Team Lead",
@@ -110,31 +125,23 @@
         "pri": "Critical",
         "rec": "Семен",
         "open": "05.05",
-        "age": 60
-      },
-      {
-        "vac": "Системный Аналитик",
-        "dept": "Продукт",
-        "pri": "Critical",
-        "rec": "София",
-        "open": "05.05",
-        "age": 60
+        "age": 70
       }
     ],
     "tto_median": 6.0,
-    "tto_mean": 10.5,
-    "tth_median": null,
-    "tth_mean": null,
-    "offers_made_jo": 102,
-    "started": 109
+    "tto_mean": 10.4,
+    "tth_median": 9.0,
+    "tth_mean": 11.5,
+    "offers_made_jo": 105,
+    "started": 111
   },
   "sources_top": {
     "hh.ru": 66,
     "реферал": 17,
     "холодный поиск": 15,
     "кадровое агентство": 3,
-    "закрыта заказчиком": 2,
-    "холодный": 1,
+    "закрыта заказчиком": 1,
+    "linkedin": 1,
     "внутренний рост": 1
   }
 }

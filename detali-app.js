@@ -526,8 +526,9 @@ function renderVacanciesTable(){
     Critical: {label:'Critical', bg:'#FEE4E2', color:'#F04438'},
     High:     {label:'High',     bg:'#FEF6E7', color:'#F79009'},
     Medium:   {label:'Medium',   bg:'#EFF4FF', color:'#3B6FE0'},
+    Low:      {label:'Low',      bg:'#E8F8F0', color:'#12B76A'},
   };
-  const P_ORDER = {Critical:0, High:1, Medium:2};
+  const P_ORDER = {Critical:0, High:1, Medium:2, Low:3};
   const dayColor = d => d>=30?'#F04438':d>=15?'#F79009':d>=7?'#F59E0B':'#12B76A';
   const sorted = [...HF_OPEN_VACS].sort((a,b)=>{
     const pd = (P_ORDER[a.priority]||0)-(P_ORDER[b.priority]||0);
@@ -976,30 +977,8 @@ const HF_FUNNEL = [
   {stage:'Оффер принят',         count:35,   pct:1.6},
 ];
 
-// обновлено 16.06.2026 — дни из Google Sheets (day-in-work)
-const HF_OPEN_VACS = [
-  {name:'Product Manager ППМ',              dept:'Продукт',   recruiter:'София', days:33, priority:'Critical'},
-  {name:'Senior Backend Developer',         dept:'ИТ',        recruiter:'Лена',  days:29, priority:'Critical'},
-  {name:'Senior Backend Developer',         dept:'ИТ',        recruiter:'Лена',  days:29, priority:'Critical'},
-  {name:'DevOps',                           dept:'ИТ',        recruiter:'Лена',  days:29, priority:'Critical'},
-  {name:'Team Lead (новые проекты)',         dept:'ИТ',        recruiter:'Семён', days:29, priority:'Critical'},
-  {name:'Lead-дизайнер UX/UI',              dept:'Продукт',   recruiter:'София', days:44, priority:'Critical'},
-  {name:'Системный аналитик',               dept:'Продукт',   recruiter:'София', days:29, priority:'Critical'},
-  {name:'PR-менеджер',                      dept:'Маркетинг', recruiter:'Соня',  days:43, priority:'High'},
-  {name:'Продакт-маркетинг менеджер',       dept:'Маркетинг', recruiter:'Соня',  days:34, priority:'High'},
-  {name:'AI Product Manager / ИИ директор', dept:'Продукт',   recruiter:'София', days:29, priority:'High'},
-  {name:'Senior Frontend Developer',        dept:'ИТ',        recruiter:'Семён', days:25, priority:'High'},
-  {name:'Senior Backend Developer (СПБ)',   dept:'ИТ',        recruiter:'Лена',  days:5,  priority:'High'},
-  {name:'CTO',                              dept:'ИТ',        recruiter:'Семён', days:1,  priority:'High'},
-  {name:'Главный юрист',                    dept:'Юр.',       recruiter:'Лена',  days:13, priority:'High'},
-  {name:'Manual QA',                        dept:'ИТ',        recruiter:'Лена',  days:5,  priority:'High'},
-  {name:'Manual QA',                        dept:'ИТ',        recruiter:'Лена',  days:5,  priority:'High'},
-  {name:'Manual QA (СПБ)',                  dept:'ИТ',        recruiter:'Лена',  days:5,  priority:'High'},
-  {name:'Руководитель по продаже пластика', dept:'Маркетинг', recruiter:'Соня',  days:25, priority:'Medium'},
-  {name:'Менеджер по привилегиям',          dept:'Маркетинг', recruiter:'Соня',  days:25, priority:'Medium'},
-  {name:'Support L3',                       dept:'ИТ',        recruiter:'Семён', days:3,  priority:'Medium'},
-  {name:'Младший специалист заботы',        dept:'Забота',    recruiter:'Саша',  days:29, priority:'Medium'},
-];
+// живые данные: OPEN_VAC пересобирается fetch_detali.py из вкладки «Вакансии» при каждом обновлении
+const HF_OPEN_VACS = (__D.OPEN_VAC||[]).map(v=>({name:v.name, dept:v.dept, recruiter:v.rec, days:v.days, priority:v.p}));
 
 const HF_TTF_MONTHS = {
   labels:['Январь','Февраль','Март','Апрель','Май'],
@@ -1121,13 +1100,14 @@ function renderHFOpenTable(){
     Critical: {label:'Critical', color:'#F04438'},
     High:     {label:'High',     color:'#F79009'},
     Medium:   {label:'Medium',   color:'#3B6FE0'},
+    Low:      {label:'Low',      color:'#12B76A'},
   };
-  const ORDER = ['Critical','High','Medium'];
+  const ORDER = ['Critical','High','Medium','Low'];
   const dayColor = d => d>=30?'#F04438':d>=15?'#F79009':d>=7?'#F59E0B':'#12B76A';
 
   const source = hfRecFilter==='all'
     ? HF_OPEN_VACS
-    : HF_OPEN_VACS.filter(v=>v.recruiter===hfRecFilter);
+    : HF_OPEN_VACS.filter(v=>String(v.recruiter||'').includes(hfRecFilter));
 
   const badge = document.getElementById('hf-open-badge');
   if(badge) badge.textContent = source.length;

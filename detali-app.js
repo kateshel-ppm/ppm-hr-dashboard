@@ -216,7 +216,7 @@ function renderKPIs(){
   const dcEl=$('dc-num');
   if(dcEl){
     if(mode==='monthly'){
-      countUp(dcEl,period==='all'?93:MONTHS[parseInt(period)]?.hires||0);
+      countUp(dcEl,period==='all'?Object.values(MONTHS).reduce((s,m)=>s+m.hires,0):MONTHS[parseInt(period)]?.hires||0);
     } else {
       if(period==='all') countUp(dcEl,W_NH_DATA.reduce((s,v)=>s+v,0));
       else countUp(dcEl,WEEKS[WEEK_MAP[period]]?.newHires||0);
@@ -251,8 +251,8 @@ function buildMainChart(){
   const ctx=document.getElementById('ch-main').getContext('2d');
 
   if(mode==='monthly'){
-    const labels=['Январь','Февраль','Март','Апрель','Май','Июнь'];
-    const data=[22,17,22,27,5,3];
+    const labels=MONTH_ORDER.map(m=>MONTHS[m].name);
+    const data=MONTH_ORDER.map(m=>MONTHS[m].hires);
     const bgColors=data.map((_,i)=>
       period==='all'?'#3B6FE0':(parseInt(period)===i+1?'#3B6FE0':'#C7D5F7')
     );
@@ -306,7 +306,7 @@ function buildMainChart(){
 function updateMainChart(){
   if(!mainChart){ buildMainChart(); return; }
   if(mode==='monthly'){
-    mainChart.data.datasets[0].backgroundColor=[1,2,3,4,5,6].map(i=>
+    mainChart.data.datasets[0].backgroundColor=MONTH_ORDER.map(i=>
       period==='all'?'#3B6FE0':(parseInt(period)===i?'#3B6FE0':'#C7D5F7')
     );
     mainChart.update('active');
@@ -771,7 +771,7 @@ function renderOpenList(){
 // ══════════════════════════════════════════════════════════
 // CLOSED VACANCIES
 // ══════════════════════════════════════════════════════════
-const MONTH_NAMES={1:'Январь',2:'Февраль',3:'Март',4:'Апрель',5:'Май'};
+const MONTH_NAMES={1:'Январь',2:'Февраль',3:'Март',4:'Апрель',5:'Май',6:'Июнь',7:'Июль',8:'Август',9:'Сентябрь',10:'Октябрь',11:'Ноябрь',12:'Декабрь'};
 let closedFilter='all';
 function renderClosed(){
   const rows=closedFilter==='all'?CLOSED_DATA:CLOSED_DATA.filter(r=>r.m===parseInt(closedFilter));
@@ -1014,7 +1014,7 @@ function initClosedTabCounts(){
   CLOSED_DATA.forEach(r=>{ byMonth[r.m]=(byMonth[r.m]||0)+1; });
   const el = id => document.getElementById(id);
   if(el('ctab-all'))  el('ctab-all').textContent  = total;
-  [1,2,3,4,5,6].forEach(m=>{ if(el(`ctab-${m}`)) el(`ctab-${m}`).textContent = byMonth[m]||0; });
+  [1,2,3,4,5,6,7,8,9,10,11,12].forEach(m=>{ if(el(`ctab-${m}`)) el(`ctab-${m}`).textContent = byMonth[m]||0; });
 }
 
 // ══════════════════════════════════════════════════════════

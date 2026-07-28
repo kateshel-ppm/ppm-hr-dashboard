@@ -1,48 +1,48 @@
 {
   "as_of": "2026-07-28",
   "headcount": {
-    "active": 136,
+    "active": 143,
     "plan": 149,
-    "staffing_pct": 91.3,
-    "managers": 33,
-    "ic": 103,
-    "on_probation": 28,
+    "staffing_pct": 96.0,
+    "managers": 34,
+    "ic": 109,
+    "on_probation": 34,
     "by_dept": {
       "Забота": 65,
-      "ИТ": 19,
+      "ИТ": 23,
       "Маркетинг": 11,
-      "Продукт": 8,
+      "Продукт": 9,
       "HR": 8,
+      "Партнеры": 7,
       "АУП": 7,
-      "Партнеры": 6,
       "Фин": 4,
       "АХО": 3,
       "Рефералы": 3,
-      "ВЭД": 1,
+      "MAZE": 2,
       "ЮО": 1
     },
     "by_format": {
-      "офис": 53,
-      "удаленно": 75,
-      "гибрид": 7,
+      "офис": 57,
+      "удаленно": 74,
+      "гибрид": 11,
       "—": 1
     }
   },
   "hires_by_month": {
     "1": 4,
-    "2": 15,
-    "3": 16,
+    "2": 16,
+    "3": 17,
     "4": 28,
-    "5": 22,
+    "5": 21,
     "6": 6,
-    "7": 6
+    "7": 13
   },
   "turnover": {
     "ytd_count": 21,
-    "voluntary": 0,
-    "involuntary": 21,
-    "rate_simple_pct": 15.4,
-    "early_probation": 0,
+    "voluntary": null,
+    "involuntary": null,
+    "rate_simple_pct": 14.7,
+    "early_probation": 12,
     "by_month": {
       "3": 1,
       "4": 5,

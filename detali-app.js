@@ -182,22 +182,32 @@ function renderKPIs(){
   countUp($('v-hires'),hires);
   if(kpi6val!==null) countUp($('v-kpi6'),kpi6val,600,mode==='weekly'&&period!=='all'?0:1,mode==='weekly'&&period!=='all'?'':mode==='monthly'?'д.':'');
 
-  // Текучесть — динамически по выбранному месяцу
-  let tvAll=10.8, tvVol=6.9, tvInv=3.8, tvSub='14 уволено';
+  // Текучесть — из MONTHS (в источнике больше нет причины увольнения → vol/inv могут быть null)
+  const _ms=Object.values(MONTHS);
+  const _hcNow=_ms[_ms.length-1]?.hc||0;
+  let tvAll, tvVol, tvInv, tvSub;
   if(mode==='monthly' && period!=='all'){
     const md=MONTHS[parseInt(period)];
     tvAll=md.hc>0?parseFloat((md.fired/md.hc*100).toFixed(1)):0;
-    tvVol=md.hc>0?parseFloat((md.firedVol/md.hc*100).toFixed(1)):0;
-    tvInv=md.hc>0?parseFloat((md.firedInv/md.hc*100).toFixed(1)):0;
+    tvVol=(md.firedVol!=null&&md.hc>0)?parseFloat((md.firedVol/md.hc*100).toFixed(1)):null;
+    tvInv=(md.firedInv!=null&&md.hc>0)?parseFloat((md.firedInv/md.hc*100).toFixed(1)):null;
     tvSub=md.fired>0?`${md.fired} уволено в ${md.prep}`:'нет увольнений';
+  } else {
+    const f=_ms.reduce((s,m)=>s+(m.fired||0),0);
+    const fv=_ms.some(m=>m.firedVol==null)?null:_ms.reduce((s,m)=>s+m.firedVol,0);
+    tvAll=_hcNow?parseFloat((f/_hcNow*100).toFixed(1)):0;
+    tvVol=fv==null?null:parseFloat((fv/_hcNow*100).toFixed(1));
+    tvInv=fv==null?null:parseFloat(((f-fv)/_hcNow*100).toFixed(1));
+    tvSub=`${f} уволено YTD`;
   }
+  const pct=v=>v==null?'н/д':v.toFixed(1)+'%';
   countUp($('v-tv'),tvAll,600,1,'%');
-  setTxt('tv-all',tvAll.toFixed(1)+'%');
-  setTxt('tv-vol',tvVol.toFixed(1)+'%');
-  setTxt('tv-inv',tvInv.toFixed(1)+'%');
-  setTxt('tv2-all',tvAll.toFixed(1)+'%');
-  setTxt('tv2-vol',tvVol.toFixed(1)+'%');
-  setTxt('tv2-inv',tvInv.toFixed(1)+'%');
+  setTxt('tv-all',pct(tvAll));
+  setTxt('tv-vol',pct(tvVol));
+  setTxt('tv-inv',pct(tvInv));
+  setTxt('tv2-all',pct(tvAll));
+  setTxt('tv2-vol',pct(tvVol));
+  setTxt('tv2-inv',pct(tvInv));
   const tvSubEl=document.querySelector('#kc7 .kpi-sub');
   if(tvSubEl) tvSubEl.textContent=tvSub;
 

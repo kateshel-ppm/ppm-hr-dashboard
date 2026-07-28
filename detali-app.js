@@ -130,31 +130,37 @@ function renderKPIs(){
   let hires, dHires, sHires;
   let kpi6val, dKpi6, sKpi6, lblKpi6;
   let openVac, sOpen;
+  // открытые вакансии — всегда текущий срез (не зависят от выбранного периода)
+  const openNow=(OPEN_VAC||[]).length;
+  const ST0=__D.STAFF||{hc:143,plan:149};
 
   if(mode==='monthly'){
     // ── Monthly ──
     if(period==='all'){
-      hc=132; dHC=null; sHC='132 действующих';
-      hires=93; dHires=null; sHires='с начала года';
-      kpi6val=11.9; dKpi6=null; sKpi6='дней до оффера'; lblKpi6='Среднее TTO';
-      openVac=19; sOpen='все периоды';
+      hc=ST0.hc; dHC=null; sHC=`${ST0.hc} действующих`;
+      hires=Object.values(MONTHS).reduce((s,m)=>s+(m.hires||0),0); dHires=null; sHires='с начала года';
+      const _tw=Object.values(MONTHS).filter(m=>m.tto!=null&&m.hires>0);
+      const _tsum=_tw.reduce((s,m)=>s+m.tto*m.hires,0), _tn=_tw.reduce((s,m)=>s+m.hires,0);
+      kpi6val=_tn?parseFloat((_tsum/_tn).toFixed(1)):null; dKpi6=null; sKpi6='дней до оффера'; lblKpi6='Среднее TTO';
+      openVac=openNow; sOpen='сейчас в работе';
     } else {
       const m=parseInt(period), d=MONTHS[m], prev=m>1?MONTHS[m-1]:null;
       hc=d.hc; dHC=null; sHC=`на конец ${d.prep}`;
       hires=d.hires; dHires=prev?d.hires-prev.hires:null; sHires=`в ${d.prep}`;
       kpi6val=d.tto; dKpi6=prev&&prev.tto?parseFloat((d.tto-prev.tto).toFixed(1)):null;
       sKpi6='дней до оффера'; lblKpi6='Среднее TTO';
-      openVac=m===5?19:0; sOpen=m===5?'в работе':'нет активных';
+      openVac=openNow; sOpen='сейчас в работе';
     }
   } else {
     // ── Weekly ──
     if(period==='all'){
-      hc=132; dHC=null; sHC='актуально (нед. 23)';
+      const _lw=[...WEEKS].reverse().find(w=>w.hc!=null);
+      hc=_lw?_lw.hc:null; dHC=null; sHC=_lw?`актуально (${_lw.label.toLowerCase()})`:'';
       hires=W_NH_DATA.reduce((s,v)=>s+v,0);
       dHires=null; sHires='за отслеживаемый период';
       const totalInt=WEEKS.reduce((s,w)=>s+w.hrInt+w.hmInt+(w.techInt||0)+(w.finInt||0),0);
       kpi6val=totalInt; dKpi6=null; sKpi6='за все недели'; lblKpi6='Интервью итого';
-      openVac=17; sOpen='в работе';
+      openVac=openNow; sOpen='сейчас в работе';
     } else {
       const wi=WEEK_MAP[period];
       const w=WEEKS[wi], wprev=wi>0?WEEKS[wi-1]:null;
@@ -170,7 +176,7 @@ function renderKPIs(){
       const techPart=w.techInt?` · тех: ${w.techInt}`:'';
       const finPart=w.finInt?` · фин: ${w.finInt}`:'';
       sKpi6=`HR: ${w.hrInt} · HM: ${w.hmInt}${techPart}${finPart}`; lblKpi6='Интервью за неделю';
-      openVac=17; sOpen='в работе';
+      openVac=openNow; sOpen='сейчас в работе';
     }
   }
 
@@ -738,6 +744,8 @@ function applyStaffStructure(){
   S('sp-plan','Штат: '+ST.plan+' · Открыто: '+openN);
   const f=document.getElementById('sp-fill'), em=document.getElementById('sp-empty');
   if(f) f.style.flex=pct; if(em) em.style.flex=100-pct;
+  S('v-staff-sub',ST.hc+' из '+ST.plan+' по штату');
+  S('v-mgr-sub',ST.managers+' руководителя / '+ST.ic+' ИК');
   S('rl-mgr-n',ST.managers); S('rl-ic-n',ST.ic);
   S('rl-mgr-pct',(ST.managers/ST.hc*100).toFixed(1)+'%');
   S('rl-ic-pct',(ST.ic/ST.hc*100).toFixed(1)+'%');

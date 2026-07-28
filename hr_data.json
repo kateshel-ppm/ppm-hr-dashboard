@@ -30,25 +30,25 @@
   },
   "hires_by_month": {
     "1": 4,
-    "2": 14,
+    "2": 15,
     "3": 16,
-    "4": 25,
-    "5": 21,
+    "4": 28,
+    "5": 22,
     "6": 6,
-    "7": 5
+    "7": 6
   },
   "turnover": {
-    "ytd_count": 15,
-    "voluntary": 10,
-    "involuntary": 5,
-    "rate_simple_pct": 11.0,
-    "early_probation": 5,
+    "ytd_count": 21,
+    "voluntary": 0,
+    "involuntary": 21,
+    "rate_simple_pct": 15.4,
+    "early_probation": 0,
     "by_month": {
       "3": 1,
-      "4": 6,
-      "5": 6,
-      "6": 1,
-      "7": 1
+      "4": 5,
+      "5": 7,
+      "6": 3,
+      "7": 5
     }
   },
   "vacancies": {

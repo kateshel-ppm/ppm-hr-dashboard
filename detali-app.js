@@ -490,6 +490,11 @@ function renderWeeklyTasks(){
     Medium:   {label:'Medium',   color:'#3B6FE0', bg:'#EFF4FF', dot:'#3B6FE0'},
   };
 
+  // подписи недель — из данных (обновляются вместе с задачами)
+  const dl=document.getElementById('wt-done-lbl'), fl=document.getElementById('wt-focus-lbl');
+  if(dl && WEEKLY_TASKS.done.week)  dl.textContent = WEEKLY_TASKS.done.week + ' — итоги';
+  if(fl && WEEKLY_TASKS.focus.week) fl.textContent = WEEKLY_TASKS.focus.week + ' — план';
+
   // Итоги (выполнено)
   const doneEl = document.getElementById('tasks-done');
   if(doneEl) doneEl.innerHTML = WEEKLY_TASKS.done.items.map(t => {

@@ -176,8 +176,9 @@ function renderKPIs(){
 
   // Animate
   if(hc!==null) countUp($('v-hc'),hc); else setTxt('v-hc','—');
-  countUp($('v-staff'),89,600,0,'%');
-  countUp($('v-mgr'),17.7,600,1,'%');
+  const ST=__D.STAFF||{hc:143,plan:149,managers:34,ic:109};
+  countUp($('v-staff'),Math.round(ST.hc/ST.plan*100),600,0,'%');
+  countUp($('v-mgr'),+(ST.managers/ST.hc*100).toFixed(1),600,1,'%');
   countUp($('v-open'),openVac);
   countUp($('v-hires'),hires);
   if(kpi6val!==null) countUp($('v-kpi6'),kpi6val,600,mode==='weekly'&&period!=='all'?0:1,mode==='weekly'&&period!=='all'?'':mode==='monthly'?'д.':'');
@@ -685,17 +686,25 @@ function initDeptsChart(){
 function buildTurnoverChart(){
   const ctx = document.getElementById('ch-turnover');
   if(!ctx) return;
-  const labels = ['Январь','Февраль','Март','Апрель','Май','Июнь'];
-  const volData  = [0, 0, 0, 5, 3, 1];
-  const invData  = [0, 0, 1, 1, 3, 0];
+  // из MONTHS; если в источнике нет причины увольнения (firedVol=null) — один ряд «Уволено»
+  const labels = MONTH_ORDER.map(m=>MONTHS[m].name);
+  const noSplit = MONTH_ORDER.some(m=>MONTHS[m].fired>0 && MONTHS[m].firedVol==null);
+  const datasets = noSplit
+    ? [{label:'Уволено', data:MONTH_ORDER.map(m=>MONTHS[m].fired||0), backgroundColor:'#F04438', borderRadius:4, borderSkipped:false, stack:'s'}]
+    : [
+        {label:'Добровольная',  data:MONTH_ORDER.map(m=>MONTHS[m].firedVol||0), backgroundColor:'#F04438', borderRadius:4, borderSkipped:false, stack:'s'},
+        {label:'По инициативе', data:MONTH_ORDER.map(m=>MONTHS[m].firedInv||0), backgroundColor:'#3B6FE0', borderRadius:4, borderSkipped:false, stack:'s'},
+      ];
+  const totalFired = MONTH_ORDER.reduce((s,m)=>s+(MONTHS[m].fired||0),0);
+  const tvT=document.getElementById('tv-total');
+  if(tvT) tvT.textContent = `${totalFired} уволено YTD`;
+  const lg=tvT && tvT.parentElement ? tvT.parentElement.querySelector('div') : null;
+  if(lg && noSplit) lg.innerHTML='<div style="display:flex;align-items:center;gap:5px"><div style="width:9px;height:9px;border-radius:2px;background:#F04438"></div><span style="font-size:11px;color:var(--muted)">Уволено (причина: н/д в таблице)</span></div>';
   new Chart(ctx.getContext('2d'), {
     type: 'bar',
     data: {
       labels,
-      datasets: [
-        {label:'Добровольная',   data:volData, backgroundColor:'#F04438', borderRadius:4, borderSkipped:false, stack:'s'},
-        {label:'По инициативе',  data:invData, backgroundColor:'#3B6FE0', borderRadius:4, borderSkipped:false, stack:'s'},
-      ]
+      datasets
     },
     options: {
       responsive:true, maintainAspectRatio:false,
@@ -716,6 +725,24 @@ function buildTurnoverChart(){
       animation:{duration:700,easing:'easeOutCubic'},
     }
   });
+}
+
+function applyStaffStructure(){
+  // «Структура персонала» — из STAFF (fetch_detali.py) и OPEN_VAC; статика в HTML только как fallback
+  const ST=__D.STAFF; if(!ST) return;
+  const openN=(OPEN_VAC||[]).length;
+  const pct=Math.round(ST.hc/ST.plan*100);
+  const S=(id,t)=>{const e=document.getElementById(id); if(e) e.textContent=t;};
+  S('sp-pct',pct+'%');
+  S('sp-active','Действующих: '+ST.hc);
+  S('sp-plan','Штат: '+ST.plan+' · Открыто: '+openN);
+  const f=document.getElementById('sp-fill'), em=document.getElementById('sp-empty');
+  if(f) f.style.flex=pct; if(em) em.style.flex=100-pct;
+  S('rl-mgr-n',ST.managers); S('rl-ic-n',ST.ic);
+  S('rl-mgr-pct',(ST.managers/ST.hc*100).toFixed(1)+'%');
+  S('rl-ic-pct',(ST.ic/ST.hc*100).toFixed(1)+'%');
+  const mb=document.getElementById('rl-mgr-bar'), ib=document.getElementById('rl-ic-bar');
+  if(mb) mb.style.flex=ST.managers; if(ib) ib.style.flex=ST.ic;
 }
 
 function renderDeptBars(){
@@ -971,6 +998,7 @@ setTimeout(()=>{
   renderStructureCard();
   renderVacanciesTable();
   renderSparklines();
+  applyStaffStructure();
   buildTurnoverChart();
   initialized=true;
 },800);

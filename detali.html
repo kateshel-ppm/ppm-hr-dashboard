@@ -403,7 +403,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <div style="display:flex;align-items:center;gap:5px"><div style="width:9px;height:9px;border-radius:2px;background:#F04438"></div><span style="font-size:11px;color:var(--muted)">Добровольная</span></div>
           <div style="display:flex;align-items:center;gap:5px"><div style="width:9px;height:9px;border-radius:2px;background:#3B6FE0"></div><span style="font-size:11px;color:var(--muted)">По инициативе</span></div>
         </div>
-        <span style="font-size:11px;font-weight:600;color:var(--muted)">14 уволено YTD</span>
+        <span style="font-size:11px;font-weight:600;color:var(--muted)" id="tv-total">21 уволено YTD</span>
       </div>
     </div>
   </div>
@@ -416,10 +416,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <!-- Headline -->
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px">
         <span style="font-size:12px;font-weight:500;color:var(--muted);flex:1">Укомплектованность</span>
-        <span style="font-size:22px;font-weight:800;color:var(--primary)">89%</span>
+        <span style="font-size:22px;font-weight:800;color:var(--primary)" id="sp-pct">96%</span>
       </div>
-      <div class="s-split"><div class="s-filled" style="flex:89"></div><div class="s-empty" style="flex:11"></div></div>
-      <div class="s-labels"><span>Действующих: 132</span><span>Штат: 149 · Открыто: 19</span></div>
+      <div class="s-split"><div class="s-filled" id="sp-fill" style="flex:96"></div><div class="s-empty" id="sp-empty" style="flex:4"></div></div>
+      <div class="s-labels"><span id="sp-active">Действующих: 143</span><span id="sp-plan">Штат: 149 · Открыто: 20</span></div>
 
       <!-- Department table -->
       <div style="border-top:1px solid var(--border);margin-top:14px">
@@ -430,21 +430,21 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:2px">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--micro);margin-bottom:8px">Структура ролей</div>
         <div style="display:flex;height:6px;border-radius:4px;overflow:hidden;margin-bottom:9px">
-          <div style="flex:23;background:#3B6FE0"></div>
-          <div style="flex:107;background:#E5E7EB"></div>
+          <div id="rl-mgr-bar" style="flex:34;background:#3B6FE0"></div>
+          <div id="rl-ic-bar" style="flex:109;background:#E5E7EB"></div>
         </div>
         <div style="display:flex;gap:20px">
           <div style="display:flex;align-items:center;gap:6px">
             <div style="width:8px;height:8px;border-radius:2px;background:#3B6FE0;flex-shrink:0"></div>
             <span style="font-size:12px;color:var(--muted)">Руководители</span>
-            <span style="font-size:13px;font-weight:800;color:var(--text)">23</span>
-            <span style="font-size:11px;color:var(--micro)">17.7%</span>
+            <span style="font-size:13px;font-weight:800;color:var(--text)" id="rl-mgr-n">34</span>
+            <span style="font-size:11px;color:var(--micro)" id="rl-mgr-pct">23.8%</span>
           </div>
           <div style="display:flex;align-items:center;gap:6px">
             <div style="width:8px;height:8px;border-radius:2px;background:#D1D5DB;flex-shrink:0"></div>
             <span style="font-size:12px;color:var(--muted)">Сотрудники</span>
-            <span style="font-size:13px;font-weight:800;color:var(--text)">107</span>
-            <span style="font-size:11px;color:var(--micro)">82.3%</span>
+            <span style="font-size:13px;font-weight:800;color:var(--text)" id="rl-ic-n">109</span>
+            <span style="font-size:11px;color:var(--micro)" id="rl-ic-pct">76.2%</span>
           </div>
         </div>
       </div>

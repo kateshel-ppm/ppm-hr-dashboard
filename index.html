@@ -39,7 +39,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .section-cap .hint{font-size:11.5px;color:var(--micro)}
 .lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--micro)}
 .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-@media(min-width:1060px){.kpi-row{grid-template-columns:repeat(8,1fr)}}
+@media(min-width:1060px){.kpi-row{grid-template-columns:repeat(6,1fr)}}
 @media(max-width:560px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
 .kpi-card{background:var(--card);border-radius:var(--radius);padding:14px 14px 12px;box-shadow:var(--shadow);transition:box-shadow .18s;position:relative;overflow:hidden}
 .kpi-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--micro)}
@@ -150,20 +150,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="kpi-tgt"><span class="dot success"></span>цель ≤ 21д</div>
       <div class="kpi-sub">⚠ хвост senior до 91д</div>
     </div>
-    <div class="kpi-card s-danger">
-      <div class="kpi-lbl">Текучесть YTD</div>
-      <div class="kpi-val">15,4<span class="u">%</span></div>
-      <span class="delta neutral">22 чел.</span>
-      <div class="kpi-tgt"><span class="dot danger"></span>цель &lt; 10%</div>
-      <div class="kpi-sub">причины: колонки нет в таблице</div>
-    </div>
-    <div class="kpi-card s-warning">
-      <div class="kpi-lbl">Ранняя текучесть</div>
-      <div class="kpi-val">~12<span class="u">%</span></div>
-      <span class="delta neutral">13 чел.</span>
-      <div class="kpi-tgt"><span class="dot warning"></span>цель &lt; 10%</div>
-      <div class="kpi-sub">ушли в первые 3 мес (13 из 106)</div>
-    </div>
     <div class="kpi-card">
       <div class="kpi-lbl">Offer acceptance</div>
       <div class="kpi-val">—</div>
@@ -193,13 +179,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div class="alert-x">При медиане до оффера ~8 дней старейшая вакансия — Senior Backend Developer, 91 день (critical). Прогресс за неделю: закрыты Lead-дизайнер UX/UI, Системный аналитик и DevOps, открытых стало 12 (−8); из новых — Инфлюенс-менеджер, Юрист, CTO (critical). По Хантфлоу в июле выставлено 24 оффера, закрыто 14 вакансий.</div>
       </div>
     </div>
-    <div class="alert warn">
-      <div class="alert-ic">▲</div>
-      <div>
-        <div class="alert-t">Текучесть 15,4% — выше цели, и без причин увольнений</div>
-        <div class="alert-x">22 увольнения YTD (пик — май: 7, июль: 6). Из перестроенного листа «ШТАТКА уволенные» пропала колонка «Причина увольнения» — разбивка добровольно/компания и точная ранняя текучесть больше не считаются. Рекомендация: вернуть колонку в таблицу.</div>
-      </div>
-    </div>
     <div class="alert ok">
       <div class="alert-ic">✓</div>
       <div>
@@ -212,13 +191,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div>
         <div class="alert-t">Новый дивизион «Крипт»</div>
         <div class="alert-x">В структуре появилось направление «Крипт» — первые роли в ИТ, Продукте и Партнёрах (по 1 чел.). Новая точка роста; по мере найма выделить отдельным блоком в оргструктуре и метриках.</div>
-      </div>
-    </div>
-    <div class="alert warn">
-      <div class="alert-ic">▲</div>
-      <div>
-        <div class="alert-t">Ранняя текучесть ~12% — выше цели</div>
-        <div class="alert-x">13 из 22 уволенных ушли в первые 3 месяца работы (оценка: дат испытательного срока в листе уволенных больше нет). При найме 106 это ~12% — выше цели &lt;10%; сконцентрировано в массовом найме Заботы.</div>
       </div>
     </div>
   </div>
@@ -262,11 +234,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       </div>
       <div class="sbar"><div class="f" style="width:91.1%"></div><div class="t" style="width:8.9%"></div></div>
       <div class="slabels"><span>91,1% укомплектовано</span><span>14 вакантно</span></div>
-      <div class="lbl" style="margin-top:16px;margin-bottom:6px">Текучесть YTD</div>
+      <div class="lbl" style="margin-top:16px;margin-bottom:6px">Формат работы</div>
       <div class="big-stat">
-        <div class="bs"><div class="n">15,4%</div><div class="l">всего (22 чел.)</div></div>
-        <div class="bs"><div class="n" style="color:var(--warning)">13</div><div class="l">в первые 3 мес</div></div>
-        <div class="bs"><div class="n" style="color:var(--muted)">7</div><div class="l">пик — май</div></div>
+        <div class="bs"><div class="n">74</div><div class="l">удалённо</div></div>
+        <div class="bs"><div class="n">59</div><div class="l">офис</div></div>
+        <div class="bs"><div class="n" style="color:var(--muted)">11</div><div class="l">гибрид</div></div>
       </div>
     </div>
   </div>
@@ -275,7 +247,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <div class="foot">
   Executive-Обзор · данные ППМ на <span class="js-asof">30.06.2026</span> из источника истины (вкладки «Вакансии» + «ШТАТКА»), скрипт <code>fetch_hr_data.py</code>. Детальный операционный дашборд — вкладка «Детали».<br>
-  Найм YTD = старт в ШТАТКЕ (106). Штатное расписание с августа = 157 (было 149); укомплектованность нед. 31 = 92,36% — по листу «Укомплектованность». Срок до оффера: медиана TTO 8,0д (массовый Забота); senior-роли — хвост до 91д, мерятся раздельно. Текучесть без разбивки по причинам: колонка «Причина увольнения» удалена из листа уволенных. Рекрутмент-аналитика — на вкладке «Детали». Цели заданы Екатериной 16.06.2026.
+  Найм YTD = старт в ШТАТКЕ (106). Штатное расписание с августа = 157 (было 149); укомплектованность нед. 31 = 92,36% — по листу «Укомплектованность». Срок до оффера: медиана TTO 8,0д (массовый Забота); senior-роли — хвост до 91д, мерятся раздельно. Рекрутмент-аналитика — на вкладке «Детали». Цели заданы Екатериной 16.06.2026.
 </div>
 
 <script>

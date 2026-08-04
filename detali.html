@@ -98,7 +98,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 @media(max-width:640px){#open-list{grid-template-columns:1fr!important}}
 
 /* ── KPI row ── */
-.kpi-row{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:18px}
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:18px}
 @media(max-width:1150px){.kpi-row{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:640px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
 .kpi-card{background:var(--card);border-radius:var(--radius);padding:15px 15px 13px;box-shadow:var(--shadow);transition:box-shadow .18s}
@@ -335,12 +335,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div id="d-kpi6"></div>
         <div class="kpi-sub" id="s-kpi6">дней до оффера</div>
       </div>
-      <div class="kpi-card skeleton" id="kc7">
-        <div class="kpi-lbl">Текучесть</div>
-        <div class="kpi-val" id="v-tv">—</div>
-        <div id="d-tv"></div>
-        <div class="kpi-sub">14 уволено</div>
-      </div>
     </div>
   </div>
 
@@ -366,45 +360,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
   </div>
 
-  <!-- Row 1: Main chart + Open by dept -->
-  <div class="grid-2 sec">
+  <!-- Row 1: Main chart -->
+  <div class="sec">
     <div class="card p20 skeleton" id="cc1">
       <div class="ch">
         <span class="lbl mb0" id="lbl-main-chart">Оформления по месяцам</span>
         <span class="badge" id="badge-main-chart">93 итого</span>
       </div>
       <div style="height:190px;position:relative"><canvas id="ch-main"></canvas></div>
-    </div>
-    <div class="card p20 skeleton" id="cc2">
-      <div class="ch">
-        <span class="lbl mb0">Текучесть</span>
-        <span class="badge">YTD 2026</span>
-      </div>
-      <!-- Метрики -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
-        <div style="text-align:center;padding:10px 6px;background:#FEF6E7;border-radius:10px">
-          <div style="font-size:20px;font-weight:800;color:#B45309;line-height:1" id="tv2-all">10.8%</div>
-          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#92400E;margin-top:3px">Всего</div>
-        </div>
-        <div style="text-align:center;padding:10px 6px;background:var(--danger-light);border-radius:10px">
-          <div style="font-size:20px;font-weight:800;color:var(--danger);line-height:1" id="tv2-vol">6.9%</div>
-          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--danger);margin-top:3px">Добровольная</div>
-        </div>
-        <div style="text-align:center;padding:10px 6px;background:var(--primary-light);border-radius:10px">
-          <div style="font-size:20px;font-weight:800;color:var(--primary);line-height:1" id="tv2-inv">3.8%</div>
-          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--primary);margin-top:3px">По инициативе</div>
-        </div>
-      </div>
-      <!-- Chart -->
-      <div style="height:150px;position:relative"><canvas id="ch-turnover"></canvas></div>
-      <!-- Legend + total -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
-        <div style="display:flex;gap:14px">
-          <div style="display:flex;align-items:center;gap:5px"><div style="width:9px;height:9px;border-radius:2px;background:#F04438"></div><span style="font-size:11px;color:var(--muted)">Добровольная</span></div>
-          <div style="display:flex;align-items:center;gap:5px"><div style="width:9px;height:9px;border-radius:2px;background:#3B6FE0"></div><span style="font-size:11px;color:var(--muted)">По инициативе</span></div>
-        </div>
-        <span style="font-size:11px;font-weight:600;color:var(--muted)" id="tv-total">21 уволено YTD</span>
-      </div>
     </div>
   </div>
 
@@ -450,9 +413,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       </div>
 
       <!-- Hidden IDs для renderKPIs -->
-      <span id="tv-all" style="display:none">10.8%</span>
-      <span id="tv-vol" style="display:none">6.9%</span>
-      <span id="tv-inv" style="display:none">3.8%</span>
     </div>
 
     <!-- Открытые вакансии -->

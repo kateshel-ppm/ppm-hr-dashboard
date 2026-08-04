@@ -190,34 +190,7 @@ function renderKPIs(){
   if(kpi6val!==null) countUp($('v-kpi6'),kpi6val,600,mode==='weekly'&&period!=='all'?0:1,mode==='weekly'&&period!=='all'?'':mode==='monthly'?'д.':'');
 
   // Текучесть — из MONTHS (в источнике больше нет причины увольнения → vol/inv могут быть null)
-  const _ms=Object.values(MONTHS);
-  const _hcNow=_ms[_ms.length-1]?.hc||0;
-  let tvAll, tvVol, tvInv, tvSub;
-  if(mode==='monthly' && period!=='all'){
-    const md=MONTHS[parseInt(period)];
-    tvAll=md.hc>0?parseFloat((md.fired/md.hc*100).toFixed(1)):0;
-    tvVol=(md.firedVol!=null&&md.hc>0)?parseFloat((md.firedVol/md.hc*100).toFixed(1)):null;
-    tvInv=(md.firedInv!=null&&md.hc>0)?parseFloat((md.firedInv/md.hc*100).toFixed(1)):null;
-    tvSub=md.fired>0?`${md.fired} уволено в ${md.prep}`:'нет увольнений';
-  } else {
-    const f=_ms.reduce((s,m)=>s+(m.fired||0),0);
-    const fv=_ms.some(m=>m.firedVol==null)?null:_ms.reduce((s,m)=>s+m.firedVol,0);
-    tvAll=_hcNow?parseFloat((f/_hcNow*100).toFixed(1)):0;
-    tvVol=fv==null?null:parseFloat((fv/_hcNow*100).toFixed(1));
-    tvInv=fv==null?null:parseFloat(((f-fv)/_hcNow*100).toFixed(1));
-    tvSub=`${f} уволено YTD`;
-  }
-  const pct=v=>v==null?'н/д':v.toFixed(1)+'%';
-  countUp($('v-tv'),tvAll,600,1,'%');
-  setTxt('tv-all',pct(tvAll));
-  setTxt('tv-vol',pct(tvVol));
-  setTxt('tv-inv',pct(tvInv));
-  setTxt('tv2-all',pct(tvAll));
-  setTxt('tv2-vol',pct(tvVol));
-  setTxt('tv2-inv',pct(tvInv));
-  const tvSubEl=document.querySelector('#kc7 .kpi-sub');
-  if(tvSubEl) tvSubEl.textContent=tvSub;
-
+  // блок текучести удалён с дашборда по решению Екатерины (04.08.2026); данные fired остаются в MONTHS
   showDelta('d-hc',dHC);
   showDelta('d-hires',dHires);
   showDelta('d-kpi6',dKpi6,mode==='monthly'?'д.':'',mode==='monthly');
@@ -689,49 +662,6 @@ function initDeptsChart(){
 // ══════════════════════════════════════════════════════════
 // DEPT BARS
 // ══════════════════════════════════════════════════════════
-function buildTurnoverChart(){
-  const ctx = document.getElementById('ch-turnover');
-  if(!ctx) return;
-  // из MONTHS; если в источнике нет причины увольнения (firedVol=null) — один ряд «Уволено»
-  const labels = MONTH_ORDER.map(m=>MONTHS[m].name);
-  const noSplit = MONTH_ORDER.some(m=>MONTHS[m].fired>0 && MONTHS[m].firedVol==null);
-  const datasets = noSplit
-    ? [{label:'Уволено', data:MONTH_ORDER.map(m=>MONTHS[m].fired||0), backgroundColor:'#F04438', borderRadius:4, borderSkipped:false, stack:'s'}]
-    : [
-        {label:'Добровольная',  data:MONTH_ORDER.map(m=>MONTHS[m].firedVol||0), backgroundColor:'#F04438', borderRadius:4, borderSkipped:false, stack:'s'},
-        {label:'По инициативе', data:MONTH_ORDER.map(m=>MONTHS[m].firedInv||0), backgroundColor:'#3B6FE0', borderRadius:4, borderSkipped:false, stack:'s'},
-      ];
-  const totalFired = MONTH_ORDER.reduce((s,m)=>s+(MONTHS[m].fired||0),0);
-  const tvT=document.getElementById('tv-total');
-  if(tvT) tvT.textContent = `${totalFired} уволено YTD`;
-  const lg=tvT && tvT.parentElement ? tvT.parentElement.querySelector('div') : null;
-  if(lg && noSplit) lg.innerHTML='<div style="display:flex;align-items:center;gap:5px"><div style="width:9px;height:9px;border-radius:2px;background:#F04438"></div><span style="font-size:11px;color:var(--muted)">Уволено (причина: н/д в таблице)</span></div>';
-  new Chart(ctx.getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels,
-      datasets
-    },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{...TT, callbacks:{
-          label: c => ` ${c.dataset.label}: ${c.raw} чел.`,
-          footer: items => {
-            const tot = items.reduce((s,i)=>s+i.raw,0);
-            return tot > 0 ? `Итого: ${tot} чел.` : '';
-          }
-        }}
-      },
-      scales:{
-        x:{grid:{display:false},border:{display:false},ticks:{color:'#9CA3AF',font:{size:11}}},
-        y:{grid:{color:'#F3F4F6'},border:{display:false,dash:[4,4]},ticks:{color:'#9CA3AF',font:{size:11},stepSize:1},beginAtZero:true},
-      },
-      animation:{duration:700,easing:'easeOutCubic'},
-    }
-  });
-}
 
 function applyStaffStructure(){
   // «Структура персонала» — из STAFF (fetch_detali.py) и OPEN_VAC; статика в HTML только как fallback
@@ -1007,7 +937,6 @@ setTimeout(()=>{
   renderVacanciesTable();
   renderSparklines();
   applyStaffStructure();
-  buildTurnoverChart();
   initialized=true;
 },800);
 

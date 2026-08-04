@@ -1092,6 +1092,44 @@ function initHuntflowCharts(){
     }
   }
 
+  // Типы интервью понедельно — отдельный график на каждого рекрутёра
+  const rsw=HF.rec_stage_weekly||{};
+  const rsGrid=document.getElementById('hf-rec-stage-grid');
+  if(rsGrid && Object.keys(rsw).length){
+    const totalOf=n=>Object.values(rsw[n]).reduce((s,w)=>s+w.rek+w.tech+w.cust,0);
+    const names=Object.keys(rsw).sort((a,b)=>totalOf(b)-totalOf(a));
+    const allWeeks=[...new Set(names.flatMap(n=>Object.keys(rsw[n])))].map(Number).sort((a,b)=>a-b);
+    names.forEach((nm,idx)=>{
+      const card=document.createElement('div');
+      card.className='card p20';
+      card.innerHTML=`<div class="ch"><span class="lbl mb0">${nm}</span><span class="badge">${totalOf(nm)} интервью</span></div>
+        <div style="height:180px;position:relative"><canvas id="ch-rsw-${idx}"></canvas></div>`;
+      rsGrid.appendChild(card);
+      const get=(w,k)=>(rsw[nm][String(w)]||{})[k]||0;
+      new Chart(card.querySelector('canvas').getContext('2d'),{
+        type:'line',
+        data:{
+          labels:allWeeks.map(w=>'Нед. '+w),
+          datasets:[
+            {label:'С HR',data:allWeeks.map(w=>get(w,'rek')),borderColor:'#3B6FE0',backgroundColor:'#3B6FE0',tension:.35,pointRadius:3,borderWidth:2.2,fill:false},
+            {label:'Техническое',data:allWeeks.map(w=>get(w,'tech')),borderColor:'#F79009',backgroundColor:'#F79009',tension:.35,pointRadius:3,borderWidth:2.2,fill:false},
+            {label:'С заказчиком',data:allWeeks.map(w=>get(w,'cust')),borderColor:'#10B981',backgroundColor:'#10B981',tension:.35,pointRadius:3,borderWidth:2.2,fill:false},
+          ]
+        },
+        options:{
+          responsive:true,maintainAspectRatio:false,
+          plugins:{legend:{labels:{font:{size:10.5},boxWidth:9,usePointStyle:true}},
+            tooltip:{...TT,callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}`}}},
+          scales:{
+            x:{grid:{display:false},border:{display:false},ticks:{color:'#9CA3AF',font:{size:10.5}}},
+            y:{grid:{color:'#F3F4F6'},border:{display:false},ticks:{color:'#9CA3AF',font:{size:10.5},stepSize:5},beginAtZero:true},
+          },
+          animation:{duration:700,easing:'easeOutCubic'},
+        }
+      });
+    });
+  }
+
   // План-факт интервью по рекрутёрам
   const pf=HF.plan_fact||[];
   const cv=document.getElementById('ch-ttf');

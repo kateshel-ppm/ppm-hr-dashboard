@@ -1092,37 +1092,6 @@ function initHuntflowCharts(){
     }
   }
 
-  // Интервью по типам (рекрутер / тех / заказчик) на рекрутёра
-  const rs=HF.rec_stage||{};
-  const rsCv=document.getElementById('ch-rec-stage');
-  if(rsCv && Object.keys(rs).length){
-    const names=Object.keys(rs).sort((a,b)=>(rs[b].rek+rs[b].tech+rs[b].cust)-(rs[a].rek+rs[a].tech+rs[a].cust));
-    const grand=names.reduce((s,n)=>s+rs[n].rek+rs[n].tech+rs[n].cust,0);
-    const rsB=document.getElementById('hf-rs-badge');
-    if(rsB) rsB.textContent=grand+' интервью с июля';
-    new Chart(rsCv.getContext('2d'),{
-      type:'bar',
-      data:{
-        labels:names.map(n=>n.split(' ')[0]),
-        datasets:[
-          {label:'С рекрутером',data:names.map(n=>rs[n].rek),backgroundColor:'#3B6FE0',borderRadius:5},
-          {label:'Техническое',data:names.map(n=>rs[n].tech),backgroundColor:'#F79009',borderRadius:5},
-          {label:'С заказчиком',data:names.map(n=>rs[n].cust),backgroundColor:'#10B981',borderRadius:5},
-        ]
-      },
-      options:{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{labels:{font:{size:11},boxWidth:10,usePointStyle:true}},
-          tooltip:{...TT,callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}`}}},
-        scales:{
-          x:{grid:{display:false},border:{display:false},ticks:{color:'#9CA3AF',font:{size:11}}},
-          y:{grid:{color:'#F3F4F6'},border:{display:false},ticks:{color:'#9CA3AF',font:{size:11}},beginAtZero:true},
-        },
-        animation:{duration:800,easing:'easeOutCubic'},
-      }
-    });
-  }
-
   // План-факт интервью по рекрутёрам
   const pf=HF.plan_fact||[];
   const cv=document.getElementById('ch-ttf');

@@ -673,6 +673,33 @@ function applyStaffStructure(){
   if(mb) mb.style.flex=ST.managers; if(ib) ib.style.flex=ST.ic;
 }
 
+function initStructureDonut(){
+  // «Структура персонала» — круговая по отделам (DEPT_BREAKDOWN из живой ШТАТКИ)
+  const cv=document.getElementById('ch-structure');
+  if(!cv || !DEPT_BREAKDOWN || !DEPT_BREAKDOWN.length) return;
+  const total=DEPT_BREAKDOWN.reduce((s,d)=>s+d.count,0);
+  const S=(id,t)=>{const e=document.getElementById(id); if(e) e.textContent=t;};
+  S('sp-total',total);
+  const ST=__D.STAFF;
+  if(ST){ S('sp-badge','укомплектованность '+Math.round(ST.hc/ST.plan*100)+'% ('+ST.hc+'/'+ST.plan+')'); }
+  const colors=DEPT_BREAKDOWN.map((d,i)=>DEPT_COLORS[d.dept]||['#3B6FE0','#10B981','#F79009','#06B6D4','#8B5CF6','#EC4899','#F59E0B','#6B7280','#14B8A6','#EF4444','#84CC16','#A855F7'][i%12]);
+  new Chart(cv.getContext('2d'),{
+    type:'doughnut',
+    data:{labels:DEPT_BREAKDOWN.map(d=>d.dept),
+      datasets:[{data:DEPT_BREAKDOWN.map(d=>d.count),backgroundColor:colors,borderWidth:2,borderColor:'#fff',hoverOffset:6}]},
+    options:{responsive:false,cutout:'66%',plugins:{legend:{display:false},
+      tooltip:{...TT,callbacks:{label:c=>` ${c.label}: ${c.raw} чел. (${(c.raw/total*100).toFixed(1)}%)`}}},animation:{duration:700}},
+  });
+  const lg=document.getElementById('sp-legend');
+  if(lg) lg.innerHTML=DEPT_BREAKDOWN.map((d,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+      <div style="width:9px;height:9px;border-radius:50%;background:${colors[i]};flex-shrink:0"></div>
+      <span style="font-size:12.5px;color:var(--text);flex:1">${d.dept}</span>
+      <span style="font-size:13px;font-weight:800;color:var(--text)">${d.count}</span>
+      <span style="font-size:11px;color:var(--micro);min-width:44px;text-align:right">${d.pct}%</span>
+    </div>`).join('');
+}
+
 function renderDeptBars(){
   const el = document.getElementById('dept-bars');
   if(!el) return;
@@ -909,6 +936,7 @@ setTimeout(()=>{
   renderVacanciesTable();
   renderSparklines();
   applyStaffStructure();
+  initStructureDonut();
   initialized=true;
 },800);
 

@@ -374,45 +374,20 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   <!-- Row 2: Structure + Open Vacancies -->
   <div class="grid-2 sec">
     <div class="card p20 skeleton" id="cc4">
-      <div class="lbl" style="margin-bottom:14px">Структура персонала</div>
-
-      <!-- Headline -->
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px">
-        <span style="font-size:12px;font-weight:500;color:var(--muted);flex:1">Укомплектованность</span>
-        <span style="font-size:22px;font-weight:800;color:var(--primary)" id="sp-pct">96%</span>
+      <div class="ch">
+        <span class="lbl mb0">Структура персонала</span>
+        <span class="badge" id="sp-badge">по отделам</span>
       </div>
-      <div class="s-split"><div class="s-filled" id="sp-fill" style="flex:96"></div><div class="s-empty" id="sp-empty" style="flex:4"></div></div>
-      <div class="s-labels"><span id="sp-active">Действующих: 143</span><span id="sp-plan">Штат: 149 · Открыто: 20</span></div>
-
-      <!-- Department table -->
-      <div style="border-top:1px solid var(--border);margin-top:14px">
-        <table id="dept-struct-table" style="width:100%;border-collapse:collapse"></table>
-      </div>
-
-      <!-- Roles split bar -->
-      <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:2px">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--micro);margin-bottom:8px">Структура ролей</div>
-        <div style="display:flex;height:6px;border-radius:4px;overflow:hidden;margin-bottom:9px">
-          <div id="rl-mgr-bar" style="flex:34;background:#3B6FE0"></div>
-          <div id="rl-ic-bar" style="flex:109;background:#E5E7EB"></div>
-        </div>
-        <div style="display:flex;gap:20px">
-          <div style="display:flex;align-items:center;gap:6px">
-            <div style="width:8px;height:8px;border-radius:2px;background:#3B6FE0;flex-shrink:0"></div>
-            <span style="font-size:12px;color:var(--muted)">Руководители</span>
-            <span style="font-size:13px;font-weight:800;color:var(--text)" id="rl-mgr-n">34</span>
-            <span style="font-size:11px;color:var(--micro)" id="rl-mgr-pct">23.8%</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px">
-            <div style="width:8px;height:8px;border-radius:2px;background:#D1D5DB;flex-shrink:0"></div>
-            <span style="font-size:12px;color:var(--muted)">Сотрудники</span>
-            <span style="font-size:13px;font-weight:800;color:var(--text)" id="rl-ic-n">109</span>
-            <span style="font-size:11px;color:var(--micro)" id="rl-ic-pct">76.2%</span>
+      <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+        <div class="donut-wrap" style="position:relative;flex-shrink:0">
+          <canvas id="ch-structure" width="200" height="200"></canvas>
+          <div class="donut-center">
+            <div class="dc-num" id="sp-total">—</div>
+            <div class="dc-sub">сотрудников</div>
           </div>
         </div>
+        <div style="flex:1;min-width:210px" id="sp-legend"></div>
       </div>
-
-      <!-- Hidden IDs для renderKPIs -->
     </div>
 
     <!-- Открытые вакансии -->

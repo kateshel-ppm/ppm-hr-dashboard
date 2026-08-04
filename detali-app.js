@@ -34,7 +34,6 @@ const OPEN_VAC = __D.OPEN_VAC;
 
 const CLOSED_DATA = __D.CLOSED_DATA;
 
-const REFERRALS = __D.REFERRALS;
 
 const DEPT_COLORS = {
   'ИТ':'#3B6FE0','Маркетинг':'#06B6D4','Забота':'#10B981','HR':'#8B5CF6',
@@ -885,24 +884,7 @@ function initWorkFormat(){
     </div>`).join('');
 }
 
-function renderReferrals(){
-  const deptC = DEPT_COLORS;
-  document.getElementById('ref-tbody').innerHTML=REFERRALS.map(r=>{
-    const dc=deptC[r.dept]||'#9CA3AF';
-    const statusBadge=r.dismissed
-      ?`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--danger-light);color:var(--danger)">уволен</span>`
-      :`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--success-light);color:var(--success)">работает</span>`;
-    const refDisplay=r.ref==='—'?`<span style="color:var(--micro)">—</span>`:`<span style="font-weight:600">${r.ref}</span>`;
-    return `<tr>
-      <td style="padding:9px 10px;border-bottom:1px solid #F3F4F6;font-size:13px">${refDisplay}</td>
-      <td style="padding:9px 10px;border-bottom:1px solid #F3F4F6;font-size:13px;font-weight:500">${r.cand}</td>
-      <td style="padding:9px 10px;border-bottom:1px solid #F3F4F6;font-size:12px;color:var(--muted);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.vac}</td>
-      <td style="padding:9px 10px;border-bottom:1px solid #F3F4F6;font-size:12px"><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:${dc};flex-shrink:0"></span>${r.dept}</span></td>
-      <td style="padding:9px 10px;border-bottom:1px solid #F3F4F6;font-size:13px;font-weight:600;text-align:right;color:var(--muted)">${r.tenure}</td>
-      <td style="padding:9px 10px;border-bottom:1px solid #F3F4F6;text-align:center">${statusBadge}</td>
-    </tr>`;
-  }).join('');
-}
+// блок «Реферальные сотрудники» удалён с дашборда по решению Екатерины (04.08.2026)
 
 // ══════════════════════════════════════════════════════════
 // INIT (after 800ms skeleton)
@@ -923,7 +905,6 @@ setTimeout(()=>{
   initQoH();
   initWorkFormat();
   renderOpenList();
-  renderReferrals();
   renderClosed();
   renderRecruiters();
   animateBars();

@@ -153,8 +153,8 @@ function renderKPIs(){
   } else {
     // ── Weekly ──
     if(period==='all'){
-      const _lw=[...WEEKS].reverse().find(w=>w.hc!=null);
-      hc=_lw?_lw.hc:null; dHC=null; sHC=_lw?`актуально (${_lw.label.toLowerCase()})`:'';
+      // «Всего» в листе «Кол-во нанятых» — нарастающий итог найма, не штат; сотрудники — из ШТАТКИ
+      hc=ST0.hc; dHC=null; sHC='действующих по ШТАТКЕ';
       hires=W_NH_DATA.reduce((s,v)=>s+v,0);
       dHires=null; sHires='за отслеживаемый период';
       const totalInt=WEEKS.reduce((s,w)=>s+w.hrInt+w.hmInt+(w.techInt||0)+(w.finInt||0),0);
@@ -163,9 +163,7 @@ function renderKPIs(){
     } else {
       const wi=WEEK_MAP[period];
       const w=WEEKS[wi], wprev=wi>0?WEEKS[wi-1]:null;
-      hc=w.hc??wprev?.hc??null;
-      dHC=wprev&&w.hc!==null&&wprev.hc!==null?w.hc-wprev.hc:null;
-      sHC=`на конец ${w.label.toLowerCase()}`;
+      hc=ST0.hc; dHC=null; sHC='действующих по ШТАТКЕ';
       hires=w.newHires??0;
       dHires=wprev&&w.newHires!==null&&wprev.newHires!==null?w.newHires-wprev.newHires:null;
       sHires=`оформлено за ${w.label.toLowerCase()}`;

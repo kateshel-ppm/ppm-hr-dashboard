@@ -1,11 +1,11 @@
 {
   "as_of": "2026-08-04",
   "headcount": {
-    "active": 145,
+    "active": 143,
     "plan": 157,
-    "staffing_pct": 92.4,
-    "managers": 35,
-    "ic": 110,
+    "staffing_pct": 91.1,
+    "managers": 34,
+    "ic": 109,
     "on_probation": 29,
     "by_dept": {
       "Забота": 64,
@@ -18,12 +18,11 @@
       "Фин": 4,
       "АХО": 3,
       "Рефералы": 3,
-      "MAZE": 2,
       "Продажи": 1,
       "ЮО": 1
     },
     "by_format": {
-      "офис": 59,
+      "офис": 57,
       "гибрид": 11,
       "удаленно": 74,
       "—": 1
@@ -32,18 +31,18 @@
   "hires_by_month": {
     "1": 4,
     "2": 16,
-    "3": 17,
+    "3": 16,
     "4": 28,
     "5": 21,
     "6": 6,
-    "7": 15,
+    "7": 14,
     "8": 1
   },
   "turnover": {
     "ytd_count": 22,
     "voluntary": null,
     "involuntary": null,
-    "rate_simple_pct": 15.2,
+    "rate_simple_pct": 15.4,
     "early_probation": 13,
     "by_month": {
       "3": 1,
@@ -128,17 +127,17 @@
       }
     ],
     "tto_median": 8.0,
-    "tto_mean": 15.6,
+    "tto_mean": 15.1,
     "tth_median": 13.0,
-    "tth_mean": 19.7,
-    "offers_made_jo": 122,
-    "started": 128
+    "tth_mean": 19.2,
+    "offers_made_jo": 121,
+    "started": 127
   },
   "sources_top": {
     "hh.ru": 66,
     "реферал": 17,
     "холодный поиск": 16,
-    "hh": 11,
+    "hh": 10,
     "hh поиск": 3,
     "кадровое агентство": 3,
     "закрыта заказчиком": 1

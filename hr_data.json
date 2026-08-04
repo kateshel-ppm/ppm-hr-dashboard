@@ -1,17 +1,17 @@
 {
   "as_of": "2026-08-04",
   "headcount": {
-    "active": 143,
+    "active": 145,
     "plan": 149,
-    "staffing_pct": 96.0,
-    "managers": 34,
-    "ic": 109,
-    "on_probation": 27,
+    "staffing_pct": 97.3,
+    "managers": 35,
+    "ic": 110,
+    "on_probation": 29,
     "by_dept": {
-      "Забота": 65,
-      "ИТ": 23,
-      "Маркетинг": 11,
-      "Продукт": 9,
+      "Забота": 64,
+      "ИТ": 22,
+      "Маркетинг": 13,
+      "Продукт": 10,
       "HR": 8,
       "Партнеры": 7,
       "АУП": 7,
@@ -19,12 +19,13 @@
       "АХО": 3,
       "Рефералы": 3,
       "MAZE": 2,
+      "Продажи": 1,
       "ЮО": 1
     },
     "by_format": {
-      "офис": 57,
-      "удаленно": 74,
+      "офис": 59,
       "гибрид": 11,
+      "удаленно": 74,
       "—": 1
     }
   },
@@ -35,37 +36,38 @@
     "4": 28,
     "5": 21,
     "6": 6,
-    "7": 13
+    "7": 15,
+    "8": 1
   },
   "turnover": {
-    "ytd_count": 21,
+    "ytd_count": 22,
     "voluntary": null,
     "involuntary": null,
-    "rate_simple_pct": 14.7,
-    "early_probation": 12,
+    "rate_simple_pct": 15.2,
+    "early_probation": 13,
     "by_month": {
       "3": 1,
       "4": 5,
       "5": 7,
       "6": 3,
-      "7": 5
+      "7": 6
     }
   },
   "vacancies": {
     "total_rows": 155,
     "status_counts": {
-      "finished": 125,
-      "in progress": 15,
+      "finished": 128,
+      "in progress": 12,
       "отказ от оффера": 7,
       "freeze": 5,
       "принят оффер": 2,
       "увольнение на ис": 1
     },
-    "open": 15,
+    "open": 12,
     "open_by_priority": {
       "Critical": 5,
-      "Medium": 5,
-      "High": 5
+      "Medium": 3,
+      "High": 4
     },
     "oldest": {
       "vac": "Senior Backend Developer",
@@ -85,22 +87,6 @@
         "age": 91
       },
       {
-        "vac": "Manual QA (СПБ)",
-        "dept": "ИТ",
-        "pri": "Medium",
-        "rec": "Алексей, Лена",
-        "open": "09.06",
-        "age": 56
-      },
-      {
-        "vac": "Manual QA",
-        "dept": "ИТ",
-        "pri": "Medium",
-        "rec": "Лена",
-        "open": "09.06",
-        "age": 56
-      },
-      {
         "vac": "Manual QA",
         "dept": "ИТ",
         "pri": "Medium",
@@ -117,12 +103,28 @@
         "age": 47
       },
       {
-        "vac": "Support Engineer L3 / Junior Devops",
-        "dept": "Забота",
+        "vac": "Бизнес-ассистент",
+        "dept": "Управление",
+        "pri": "Medium",
+        "rec": "Соня",
+        "open": "20.7",
+        "age": 15
+      },
+      {
+        "vac": "Юрист",
+        "dept": "ИТ",
+        "pri": "Critical",
+        "rec": "Лена",
+        "open": "27.07",
+        "age": 8
+      },
+      {
+        "vac": "AI Product manager",
+        "dept": "Продукт",
         "pri": "High",
-        "rec": "Саша",
-        "open": "18.06",
-        "age": 47
+        "rec": "София",
+        "open": "27.07",
+        "age": 8
       }
     ],
     "tto_median": 8.0,

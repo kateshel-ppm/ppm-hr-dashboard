@@ -472,12 +472,7 @@ function initSources(){
     <span>${s.label}</span><span class="leg-pct">${Math.round(s.count/total*100)}%</span></div>`).join('');
 }
 function renderWeeklyTasks(){
-  const PRI = {
-    Critical: {label:'Critical', color:'#F04438', bg:'#FEE4E2', dot:'#F04438'},
-    High:     {label:'High',     color:'#F79009', bg:'#FEF6E7', dot:'#F79009'},
-    Low:      {label:'Low',      color:'#9CA3AF', bg:'#F3F4F6', dot:'#D1D5DB'},
-    Medium:   {label:'Medium',   color:'#3B6FE0', bg:'#EFF4FF', dot:'#3B6FE0'},
-  };
+  // приоритеты задач скрыты по решению Екатерины (04.08.2026)
 
   // подписи недель — из данных (обновляются вместе с задачами)
   const dl=document.getElementById('wt-done-lbl'), fl=document.getElementById('wt-focus-lbl');
@@ -487,28 +482,24 @@ function renderWeeklyTasks(){
   // Итоги (выполнено)
   const doneEl = document.getElementById('tasks-done');
   if(doneEl) doneEl.innerHTML = WEEKLY_TASKS.done.items.map(t => {
-    const pr = PRI[t.priority] || PRI.Low;
     return `<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #F3F4F6">
       <div style="width:20px;height:20px;border-radius:50%;background:#DCFAE6;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">
-        <span style="font-size:11px;line-height:1">✓</span>
+        <span style="font-size:11px;line-height:1">\u2713</span>
       </div>
       <div style="flex:1;min-width:0">
         <div style="font-size:13px;font-weight:500;color:var(--text);line-height:1.4">${t.task}</div>
-        ${t.result ? `<div style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4">→ ${t.result}</div>` : ''}
+        ${t.result ? `<div style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4">\u2192 ${t.result}</div>` : ''}
       </div>
-      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${pr.bg};color:${pr.color};flex-shrink:0;white-space:nowrap">${pr.label}</span>
     </div>`;
   }).join('');
 
   // Фокусы
   const focusEl = document.getElementById('tasks-focus');
   if(focusEl) focusEl.innerHTML = WEEKLY_TASKS.focus.items.map((t,i) => {
-    const pr = PRI[t.priority] || PRI.Low;
     const isLast = i === WEEKLY_TASKS.focus.items.length - 1;
     return `<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 0;${isLast?'':'border-bottom:1px solid #F3F4F6'}">
-      <div style="width:20px;height:20px;border-radius:50%;border:2px solid ${pr.dot};display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"></div>
+      <div style="width:20px;height:20px;border-radius:50%;border:2px solid #3B6FE0;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"></div>
       <div style="font-size:13px;font-weight:500;color:var(--text);line-height:1.4;flex:1">${t.task}</div>
-      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${pr.bg};color:${pr.color};flex-shrink:0;white-space:nowrap">${pr.label}</span>
     </div>`;
   }).join('');
 }

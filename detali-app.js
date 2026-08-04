@@ -1037,61 +1037,6 @@ function initHuntflowCharts(){
     const lbl=document.querySelector('#hf-kpi-row .kpi-card:nth-child(5) .kpi-lbl');
     if(lbl) lbl.textContent='Интервью, '+m0.toLowerCase();
   }
-  // Интервью по рекрутёрам понедельно (с июля)
-  const rwk=HF.rec_weekly||{};
-  const rwEl=document.getElementById('hf-rec-weekly');
-  if(rwEl && rwk.weeks && rwk.weeks.length){
-    const weeks=rwk.weeks, recs=rwk.recruiters;
-    const grand=weeks.reduce((s,w)=>s+Object.values(w.by).reduce((a,b)=>a+b,0),0);
-    const bd=document.getElementById('hf-rw-badge');
-    if(bd) bd.textContent=grand+' интервью с июля';
-    const th='font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--micro);padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap';
-    const td='padding:8px 10px;border-bottom:1px solid #F3F4F6;font-size:13px;text-align:center';
-    let h='<table style="width:100%;border-collapse:collapse"><thead><tr>'
-      +`<th style="${th};text-align:left">Рекрутёр</th>`
-      +weeks.map(w=>`<th style="${th};text-align:center">Нед. ${w.week}</th>`).join('')
-      +`<th style="${th};text-align:right">Итого</th></tr></thead><tbody>`;
-    recs.forEach(rc=>{
-      const tot=weeks.reduce((s,w)=>s+(w.by[rc]||0),0);
-      h+=`<tr><td style="padding:8px 10px;border-bottom:1px solid #F3F4F6;font-size:13px;font-weight:500;white-space:nowrap">${rc}</td>`
-        +weeks.map(w=>{const v=w.by[rc]||0; return `<td style="${td};${v?'font-weight:700':'color:var(--micro)'}">${v||'—'}</td>`;}).join('')
-        +`<td style="${td};text-align:right;font-weight:800">${tot}</td></tr>`;
-    });
-    h+=`<tr><td style="padding:8px 10px;font-size:12px;font-weight:700;color:var(--muted)">Итого</td>`
-      +weeks.map(w=>{const t=Object.values(w.by).reduce((a,b)=>a+b,0); return `<td style="${td};font-weight:800">${t}</td>`;}).join('')
-      +`<td style="${td};text-align:right;font-weight:800">${grand}</td></tr>`;
-    h+='</tbody></table>';
-    rwEl.innerHTML=h;
-    // линейная динамика: одна линия на рекрутёра
-    const rwCv=document.getElementById('ch-rec-weekly');
-    if(rwCv){
-      const LC=['#3B6FE0','#F79009','#10B981','#EC4899','#8B5CF6','#06B6D4','#EF4444','#6B7280'];
-      new Chart(rwCv.getContext('2d'),{
-        type:'line',
-        data:{
-          labels:weeks.map(w=>'Нед. '+w.week),
-          datasets:recs.map((rc,i)=>({
-            label:rc.split(' ')[0],
-            data:weeks.map(w=>w.by[rc]||0),
-            borderColor:LC[i%LC.length],
-            backgroundColor:LC[i%LC.length],
-            tension:.35,pointRadius:3.5,pointHoverRadius:5,borderWidth:2.2,fill:false,
-          }))
-        },
-        options:{
-          responsive:true,maintainAspectRatio:false,
-          plugins:{legend:{labels:{font:{size:11},boxWidth:10,usePointStyle:true}},
-            tooltip:{...TT,callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}`}}},
-          scales:{
-            x:{grid:{display:false},border:{display:false},ticks:{color:'#9CA3AF',font:{size:11}}},
-            y:{grid:{color:'#F3F4F6'},border:{display:false},ticks:{color:'#9CA3AF',font:{size:11},stepSize:5},beginAtZero:true},
-          },
-          animation:{duration:800,easing:'easeOutCubic'},
-        }
-      });
-    }
-  }
-
   // Типы интервью понедельно — отдельный график на каждого рекрутёра
   const rsw=HF.rec_stage_weekly||{};
   const rsGrid=document.getElementById('hf-rec-stage-grid');

@@ -635,6 +635,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
   </div>
 
+  <!-- Интервью по рекрутёрам понедельно -->
+  <div class="card p20 sec">
+    <div class="ch">
+      <span class="lbl mb0">Интервью с рекрутером — понедельно</span>
+      <span class="badge" id="hf-rw-badge">с июля</span>
+    </div>
+    <div style="overflow-x:auto" id="hf-rec-weekly"></div>
+  </div>
+
   <!-- Open vacancies risk table -->
   <div class="card sec" style="padding:20px 20px 0">
     <div class="ch" style="padding-bottom:14px">
@@ -666,7 +675,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <script src="secure-lib.js"></script>
 <script>
-window.ppmLoad("secure/detali.enc").then(function(D){window.__D=D;var s=document.createElement("script");s.src="detali-app.js";document.body.appendChild(s);})
+window.ppmLoad("secure/detali.enc").then(function(D){window.__D=D;var s=document.createElement("script");s.src="detali-app.js?cb="+Date.now();document.body.appendChild(s);})
 .catch(function(e){console.warn("нет доступа к данным (нужен вход)",e);});
 </script>
 <script src="refresh-button.js"></script>

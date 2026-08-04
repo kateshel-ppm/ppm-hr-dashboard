@@ -1011,6 +1011,33 @@ function initHuntflowCharts(){
     const lbl=document.querySelector('#hf-kpi-row .kpi-card:nth-child(5) .kpi-lbl');
     if(lbl) lbl.textContent='Интервью, '+m0.toLowerCase();
   }
+  // Интервью по рекрутёрам понедельно (с июля)
+  const rwk=HF.rec_weekly||{};
+  const rwEl=document.getElementById('hf-rec-weekly');
+  if(rwEl && rwk.weeks && rwk.weeks.length){
+    const weeks=rwk.weeks, recs=rwk.recruiters;
+    const grand=weeks.reduce((s,w)=>s+Object.values(w.by).reduce((a,b)=>a+b,0),0);
+    const bd=document.getElementById('hf-rw-badge');
+    if(bd) bd.textContent=grand+' интервью с июля';
+    const th='font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--micro);padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap';
+    const td='padding:8px 10px;border-bottom:1px solid #F3F4F6;font-size:13px;text-align:center';
+    let h='<table style="width:100%;border-collapse:collapse"><thead><tr>'
+      +`<th style="${th};text-align:left">Рекрутёр</th>`
+      +weeks.map(w=>`<th style="${th};text-align:center">Нед. ${w.week}</th>`).join('')
+      +`<th style="${th};text-align:right">Итого</th></tr></thead><tbody>`;
+    recs.forEach(rc=>{
+      const tot=weeks.reduce((s,w)=>s+(w.by[rc]||0),0);
+      h+=`<tr><td style="padding:8px 10px;border-bottom:1px solid #F3F4F6;font-size:13px;font-weight:500;white-space:nowrap">${rc}</td>`
+        +weeks.map(w=>{const v=w.by[rc]||0; return `<td style="${td};${v?'font-weight:700':'color:var(--micro)'}">${v||'—'}</td>`;}).join('')
+        +`<td style="${td};text-align:right;font-weight:800">${tot}</td></tr>`;
+    });
+    h+=`<tr><td style="padding:8px 10px;font-size:12px;font-weight:700;color:var(--muted)">Итого</td>`
+      +weeks.map(w=>{const t=Object.values(w.by).reduce((a,b)=>a+b,0); return `<td style="${td};font-weight:800">${t}</td>`;}).join('')
+      +`<td style="${td};text-align:right;font-weight:800">${grand}</td></tr>`;
+    h+='</tbody></table>';
+    rwEl.innerHTML=h;
+  }
+
   // План-факт интервью по рекрутёрам
   const pf=HF.plan_fact||[];
   const cv=document.getElementById('ch-ttf');

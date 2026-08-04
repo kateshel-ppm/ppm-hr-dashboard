@@ -118,10 +118,10 @@
         "age": 8
       },
       {
-        "vac": "AI Product manager",
-        "dept": "Продукт",
+        "vac": "DevSec",
+        "dept": "ИТ",
         "pri": "High",
-        "rec": "София",
+        "rec": "Лена",
         "open": "27.07",
         "age": 8
       }

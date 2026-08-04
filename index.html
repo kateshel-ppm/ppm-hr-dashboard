@@ -127,7 +127,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="kpi-val">96<span class="u">%</span></div>
       <span class="delta up">143 / 149</span>
       <div class="kpi-tgt"><span class="dot success"></span>цель ≥ 95% — достигнута</div>
-      <div class="kpi-sub">рук. 34 · ИК 109 · на испыт. 34</div>
+      <div class="kpi-sub">рук. 34 · ИК 109 · на испыт. 27</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-lbl">Найм YTD</div>
@@ -138,17 +138,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
     <div class="kpi-card s-warning">
       <div class="kpi-lbl">Открытые вакансии</div>
-      <div class="kpi-val">20</div>
-      <span class="delta neutral">6 critical</span>
-      <div class="kpi-tgt"><span class="dot warning"></span>6 critical в работе</div>
-      <div class="kpi-sub">High 7 · Medium 7</div>
+      <div class="kpi-val">15</div>
+      <span class="delta up">−5 за неделю</span>
+      <div class="kpi-tgt"><span class="dot warning"></span>5 critical в работе</div>
+      <div class="kpi-sub">High 5 · Medium 5</div>
     </div>
     <div class="kpi-card s-success">
       <div class="kpi-lbl">Срок до оффера медиана</div>
       <div class="kpi-val">8,0<span class="u">д</span></div>
       <span class="delta up">TTO</span>
       <div class="kpi-tgt"><span class="dot success"></span>цель ≤ 21д</div>
-      <div class="kpi-sub">⚠ хвост senior 65–106д</div>
+      <div class="kpi-sub">⚠ хвост senior до 91д</div>
     </div>
     <div class="kpi-card s-danger">
       <div class="kpi-lbl">Текучесть YTD</div>
@@ -189,8 +189,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="alert warn">
       <div class="alert-ic">▲</div>
       <div>
-        <div class="alert-t">Узкое место — senior-роли Продукта и ИТ</div>
-        <div class="alert-x">При медиане до оффера ~8 дней узкие вакансии висят 65–106 дней: Lead-дизайнер UX/UI 106д; Senior Backend, DevOps, Team Lead, Системный аналитик — по 84д. Открыто 20 (в работе 6 critical). Массовый найм быстрый, дефицит — в дорогих узких ролях.</div>
+        <div class="alert-t">Узкое место — senior-роли ИТ</div>
+        <div class="alert-x">При медиане до оффера ~8 дней старейшая вакансия — Senior Backend Developer, 91 день (critical). Прогресс за неделю: закрыты Lead-дизайнер UX/UI, Системный аналитик и DevOps, открытых стало 15 (−5). По Хантфлоу в июле выставлено 24 оффера, закрыто 14 вакансий.</div>
       </div>
     </div>
     <div class="alert warn">
@@ -229,25 +229,25 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="chart-box"><canvas id="ch-hire"></canvas></div>
     </div>
     <div class="card">
-      <div class="ch"><h3>Динамика штата к плану</h3><span class="badge">нед. 6 → 31</span></div>
+      <div class="ch"><h3>Динамика штата к плану</h3><span class="badge">нед. 6 → 30 · лист «Кол-во нанятых»</span></div>
       <div class="chart-box"><canvas id="ch-hc"></canvas></div>
     </div>
   </div>
 
   <div class="grid-3">
     <div class="card">
-      <div class="ch"><h3>Открытые вакансии</h3><span class="badge">20</span></div>
+      <div class="ch"><h3>Открытые вакансии</h3><span class="badge">15</span></div>
       <div class="pri-grid">
-        <div class="pri-pill pc"><div class="pn">6</div><div class="pl">Critical</div></div>
-        <div class="pri-pill ph"><div class="pn">7</div><div class="pl">High</div></div>
-        <div class="pri-pill pm"><div class="pn">7</div><div class="pl">Medium</div></div>
+        <div class="pri-pill pc"><div class="pn">5</div><div class="pl">Critical</div></div>
+        <div class="pri-pill ph"><div class="pn">5</div><div class="pl">High</div></div>
+        <div class="pri-pill pm"><div class="pn">5</div><div class="pl">Medium</div></div>
       </div>
       <div class="lbl" style="margin-bottom:2px">Дольше всего открыты</div>
-      <div class="aging-row bad"><span class="nm">Lead-дизайнер UX/UI · Продукт</span><span class="dp">106д</span></div>
-      <div class="aging-row bad"><span class="nm">Senior Backend · ИТ</span><span class="dp">84д</span></div>
-      <div class="aging-row bad"><span class="nm">DevOps · ИТ</span><span class="dp">84д</span></div>
-      <div class="aging-row bad"><span class="nm">Team Lead · ИТ</span><span class="dp">84д</span></div>
-      <div class="aging-row bad"><span class="nm">Системный аналитик · Продукт</span><span class="dp">84д</span></div>
+      <div class="aging-row bad"><span class="nm">Senior Backend Developer · ИТ</span><span class="dp">91д</span></div>
+      <div class="aging-row bad"><span class="nm">Manual QA (СПб) · ИТ</span><span class="dp">56д</span></div>
+      <div class="aging-row bad"><span class="nm">Manual QA ×2 · ИТ</span><span class="dp">56д</span></div>
+      <div class="aging-row"><span class="nm">Support Engineer L3 / Jun. DevOps ×2 · Забота</span><span class="dp">47д</span></div>
+      <div class="aging-row"><span class="nm">Бизнес-ассистент · Управление</span><span class="dp">15д</span></div>
     </div>
     <div class="card">
       <div class="ch"><h3>Источники найма</h3><span class="badge">источник истины</span></div>
@@ -275,7 +275,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <div class="foot">
   Executive-Обзор · данные ППМ на <span class="js-asof">30.06.2026</span> из источника истины (вкладки «Вакансии» + «ШТАТКА»), скрипт <code>fetch_hr_data.py</code>. Детальный операционный дашборд — вкладка «Детали».<br>
-  Найм YTD = старт в ШТАТКЕ (105). Срок до оффера: медиана TTO 8,0д (массовый Забота); senior-роли — хвост 65–106д, мерятся раздельно. Текучесть без разбивки по причинам: колонка «Причина увольнения» удалена из листа уволенных. Цели заданы Екатериной 16.06.2026.
+  Найм YTD = старт в ШТАТКЕ (105). Срок до оффера: медиана TTO 8,0д (массовый Забота); senior-роли — хвост до 91д, мерятся раздельно. Текучесть без разбивки по причинам: колонка «Причина увольнения» удалена из листа уволенных. Рекрутмент-аналитика (воронка, план-факт) — на вкладке «Детали», раздел «Аналитика рекрутмента». Цели заданы Екатериной 16.06.2026.
 </div>
 
 <script>
@@ -303,8 +303,8 @@ new Chart(document.getElementById('ch-hire'),{
     scales:{y:{beginAtZero:true,grid:{color:'#F3F4F6'},ticks:{font:FONT}},x:{grid:{display:false},ticks:{font:FONT}}}}
 });
 
-const hcLabels=['6','7','8','9-10','11','12','13','14','15-16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'];
-const hcData=[68,76,79,77,81,85,91,93,102,116,124,128,132,133,130,132,132,133,134,136,136,136,136,143];
+const hcLabels=['6','7','8','9-10','11','12','13','14','15-16','17','18','19','20','21','22','23','24','25','26','27','28','29','30'];
+const hcData=[68,76,79,77,81,85,91,93,102,116,124,128,132,134,136,138,139,142,143,145,146,147,152];
 new Chart(document.getElementById('ch-hc'),{
   type:'line',
   data:{labels:hcLabels,datasets:[
@@ -318,8 +318,8 @@ new Chart(document.getElementById('ch-hc'),{
 
 new Chart(document.getElementById('ch-src'),{
   type:'doughnut',
-  data:{labels:['hh.ru 74','Реферал 17','Холодный 17','Агентство 3'],
-    datasets:[{data:[74,17,17,3],backgroundColor:['#3B6FE0','#10B981','#F79009','#06B6D4'],borderWidth:0}]},
+  data:{labels:['hh.ru 80','Реферал 17','Холодный 17','Агентство 3'],
+    datasets:[{data:[80,17,17,3],backgroundColor:['#3B6FE0','#10B981','#F79009','#06B6D4'],borderWidth:0}]},
   options:{maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{font:FONT,boxWidth:9,usePointStyle:true,padding:8}},tooltip:TT}}
 });
 </script>

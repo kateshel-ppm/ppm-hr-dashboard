@@ -1062,6 +1062,34 @@ function initHuntflowCharts(){
       +`<td style="${td};text-align:right;font-weight:800">${grand}</td></tr>`;
     h+='</tbody></table>';
     rwEl.innerHTML=h;
+    // линейная динамика: одна линия на рекрутёра
+    const rwCv=document.getElementById('ch-rec-weekly');
+    if(rwCv){
+      const LC=['#3B6FE0','#F79009','#10B981','#EC4899','#8B5CF6','#06B6D4','#EF4444','#6B7280'];
+      new Chart(rwCv.getContext('2d'),{
+        type:'line',
+        data:{
+          labels:weeks.map(w=>'Нед. '+w.week),
+          datasets:recs.map((rc,i)=>({
+            label:rc.split(' ')[0],
+            data:weeks.map(w=>w.by[rc]||0),
+            borderColor:LC[i%LC.length],
+            backgroundColor:LC[i%LC.length],
+            tension:.35,pointRadius:3.5,pointHoverRadius:5,borderWidth:2.2,fill:false,
+          }))
+        },
+        options:{
+          responsive:true,maintainAspectRatio:false,
+          plugins:{legend:{labels:{font:{size:11},boxWidth:10,usePointStyle:true}},
+            tooltip:{...TT,callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}`}}},
+          scales:{
+            x:{grid:{display:false},border:{display:false},ticks:{color:'#9CA3AF',font:{size:11}}},
+            y:{grid:{color:'#F3F4F6'},border:{display:false},ticks:{color:'#9CA3AF',font:{size:11},stepSize:5},beginAtZero:true},
+          },
+          animation:{duration:800,easing:'easeOutCubic'},
+        }
+      });
+    }
   }
 
   // Интервью по типам (рекрутер / тех / заказчик) на рекрутёра

@@ -64,8 +64,8 @@
     },
     "open": 12,
     "open_by_priority": {
-      "Critical": 5,
-      "Medium": 3,
+      "Critical": 4,
+      "Medium": 4,
       "High": 4
     },
     "oldest": {
@@ -96,7 +96,7 @@
       {
         "vac": "Support Engineer L3 / Junior Devops",
         "dept": "Забота",
-        "pri": "High",
+        "pri": "Medium",
         "rec": "Саша",
         "open": "18.06",
         "age": 47
@@ -104,24 +104,24 @@
       {
         "vac": "Бизнес-ассистент",
         "dept": "Управление",
-        "pri": "Medium",
+        "pri": "High",
         "rec": "Соня",
         "open": "20.7",
         "age": 15
-      },
-      {
-        "vac": "Юрист",
-        "dept": "ИТ",
-        "pri": "Critical",
-        "rec": "Лена",
-        "open": "27.07",
-        "age": 8
       },
       {
         "vac": "DevSec",
         "dept": "ИТ",
         "pri": "High",
         "rec": "Лена",
+        "open": "27.07",
+        "age": 8
+      },
+      {
+        "vac": "AI Product manager",
+        "dept": "ИТ",
+        "pri": "High",
+        "rec": "София",
         "open": "27.07",
         "age": 8
       }

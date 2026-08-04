@@ -1,12 +1,12 @@
 {
-  "as_of": "2026-07-28",
+  "as_of": "2026-08-04",
   "headcount": {
     "active": 143,
     "plan": 149,
     "staffing_pct": 96.0,
     "managers": 34,
     "ic": 109,
-    "on_probation": 34,
+    "on_probation": 27,
     "by_dept": {
       "Забота": 65,
       "ИТ": 23,
@@ -52,93 +52,93 @@
     }
   },
   "vacancies": {
-    "total_rows": 151,
+    "total_rows": 155,
     "status_counts": {
-      "finished": 118,
-      "in progress": 20,
+      "finished": 125,
+      "in progress": 15,
       "отказ от оффера": 7,
-      "freeze": 3,
+      "freeze": 5,
       "принят оффер": 2,
       "увольнение на ис": 1
     },
-    "open": 20,
+    "open": 15,
     "open_by_priority": {
-      "High": 7,
-      "Critical": 6,
-      "Medium": 7
+      "Critical": 5,
+      "Medium": 5,
+      "High": 5
     },
     "oldest": {
-      "vac": "Продуктовый Lead дизайнер UX/UI мск",
-      "dept": "Продукт",
-      "pri": "High",
-      "rec": "София",
-      "open": "13.04",
-      "age": 106
+      "vac": "Senior Backend Developer",
+      "dept": "ИТ",
+      "pri": "Critical",
+      "rec": "Лена",
+      "open": "05.05",
+      "age": 91
     },
     "top_aging": [
-      {
-        "vac": "Продуктовый Lead дизайнер UX/UI мск",
-        "dept": "Продукт",
-        "pri": "High",
-        "rec": "София",
-        "open": "13.04",
-        "age": 106
-      },
       {
         "vac": "Senior Backend Developer",
         "dept": "ИТ",
         "pri": "Critical",
         "rec": "Лена",
         "open": "05.05",
-        "age": 84
+        "age": 91
       },
       {
-        "vac": "DevOps (уточнить про узкую специфику)",
+        "vac": "Manual QA (СПБ)",
         "dept": "ИТ",
-        "pri": "High",
-        "rec": "Лена",
-        "open": "05.05",
-        "age": 84
+        "pri": "Medium",
+        "rec": "Алексей, Лена",
+        "open": "09.06",
+        "age": 56
       },
       {
-        "vac": "Team Lead",
+        "vac": "Manual QA",
         "dept": "ИТ",
-        "pri": "Critical",
+        "pri": "Medium",
         "rec": "Лена",
-        "open": "05.05",
-        "age": 84
+        "open": "09.06",
+        "age": 56
       },
       {
-        "vac": "Системный Аналитик",
-        "dept": "Продукт",
-        "pri": "Critical",
-        "rec": "София",
-        "open": "05.05",
-        "age": 84
+        "vac": "Manual QA",
+        "dept": "ИТ",
+        "pri": "Medium",
+        "rec": "Лена",
+        "open": "09.06",
+        "age": 56
       },
       {
-        "vac": "Менеджер по привилегиям",
-        "dept": "Коммерческий",
+        "vac": "Support Engineer L3 / Junior Devops",
+        "dept": "Забота",
         "pri": "High",
-        "rec": "Соня",
-        "open": "24.05",
-        "age": 65
+        "rec": "Саша",
+        "open": "18.06",
+        "age": 47
+      },
+      {
+        "vac": "Support Engineer L3 / Junior Devops",
+        "dept": "Забота",
+        "pri": "High",
+        "rec": "Саша",
+        "open": "18.06",
+        "age": 47
       }
     ],
     "tto_median": 8.0,
-    "tto_mean": 15.3,
+    "tto_mean": 15.6,
     "tth_median": 13.0,
-    "tth_mean": 19.3,
-    "offers_made_jo": 116,
-    "started": 122
+    "tth_mean": 19.7,
+    "offers_made_jo": 122,
+    "started": 128
   },
   "sources_top": {
     "hh.ru": 66,
     "реферал": 17,
     "холодный поиск": 16,
-    "hh": 8,
+    "hh": 11,
+    "hh поиск": 3,
     "кадровое агентство": 3,
-    "закрыта заказчиком": 1,
-    "холодный": 1
+    "закрыта заказчиком": 1
   }
 }

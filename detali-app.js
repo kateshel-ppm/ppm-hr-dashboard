@@ -1014,28 +1014,21 @@ setTimeout(()=>{
 // ══════════════════════════════════════════════════════════
 // HUNTFLOW DATA & CHARTS
 // ══════════════════════════════════════════════════════════
-const HF_FUNNEL = [
-  {stage:'Новые / Оценка',      count:2138, pct:100},
-  {stage:'Long list',            count:125,  pct:6},
-  {stage:'Отправлено письмо',    count:265,  pct:12},
-  {stage:'Интервью с HR',        count:515,  pct:24},
-  {stage:'Оценка заказчиком',    count:385,  pct:18},
-  {stage:'Техническое / Тест',   count:103,  pct:5},
-  {stage:'Интервью с заказчиком',count:156,  pct:7},
-  {stage:'Интервью с CDO/CEO',   count:36,   pct:2},
-  {stage:'Принятие решения',     count:10,   pct:0.5},
-  {stage:'Выставлен оффер',      count:28,   pct:1.3},
-  {stage:'Оффер принят',         count:35,   pct:1.6},
-];
+// живая воронка из «Аналитики Хантфлоу» (апрель → сегодня): этап + сколько дошло + CR от предыдущего
+const HF_FUNNEL = (() => {
+  const f=(__D.HF||{}).funnel||[];
+  if(!f.length) return [];
+  const out=[{stage:'Оценка', count:f[0].in, cr:'100%'}];
+  f.forEach(s=>{
+    const nm=s.stage.split('→').pop().trim();
+    out.push({stage:nm, count:s.out, cr:s.cr?Math.round(parseFloat(String(s.cr).replace(',','.'))*100)+'%':''});
+  });
+  return out;
+})();
 
 // живые данные: OPEN_VAC пересобирается fetch_detali.py из вкладки «Вакансии» при каждом обновлении
 const HF_OPEN_VACS = (__D.OPEN_VAC||[]).map(v=>({name:v.name, dept:v.dept, recruiter:v.rec, days:v.days, priority:v.p}));
 
-const HF_TTF_MONTHS = {
-  labels:['Январь','Февраль','Март','Апрель','Май'],
-  data:[28,30,58,67,75],
-  counts:[1,5,7,9,20],
-};
 
 // ── Compute and inject closed-tab counts from actual CLOSED_DATA ──
 function initClosedTabCounts(){
@@ -1064,8 +1057,8 @@ function makeSpark(data, color, w=72, h=24){
 }
 
 function renderSparklines(){
-  const hireData=[22,17,22,27,5,3];
-  const hcData=[72,89,110,132,130,132];
+  const hireData=MONTH_ORDER.map(m=>MONTHS[m].hires||0);
+  const hcData=MONTH_ORDER.map(m=>MONTHS[m].hc||0);
   const hireEl=document.querySelector('#kc5 .kpi-sub');
   if(hireEl && !document.querySelector('#kc5 .kpi-spark'))
     hireEl.insertAdjacentHTML('afterend', makeSpark(hireData,'#3B6FE0'));
@@ -1075,12 +1068,13 @@ function renderSparklines(){
 }
 
 function renderHFFunnel(){
+  if(!HF_FUNNEL.length){ const el=document.getElementById('hf-funnel'); if(el) el.innerHTML='<div style="font-size:12px;color:var(--micro);padding:20px 0">нет данных</div>'; return; }
   const max = HF_FUNNEL[0].count;
   document.getElementById('hf-funnel').innerHTML = HF_FUNNEL.map((s,i) => {
-    const w = Math.round(s.count/max*100);
-    const color = i===0?'#3B6FE0':i<4?'#3B6FE0':i<8?'#10B981':i<10?'#F79009':'#12B76A';
-    const alpha = Math.max(0.25, 1 - i*0.06);
-    const conv = i>0 ? Math.round(s.count/HF_FUNNEL[i-1].count*100)+'%' : '100%';
+    const w = Math.max(2, Math.round(s.count/max*100));
+    const color = i===0?'#3B6FE0':i<3?'#3B6FE0':i<4?'#10B981':'#F79009';
+    const alpha = Math.max(0.35, 1 - i*0.12);
+    const conv = s.cr || (i>0 ? Math.round(s.count/HF_FUNNEL[i-1].count*100)+'%' : '100%');
     return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
       <span style="font-size:11px;color:var(--muted);width:170px;flex-shrink:0;text-align:right">${s.stage}</span>
       <div style="flex:1;height:20px;background:#F3F4F6;border-radius:4px;overflow:hidden;position:relative">
@@ -1093,48 +1087,52 @@ function renderHFFunnel(){
 }
 
 function initHuntflowCharts(){
-  // TTF trend line
-  new Chart(document.getElementById('ch-ttf').getContext('2d'),{
-    type:'line',
+  const HF=__D.HF||{};
+  // KPI-карточки секции
+  const S=(id,t)=>{const e=document.getElementById(id); if(e) e.textContent=t;};
+  if(HF.updated) S('hf-updated','данные Хантфлоу на '+HF.updated);
+  const st=HF.vac_status||{};
+  const tot=Object.values(st).reduce((s,v)=>s+v,0);
+  if(tot){ S('hf-v-total',tot);
+    S('hf-v-total-sub',(st['Открыта']||0)+' откр · '+(st['Закрыта']||0)+' закр · '+(st['На паузе']||0)+' пауза'); }
+  if(HF.offers){
+    if(HF.offers.tto_median!=null){ S('hf-v-tto',HF.offers.tto_median+'д'); S('hf-v-tto-sub','средн. '+HF.offers.tto_mean+'д по '+HF.offers.made+' офферам'); }
+    S('hf-v-offers',HF.offers.made); S('hf-v-offers-sub','принято: '+HF.offers.accepted);
+  }
+  if(HF.oldest){ S('hf-v-oldest',HF.oldest.age+'д'); S('hf-v-oldest-sub',HF.oldest.vac); }
+  const jm=(HF.months||{});
+  const rec=jm['Интервью с рекрутером']||{}, tech=jm['Технические интервью']||{}, cust=jm['Интервью с заказчиком']||{};
+  const mKeys=Object.keys(rec);
+  if(mKeys.length){
+    const m0=mKeys[0];
+    S('hf-v-int',rec[m0]||'—');
+    S('hf-v-int-sub','тех: '+(tech[m0]||0)+' · заказчик: '+(cust[m0]||0));
+    const lbl=document.querySelector('#hf-kpi-row .kpi-card:nth-child(5) .kpi-lbl');
+    if(lbl) lbl.textContent='Интервью, '+m0.toLowerCase();
+  }
+  // План-факт интервью по рекрутёрам
+  const pf=HF.plan_fact||[];
+  const cv=document.getElementById('ch-ttf');
+  if(!cv) return;
+  if(!pf.length){ cv.parentElement.innerHTML='<div style="font-size:12px;color:var(--micro);padding:20px 0">нет данных</div>'; return; }
+  const pfB=document.getElementById('hf-pf-badge');
+  if(pfB) pfB.textContent='факт '+pf.reduce((s,p)=>s+(p.fact||0),0)+' из '+pf.reduce((s,p)=>s+(p.plan||0),0);
+  new Chart(cv.getContext('2d'),{
+    type:'bar',
     data:{
-      labels:HF_TTF_MONTHS.labels,
+      labels:pf.map(p=>p.name.split(' ')[0]),
       datasets:[
-        {
-          label:'TTF',
-          data:HF_TTF_MONTHS.data,
-          borderColor:'#F04438',
-          backgroundColor:'rgba(240,68,56,.08)',
-          fill:true,tension:0.4,
-          pointRadius:5,
-          pointBackgroundColor:HF_TTF_MONTHS.data.map(v=>v>60?'#F04438':v>40?'#F79009':'#12B76A'),
-          pointBorderColor:'#fff',pointBorderWidth:2,
-          borderWidth:2,
-          order:1,
-        },
-        {
-          label:'Цель',
-          data:HF_TTF_MONTHS.labels.map(()=>30),
-          borderColor:'#12B76A',
-          borderWidth:1.5,
-          borderDash:[5,4],
-          pointRadius:0,
-          fill:false,
-          tension:0,
-          order:2,
-        }
+        {label:'План',data:pf.map(p=>p.plan),backgroundColor:'#E5E7EB',borderRadius:5},
+        {label:'Факт',data:pf.map(p=>p.fact),backgroundColor:'#3B6FE0',borderRadius:5},
       ]
     },
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{...TT,callbacks:{
-          label:c=>c.dataset.label==='Цель'?` Цель: 30 дней`:[` TTF: ${c.raw} дней`,`Закрыто: ${HF_TTF_MONTHS.counts[c.dataIndex]} вакансий`]
-        }},
-      },
+      plugins:{legend:{labels:{font:{size:11},boxWidth:10,usePointStyle:true}},
+        tooltip:{...TT,callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}`}}},
       scales:{
         x:{grid:{display:false},border:{display:false},ticks:{color:'#9CA3AF',font:{size:11}}},
-        y:{grid:{color:'#F3F4F6'},border:{display:false,dash:[3,3]},ticks:{color:'#9CA3AF',font:{size:11},callback:v=>v+'д'},min:0},
+        y:{grid:{color:'#F3F4F6'},border:{display:false},ticks:{color:'#9CA3AF',font:{size:11}},beginAtZero:true},
       },
       animation:{duration:800,easing:'easeOutCubic'},
     }

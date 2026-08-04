@@ -288,7 +288,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <!-- Dynamic period pills -->
     <div class="period-pills" id="period-pills"></div>
     <div class="bar-sep"></div>
-    <span style="font-size:11px;color:var(--micro);white-space:nowrap;flex-shrink:0">Обновлено: 28.07.2026</span>
+    <span style="font-size:11px;color:var(--micro);white-space:nowrap;flex-shrink:0">Обновлено: 04.08.2026</span>
   </div>
 </div>
 
@@ -655,69 +655,59 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:5px;background:#22BBD2;flex-shrink:0">
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" fill="white"/><circle cx="5" cy="5" r="2" fill="#22BBD2"/></svg>
       </span>
-      Данные Huntflow
+      Аналитика рекрутмента (Хантфлоу)
     </span>
     <div class="div-line"></div>
-    <span style="font-size:10px;font-weight:600;color:var(--micro);white-space:nowrap">17 511 кандидатов в базе</span>
+    <span style="font-size:10px;font-weight:600;color:var(--micro);white-space:nowrap" id="hf-updated">обновляется еженощно</span>
   </div>
 
   <!-- Huntflow KPIs -->
   <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px" id="hf-kpi-row">
     <div class="kpi-card">
-      <div class="kpi-lbl">Вакансий всего</div>
-      <div class="kpi-val" id="hf-v-total">60</div>
-      <div class="kpi-sub">19 откр · 38 закр · 3 пауза</div>
+      <div class="kpi-lbl">Вакансий в Хантфлоу</div>
+      <div class="kpi-val" id="hf-v-total">—</div>
+      <div class="kpi-sub" id="hf-v-total-sub"></div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-lbl">Среднее TTF</div>
-      <div class="kpi-val" style="color:#F04438" id="hf-v-ttf">63.8д</div>
-      <div style="margin-top:4px"><span class="delta down">↑ тренд растёт</span></div>
-      <div class="kpi-sub">медиана 55д</div>
+      <div class="kpi-lbl">TTO медиана (офферы)</div>
+      <div class="kpi-val" id="hf-v-tto">—</div>
+      <div class="kpi-sub" id="hf-v-tto-sub"></div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-lbl">Самая старая</div>
-      <div class="kpi-val" style="color:#F04438">166д</div>
-      <div class="kpi-sub">DevOps / Backend / Frontend</div>
+      <div class="kpi-lbl">Самая старая открытая</div>
+      <div class="kpi-val" style="color:#F04438" id="hf-v-oldest">—</div>
+      <div class="kpi-sub" id="hf-v-oldest-sub"></div>
     </div>
     <div class="kpi-card">
       <div class="kpi-lbl">Офферов выставлено</div>
-      <div class="kpi-val">28</div>
-      <div class="kpi-sub">принято: 35 (с прошлых)</div>
+      <div class="kpi-val" id="hf-v-offers">—</div>
+      <div class="kpi-sub" id="hf-v-offers-sub"></div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-lbl">На паузе</div>
-      <div class="kpi-val" style="color:var(--warning)">3</div>
-      <div class="kpi-sub">Тех. писатель · Рук-ли · PM</div>
+      <div class="kpi-lbl">Интервью в июле</div>
+      <div class="kpi-val" id="hf-v-int">—</div>
+      <div class="kpi-sub" id="hf-v-int-sub"></div>
     </div>
   </div>
 
-  <!-- Huntflow row 1: Funnel + TTF trend -->
+  <!-- Huntflow row 1: Funnel + план-факт -->
   <div class="grid-2 sec">
     <!-- Воронка -->
     <div class="card p20">
       <div class="ch">
-        <span class="lbl mb0">Воронка подбора (текущие кандидаты)</span>
-        <span class="badge">17 511 в базе</span>
+        <span class="lbl mb0">Воронка подбора</span>
+        <span class="badge" id="hf-funnel-badge">апрель → сегодня</span>
       </div>
       <div id="hf-funnel"></div>
     </div>
-    <!-- TTF trend -->
+    <!-- План-факт интервью -->
     <div class="card p20">
       <div class="ch">
-        <span class="lbl mb0">Динамика TTF по месяцам</span>
-        <span class="badge" style="background:#FEE4E2;color:#F04438">⚠ растёт</span>
+        <span class="lbl mb0">Интервью с рекрутером — план/факт августа</span>
+        <span class="badge" id="hf-pf-badge"></span>
       </div>
       <div style="height:200px;position:relative"><canvas id="ch-ttf"></canvas></div>
-      <div style="display:flex;gap:16px;margin-top:10px;align-items:flex-end">
-        <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--micro)">Янв</div><div style="font-size:15px;font-weight:800;color:var(--success)">28д</div></div>
-        <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--micro)">Фев</div><div style="font-size:15px;font-weight:800;color:var(--success)">30д</div></div>
-        <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--micro)">Мар</div><div style="font-size:15px;font-weight:800;color:var(--warning)">58д</div></div>
-        <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--micro)">Апр</div><div style="font-size:15px;font-weight:800;color:var(--danger)">67д</div></div>
-        <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--micro)">Май</div><div style="font-size:15px;font-weight:800;color:var(--danger)">75д</div></div>
-        <div style="margin-left:auto;padding-bottom:2px">
-          <span style="font-size:11px;font-weight:700;color:#F04438;background:#FEE4E2;border-radius:6px;padding:3px 9px">×2.7 к январю</span>
-        </div>
-      </div>
+      <div style="font-size:11px;color:var(--micro);margin-top:10px">План — месячная ёмкость рекрутёра; факт — проведённые интервью с начала месяца.</div>
     </div>
   </div>
 

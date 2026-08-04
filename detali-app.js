@@ -1051,14 +1051,19 @@ function initHuntflowCharts(){
         <div style="height:180px;position:relative"><canvas id="ch-rsw-${idx}"></canvas></div>`;
       rsGrid.appendChild(card);
       const get=(w,k)=>(rsw[nm][String(w)]||{})[k]||0;
+      // хвостовые нули после последней активной недели → обрыв линии (не падаем в ноль)
+      const trim=arr=>{
+        let last=-1; arr.forEach((v,i)=>{ if(v) last=i; });
+        return arr.map((v,i)=> i>last ? null : v);
+      };
       new Chart(card.querySelector('canvas').getContext('2d'),{
         type:'line',
         data:{
           labels:allWeeks.map(w=>'Нед. '+w),
           datasets:[
-            {label:'С HR',data:allWeeks.map(w=>get(w,'rek')),borderColor:'#3B6FE0',backgroundColor:'#3B6FE0',tension:.35,pointRadius:3,borderWidth:2.2,fill:false},
-            {label:'Техническое',data:allWeeks.map(w=>get(w,'tech')),borderColor:'#F79009',backgroundColor:'#F79009',tension:.35,pointRadius:3,borderWidth:2.2,fill:false},
-            {label:'С заказчиком',data:allWeeks.map(w=>get(w,'cust')),borderColor:'#10B981',backgroundColor:'#10B981',tension:.35,pointRadius:3,borderWidth:2.2,fill:false},
+            {label:'С HR',data:trim(allWeeks.map(w=>get(w,'rek'))),borderColor:'#3B6FE0',backgroundColor:'#3B6FE0',tension:.35,pointRadius:3,borderWidth:2.2,fill:false},
+            {label:'Техническое',data:trim(allWeeks.map(w=>get(w,'tech'))),borderColor:'#F79009',backgroundColor:'#F79009',tension:.35,pointRadius:3,borderWidth:2.2,fill:false},
+            {label:'С заказчиком',data:trim(allWeeks.map(w=>get(w,'cust'))),borderColor:'#10B981',backgroundColor:'#10B981',tension:.35,pointRadius:3,borderWidth:2.2,fill:false},
           ]
         },
         options:{

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="auth-gate.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Executive · Рекрутинг — Плати по миру</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F2F3F7; --card:#FFFFFF;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-hover:0 4px 16px rgba(0,0,0,.1),0 2px 4px rgba(0,0,0,.06);
+  --primary:#3B6FE0; --primary-light:#EBF1FD;
+  --success:#12B76A; --success-light:#DCFAE6;
+  --warning:#F79009; --warning-light:#FEF6E7;
+  --danger:#F04438;  --danger-light:#FEE4E2;
+  --border:#E5E7EB; --text:#0A0B0D; --muted:#6B7280; --micro:#9CA3AF; --radius:14px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 48px}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(242,243,247,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:12px 24px}
+.topbar-in{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-size:16px;font-weight:800;letter-spacing:-.2px}
+.brand .accent{color:var(--primary)}
+.tag{font-size:11px;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--border);padding:3px 10px;border-radius:20px}
+.tag.live{color:var(--success);border-color:var(--success-light);background:var(--success-light)}
+.spacer{flex:1}
+.tabs{display:flex;gap:3px;background:#EBEBF0;border-radius:9px;padding:3px}
+.tab{border:none;background:transparent;font-family:inherit;font-size:12px;font-weight:600;color:var(--muted);padding:6px 13px;border-radius:7px;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center}
+.tab.active{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tab:not(.active):hover{color:var(--text)}
+.main{max-width:1280px;margin:0 auto;padding:18px 24px 0}
+.section-cap{display:flex;align-items:baseline;gap:10px;margin:2px 0 12px}
+.section-cap h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text)}
+.section-cap .hint{font-size:11.5px;color:var(--micro)}
+.lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--micro)}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:1060px){.kpi-row{grid-template-columns:repeat(6,1fr)}}
+@media(max-width:560px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+.kpi-card{background:var(--card);border-radius:var(--radius);padding:14px 14px 12px;box-shadow:var(--shadow);transition:box-shadow .18s;position:relative;overflow:hidden}
+.kpi-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--micro)}
+.kpi-card.s-success::before{background:var(--success)}
+.kpi-card.s-warning::before{background:var(--warning)}
+.kpi-card.s-danger::before{background:var(--danger)}
+.kpi-card:hover{box-shadow:var(--shadow-hover)}
+.kpi-lbl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--micro);margin-bottom:7px;line-height:1.35;min-height:25px}
+.kpi-val{font-size:24px;font-weight:800;line-height:1;color:var(--text);margin-bottom:5px}
+.kpi-val .u{font-size:14px;font-weight:700;color:var(--muted)}
+.delta{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:20px}
+.up{background:var(--success-light);color:var(--success)}
+.down{background:var(--danger-light);color:var(--danger)}
+.neutral{background:#F3F4F6;color:var(--muted)}
+.kpi-sub{font-size:10.5px;color:var(--micro);margin-top:6px;line-height:1.4}
+.kpi-tgt{font-size:10.5px;font-weight:600;margin-top:7px;display:flex;align-items:center;gap:5px;color:var(--muted)}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--micro)}
+.dot.success{background:var(--success)} .dot.warning{background:var(--warning)} .dot.danger{background:var(--danger)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;transition:box-shadow .18s}
+.card:hover{box-shadow:var(--shadow-hover)}
+.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.ch h3{font-size:13.5px;font-weight:700}
+.badge{font-size:11px;font-weight:600;color:var(--muted);background:#F3F4F6;padding:2px 9px;border-radius:20px}
+.chart-box{position:relative;height:240px}
+.alert{display:flex;gap:12px;padding:13px 15px;border-radius:12px;margin-bottom:9px;background:#fff;box-shadow:var(--shadow);border-left:4px solid var(--danger)}
+.alert:last-child{margin-bottom:0}
+.alert.warn{border-color:var(--warning)} .alert.info{border-color:var(--primary)} .alert.ok{border-color:var(--success)}
+.alert-ic{width:26px;height:26px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;background:var(--danger-light);color:var(--danger)}
+.alert.warn .alert-ic{background:var(--warning-light);color:var(--warning)}
+.alert.info .alert-ic{background:var(--primary-light);color:var(--primary)}
+.alert.ok .alert-ic{background:var(--success-light);color:var(--success)}
+.alert-t{font-size:13px;font-weight:700;margin-bottom:2px}
+.alert-x{font-size:12px;color:var(--muted);line-height:1.45}
+/* воронка */
+.fun-row{margin-bottom:11px}
+.fun-top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px}
+.fun-top .fn{font-weight:600}
+.fun-top .fv{font-weight:700;color:var(--muted)}
+.fun-bar{height:22px;border-radius:6px;background:var(--primary-light);position:relative;overflow:hidden}
+.fun-bar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--primary);border-radius:6px;min-width:2px}
+.fun-cr{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 8px;border-radius:20px;background:#F3F4F6;color:var(--muted)}
+/* рекрутёры */
+.rec-row{padding:10px 0;border-top:1px solid var(--border)}
+.rec-row:first-of-type{border-top:none}
+.rec-top{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;margin-bottom:5px}
+.rec-top .rn{font-weight:600}
+.rec-top .rv{font-weight:700}
+.rec-bar{height:8px;border-radius:5px;background:#E5E7EB;overflow:hidden}
+.rec-bar .f{height:100%;border-radius:5px;background:var(--primary)}
+.rec-sub{display:flex;justify-content:space-between;font-size:10.5px;color:var(--micro);margin-top:4px}
+/* таблицы */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--micro);padding:6px 8px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid #F3F4F6;vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.age{font-weight:700}
+.age.warn{color:var(--warning)} .age.bad{color:var(--danger)}
+.pill{display:inline-block;font-size:10px;font-weight:700;padding:1px 8px;border-radius:20px;white-space:nowrap}
+.pill.ok{background:var(--success-light);color:var(--success)}
+.pill.wait{background:var(--warning-light);color:var(--warning)}
+.pill.mut{background:#F3F4F6;color:var(--muted)}
+.foot{max-width:1280px;margin:16px auto 0;padding:0 24px;font-size:11px;color:var(--micro);line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand">HR&nbsp;Executive · <span class="accent">Плати по миру</span></div>
+    <span class="tag live">● данные на <span class="js-asof">…</span> · Huntflow · обновление ежедневно 10:00</span>
+    <div class="spacer"></div>
+    <div class="tabs">
+      <a class="tab" href="index.html">Обзор</a>
+      <a class="tab active" href="rekruting.html">Рекрутинг</a>
+      <a class="tab" href="detali.html">Детали</a>
+      <a class="tab" href="struktura.html">Структура 2.0</a>
+      <a class="tab" href="stoimost.html">Стоимость</a>
+      <a class="tab" href="backlog.html">Гипотезы</a>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="section-cap">
+    <h2>Ключевые показатели рекрутинга</h2>
+    <span class="hint">текущий месяц · сравнение с прошлым · светофор к цели</span>
+  </div>
+  <div class="kpi-row" id="kpi-row"></div>
+
+  <div class="section-cap">
+    <h2>Требует внимания</h2>
+    <span class="hint">алерты считаются автоматически из данных Huntflow</span>
+  </div>
+  <div style="margin-bottom:14px" id="alerts"></div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="ch"><h3>Воронка найма</h3><span class="badge" id="fun-badge">апрель → сегодня</span></div>
+      <div id="funnel"></div>
+      <div class="kpi-sub" style="margin-top:8px">Конверсия — доля кандидатов, дошедших до следующего этапа. После интервью HR кандидат идёт на тех-интервью и/или сразу к заказчику, поэтому ветки считаются от этапа «Интервью HR».</div>
+    </div>
+    <div class="card">
+      <div class="ch"><h3>Закрытия вакансий и скорость</h3><span class="badge">по месяцам 2026</span></div>
+      <div class="chart-box"><canvas id="ch-close"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="ch"><h3 id="int-title">Интервью по дням</h3><span class="badge" id="int-badge"></span></div>
+      <div class="chart-box"><canvas id="ch-int"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><h3>Офферы: выставлено и принято</h3><span class="badge">по месяцам 2026</span></div>
+      <div class="chart-box"><canvas id="ch-offer"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="ch"><h3 id="rec-title">Рекрутёры: план-факт интервью</h3><span class="badge" id="rec-badge"></span></div>
+      <div id="recruiters"></div>
+      <div class="kpi-sub" style="margin-top:8px">Полоса — выполнение плана на сегодня (норма/день × рабочие дни). Справа — факт и % плана месяца.</div>
+    </div>
+    <div class="card">
+      <div class="ch"><h3>Офферы — последние и в ожидании</h3><span class="badge" id="offer-badge"></span></div>
+      <div style="max-height:280px;overflow:auto">
+        <table id="tbl-offers">
+          <thead><tr><th>Кандидат</th><th>Вакансия</th><th>Выставлен</th><th>Статус</th><th class="num">До оффера</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="ch"><h3>Открытые вакансии</h3><span class="badge" id="vac-badge"></span></div>
+    <div style="overflow-x:auto">
+      <table id="tbl-vac">
+        <thead><tr><th>Вакансия</th><th>Рекрутёр</th><th>Открыта</th><th class="num">Дней в работе</th><th class="num">Кандидатов в работе</th><th class="num" id="th-int">Интервью</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="kpi-sub" id="paused-line" style="margin-top:10px"></div>
+  </div>
+
+</div>
+
+<div class="foot">
+  Рекрутинг · источник — Huntflow (аккаунт «Глобал Пэй») через таблицу «Аналитика Хантфлоу»; таблица обновляется из Huntflow API ежедневно ~9:00, дашборд — в 10:00.<br>
+  Определения: <b>срок до оффера (TTO)</b> — дни от входа кандидата в воронку до выставления оффера; <b>TTF</b> — дни от открытия вакансии до закрытия. <b>Offer acceptance</b> — доля принятых офферов среди выставленных за последние 60 дней (офферы младше 5 дней не учитываются — по ним ещё ждём ответ). Интервью считаются по календарным событиям Huntflow — встречи без события в календаре не видны. Воронка — с апреля 2026 (начало ведения Huntflow).
+</div>
+
+<script>
+const CLR={p:'#3B6FE0',ok:'#12B76A',warn:'#F79009',bad:'#F04438',cyan:'#06B6D4',mut:'#9CA3AF'};
+const TT={backgroundColor:'#0A0B0D',padding:10,cornerRadius:8,titleFont:{family:'Inter',size:12,weight:'700'},bodyFont:{family:'Inter',size:12},displayColors:false};
+const FONT={family:'Inter',size:11};
+Chart.defaults.font.family='Inter';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtD=s=>{const p=String(s||'').split('-');return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:s;};
+
+fetch('rekruting_data.json?cb='+Date.now()).then(r=>r.json()).then(render)
+  .catch(e=>{document.getElementById('alerts').innerHTML=
+    '<div class="alert"><div class="alert-ic">!</div><div><div class="alert-t">Не удалось загрузить данные</div><div class="alert-x">Файл rekruting_data.json недоступен. Обновите страницу позже.</div></div></div>';});
+
+function kpiCard(lbl,val,unit,delta,deltaCls,tgt,tgtDot,sub,status){
+  return `<div class="kpi-card ${status?'s-'+status:''}">
+    <div class="kpi-lbl">${lbl}</div>
+    <div class="kpi-val">${val}${unit?`<span class="u">${unit}</span>`:''}</div>
+    ${delta?`<span class="delta ${deltaCls||'neutral'}">${delta}</span>`:''}
+    ${tgt?`<div class="kpi-tgt"><span class="dot ${tgtDot||''}"></span>${tgt}</div>`:''}
+    ${sub?`<div class="kpi-sub">${sub}</div>`:''}
+  </div>`;
+}
+
+const MPREP={'январь':'январе','февраль':'феврале','март':'марте','апрель':'апреле','май':'мае','июнь':'июне','июль':'июле','август':'августе','сентябрь':'сентябре','октябрь':'октябре','ноябрь':'ноябре','декабрь':'декабре'};
+function render(d){
+  document.querySelectorAll('.js-asof').forEach(el=>el.textContent=fmtD(d.as_of));
+  const k=d.kpi, cm=d.cur_month.toLowerCase(), pm=d.prev_month.toLowerCase();
+  const cmP=MPREP[cm]||cm;
+
+  // ── KPI ──
+  const oldestAge=k.oldest?k.oldest.age:0;
+  const agingStatus=oldestAge>90?'danger':oldestAge>45?'warning':'success';
+  const accStatus=k.acc_rate_60d==null?'':k.acc_rate_60d>=80?'success':k.acc_rate_60d>=65?'warning':'danger';
+  const ttoStatus=k.tto_med_60d==null?'':k.tto_med_60d<=21?'success':'warning';
+  document.getElementById('kpi-row').innerHTML=
+    kpiCard('Вакансий в работе',k.open,'',`+${k.paused} на паузе`, 'neutral',
+      `${k.aged_45} старше 45 дней`, k.aged_45>5?'danger':k.aged_45>0?'warning':'success','', k.aged_45>5?'danger':k.aged_45>0?'warning':'success')
+    +kpiCard(`Закрыто в ${esc(cmP)}`,k.closed_cur,'',`${pm}: ${k.closed_prev}`,'neutral',
+      '', '', `с начала года: ${k.closed_ytd}`, '')
+    +kpiCard(`Офферы в ${esc(cmP)}`,k.offers_cur,'',`${pm}: ${k.offers_prev}`,'neutral',
+      '', '', `в ожидании ответа: ${d.offers_pending.length}`, '')
+    +kpiCard('Offer acceptance',k.acc_rate_60d==null?'—':k.acc_rate_60d,k.acc_rate_60d==null?'':'%',
+      `${k.acc_n_60d} офферов / 60 дн`, 'neutral', 'цель ≥ 80%', accStatus, '', accStatus)
+    +kpiCard('Срок до оффера, медиана',k.tto_med_60d==null?'—':String(k.tto_med_60d).replace('.',','),'д',
+      'по принятым / 60 дн','neutral','цель ≤ 21д', ttoStatus,'',ttoStatus)
+    +kpiCard('Старейшая вакансия',oldestAge,'д','', '', 'цель ≤ 45д', agingStatus,
+      k.oldest?esc(k.oldest.vac):'', agingStatus);
+
+  // ── Алерты ──
+  const IC={danger:'!',warn:'▲',info:'i',ok:'✓'};
+  document.getElementById('alerts').innerHTML=d.alerts.map(a=>
+    `<div class="alert ${a.level==='danger'?'':a.level}"><div class="alert-ic">${IC[a.level]||'i'}</div>
+     <div><div class="alert-t">${esc(a.title)}</div><div class="alert-x">${esc(a.text)}</div></div></div>`).join('');
+
+  // ── Воронка ──
+  const stages=[];
+  if(d.funnel.length){
+    stages.push({name:'Оценка рекрутером',n:d.funnel[0].in,cr:null});
+    d.funnel.forEach(f=>stages.push({name:f.stage.split('→')[1].trim(),n:f.out,cr:f.cr}));
+  }
+  const maxN=Math.max(...stages.map(s=>s.n),1);
+  document.getElementById('funnel').innerHTML=stages.map(s=>{
+    const w=Math.max(2,Math.round(Math.sqrt(s.n/maxN)*100));
+    return `<div class="fun-row">
+      <div class="fun-top"><span class="fn">${esc(s.name)}</span>
+        <span class="fv">${s.n.toLocaleString('ru-RU')}${s.cr!=null?` &nbsp;<span class="fun-cr">${s.cr}%</span>`:''}</span></div>
+      <div class="fun-bar"><div class="fill" style="width:${w}%"></div></div></div>`;
+  }).join('');
+
+  // ── Закрытия + TTF ──
+  new Chart(document.getElementById('ch-close'),{
+    data:{labels:d.closures.map(c=>c.label),datasets:[
+      {type:'bar',label:'Закрыто вакансий',data:d.closures.map(c=>c.n),backgroundColor:CLR.p,borderRadius:6,order:2,yAxisID:'y'},
+      {type:'line',label:'Срок закрытия (TTF), медиана дней',data:d.closures.map(c=>c.ttf_med),borderColor:CLR.warn,borderWidth:2.2,pointRadius:3,pointBackgroundColor:CLR.warn,tension:.3,order:1,yAxisID:'y2'}
+    ]},
+    options:{maintainAspectRatio:false,plugins:{legend:{labels:{font:FONT,boxWidth:10,usePointStyle:true}},tooltip:TT},
+      scales:{y:{beginAtZero:true,grid:{color:'#F3F4F6'},ticks:{font:FONT,precision:0}},
+              y2:{beginAtZero:true,position:'right',grid:{display:false},ticks:{font:FONT,callback:v=>v+'д'}},
+              x:{grid:{display:false},ticks:{font:FONT}}}}
+  });
+
+  // ── Интервью по дням текущего месяца ──
+  document.getElementById('int-title').textContent=`Интервью по дням — ${d.cur_month.toLowerCase()}`;
+  const mtot=d.interview_months.map(m=>`${m.label} ${m.rek+m.teh+m.zak}`).join(' · ');
+  document.getElementById('int-badge').textContent=mtot;
+  const days=d.interview_days;
+  const todayD=parseInt(String(d.as_of).split('-')[2],10);
+  const labels=days.map(x=>x.d);
+  new Chart(document.getElementById('ch-int'),{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'С рекрутером',data:days.map(x=>x.rek),backgroundColor:CLR.p,borderRadius:4,stack:'s'},
+      {label:'Технические',data:days.map(x=>x.teh),backgroundColor:CLR.cyan,borderRadius:4,stack:'s'},
+      {label:'С заказчиком',data:days.map(x=>x.zak),backgroundColor:CLR.ok,borderRadius:4,stack:'s'}
+    ]},
+    options:{maintainAspectRatio:false,
+      plugins:{legend:{labels:{font:FONT,boxWidth:10,usePointStyle:true}},
+        tooltip:{...TT,callbacks:{title:i=>`${i[0].label} ${d.cur_month.toLowerCase()}`+(parseInt(i[0].label)>todayD?' · запланировано':'')}}},
+      scales:{y:{beginAtZero:true,stacked:true,grid:{color:'#F3F4F6'},ticks:{font:FONT,precision:0}},
+              x:{stacked:true,grid:{display:false},ticks:{font:FONT}}}}
+  });
+
+  // ── Офферы по месяцам ──
+  new Chart(document.getElementById('ch-offer'),{
+    type:'bar',
+    data:{labels:d.offer_months.map(m=>m.label),datasets:[
+      {label:'Выставлено',data:d.offer_months.map(m=>m.made),backgroundColor:CLR.p,borderRadius:6},
+      {label:'Принято',data:d.offer_months.map(m=>m.acc),backgroundColor:CLR.ok,borderRadius:6}
+    ]},
+    options:{maintainAspectRatio:false,plugins:{legend:{labels:{font:FONT,boxWidth:10,usePointStyle:true}},
+      tooltip:{...TT,callbacks:{afterBody:i=>{const m=d.offer_months[i[0].dataIndex];
+        return m.made?`acceptance: ${Math.round(m.acc/m.made*100)}%`+(m.tto_med?` · TTO медиана ${m.tto_med}д`:''):'';}}}},
+      scales:{y:{beginAtZero:true,grid:{color:'#F3F4F6'},ticks:{font:FONT,precision:0}},
+              x:{grid:{display:false},ticks:{font:FONT}}}}
+  });
+
+  // ── Рекрутёры ──
+  document.getElementById('rec-title').textContent=`Рекрутёры: план-факт интервью — ${d.cur_month.toLowerCase()}`;
+  document.getElementById('rec-badge').textContent=`план на сегодня и на месяц`;
+  document.getElementById('recruiters').innerHTML=d.recruiters.map(r=>{
+    const pct=r.plan_today?Math.min(100,Math.round(r.fact/r.plan_today*100)):null;
+    const clr=pct==null?CLR.mut:pct>=100?CLR.ok:pct>=70?CLR.p:pct>=40?CLR.warn:CLR.bad;
+    return `<div class="rec-row">
+      <div class="rec-top"><span class="rn">${esc(r.name)}</span>
+        <span class="rv">${r.fact}${r.plan_today?` / ${Math.round(r.plan_today)} на сегодня`:''}</span></div>
+      <div class="rec-bar"><div class="f" style="width:${pct==null?0:pct}%;background:${clr}"></div></div>
+      <div class="rec-sub"><span>норма ${r.norm?Math.round(r.norm):'—'}/день</span>
+        <span>план месяца ${r.plan_month?Math.round(r.plan_month):'—'} · выполнено ${r.pct_month!=null?r.pct_month+'%':'—'}</span></div>
+    </div>`;}).join('')||'<div class="kpi-sub">Нет данных плана на текущий месяц.</div>';
+
+  // ── Офферы таблица ──
+  document.getElementById('offer-badge').textContent=`ждём ответа: ${d.offers_pending.length}`;
+  document.querySelector('#tbl-offers tbody').innerHTML=d.offers_recent.map(o=>{
+    const st=o.acc?`<span class="pill ok">принят ${o.acc}</span>`:`<span class="pill wait">ожидание</span>`;
+    return `<tr><td>${esc(o.fio)}</td><td>${esc(o.vac)}</td><td>${o.made}</td><td>${st}</td>
+      <td class="num">${o.tto!=null?Math.round(o.tto)+'д':'—'}</td></tr>`;}).join('');
+
+  // ── Открытые вакансии ──
+  document.getElementById('vac-badge').textContent=`${d.open_vacancies.length} открыты · ${d.paused.length} на паузе`;
+  document.getElementById('th-int').textContent=`Интервью в ${cmP}`;
+  document.querySelector('#tbl-vac tbody').innerHTML=d.open_vacancies.map(v=>{
+    const ac=v.age>90?'bad':v.age>45?'warn':'';
+    const nm=esc(v.vac)+(v.pri?` <span class="pill mut">${esc(v.pri)}</span>`:'')
+      +(v.cand?` <span class="pill ok" title="кандидат с принятым оффером">${esc(v.cand)}</span>`:'');
+    return `<tr><td>${nm}</td><td>${esc(v.rec)||'—'}</td><td>${v.opened}</td>
+      <td class="num"><span class="age ${ac}">${v.age!=null?v.age:'—'}</span></td>
+      <td class="num">${v.in_work!=null?v.in_work:'—'}</td>
+      <td class="num">${v.int_month}</td></tr>`;}).join('');
+  document.getElementById('paused-line').innerHTML=d.paused.length?
+    '<b>На паузе:</b> '+d.paused.map(esc).join(' · '):'';
+}
+</script>
+</body>
+</html>

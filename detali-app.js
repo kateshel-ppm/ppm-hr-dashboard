@@ -44,6 +44,7 @@ const DEPT_COLORS = {
 // Department breakdown (from employees sheet, 130 active — актуально 02.06.2026)
 // ── Задачи на неделю (из Google Sheets, обновлено 09.06.2026) ──
 const WEEKLY_TASKS = __D.WEEKLY_TASKS;
+const WEEK_HIRES = __D.WEEK_HIRES || [];
 
 // обновлено из Google Sheets 16.06.2026 (нед. 24)
 const DEPT_BREAKDOWN = __D.DEPT_BREAKDOWN;
@@ -474,22 +475,20 @@ function renderWeeklyTasks(){
 
   // подписи недель — из данных (обновляются вместе с задачами)
   const dl=document.getElementById('wt-done-lbl'), fl=document.getElementById('wt-focus-lbl');
-  if(dl && WEEKLY_TASKS.done.week)  dl.textContent = WEEKLY_TASKS.done.week + ' — итоги';
+  if(dl) dl.textContent = 'Выходы недели' + (WEEK_HIRES.length ? ' · ' + WEEK_HIRES.length : '');
   if(fl && WEEKLY_TASKS.focus.week) fl.textContent = WEEKLY_TASKS.focus.week + ' — план';
 
-  // Итоги (выполнено)
+  // Выходы недели: имя + должность
   const doneEl = document.getElementById('tasks-done');
-  if(doneEl) doneEl.innerHTML = WEEKLY_TASKS.done.items.map(t => {
+  if(doneEl) doneEl.innerHTML = WEEK_HIRES.length ? WEEK_HIRES.map(p => {
     return `<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #F3F4F6">
-      <div style="width:20px;height:20px;border-radius:50%;background:#DCFAE6;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">
-        <span style="font-size:11px;line-height:1">\u2713</span>
-      </div>
+      <div style="width:20px;height:20px;border-radius:50%;background:#DCFAE6;color:#12B76A;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-weight:800;font-size:13px">+</div>
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:500;color:var(--text);line-height:1.4">${t.task}</div>
-        ${t.result ? `<div style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4">\u2192 ${t.result}</div>` : ''}
+        <div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.4">${p.name}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">${p.role||'—'}${p.date?' · '+p.date:''}</div>
       </div>
     </div>`;
-  }).join('');
+  }).join('') : `<div style="padding:14px 0;font-size:12.5px;color:var(--micro)">За эту неделю выходов не было.</div>`;
 
   // Фокусы
   const focusEl = document.getElementById('tasks-focus');

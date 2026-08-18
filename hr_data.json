@@ -71,22 +71,14 @@
       "Medium": 2
     },
     "oldest": {
-      "vac": "Support Engineer L3 / Junior Devops",
-      "dept": "Забота",
+      "vac": "Бизнес-ассистент",
+      "dept": "Управление",
       "pri": "Critical",
-      "rec": "Саша",
-      "open": "18.06",
-      "age": 61
+      "rec": "Соня",
+      "open": "20.7",
+      "age": 29
     },
     "top_aging": [
-      {
-        "vac": "Support Engineer L3 / Junior Devops",
-        "dept": "Забота",
-        "pri": "Critical",
-        "rec": "Саша",
-        "open": "18.06",
-        "age": 61
-      },
       {
         "vac": "Бизнес-ассистент",
         "dept": "Управление",
@@ -126,6 +118,14 @@
         "rec": "София, Лена",
         "open": "29.07",
         "age": 20
+      },
+      {
+        "vac": "Team Lead",
+        "dept": "ИТ",
+        "pri": "Critical",
+        "rec": "София, Лена",
+        "open": "31.07",
+        "age": 18
       }
     ],
     "tto_median": 8.0,

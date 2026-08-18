@@ -1,11 +1,11 @@
 {
   "as_of": "2026-08-18",
   "headcount": {
-    "active": 149,
+    "active": 147,
     "plan": 157,
-    "staffing_pct": 94.9,
-    "managers": 35,
-    "ic": 114,
+    "staffing_pct": 93.6,
+    "managers": 34,
+    "ic": 113,
     "on_probation": 29,
     "by_dept": {
       "Забота": 63,
@@ -19,12 +19,11 @@
       "АХО": 3,
       "Рефералы": 3,
       "Продажи": 2,
-      "MAZE": 2,
       "PR": 2,
       "ЮО": 1
     },
     "by_format": {
-      "офис": 64,
+      "офис": 62,
       "гибрид": 13,
       "удаленно": 72
     }
@@ -32,18 +31,18 @@
   "hires_by_month": {
     "1": 4,
     "2": 16,
-    "3": 17,
+    "3": 16,
     "4": 28,
     "5": 21,
     "6": 6,
-    "7": 15,
+    "7": 14,
     "8": 9
   },
   "turnover": {
     "ytd_count": 24,
     "voluntary": null,
     "involuntary": null,
-    "rate_simple_pct": 16.1,
+    "rate_simple_pct": 16.3,
     "early_probation": 14,
     "by_month": {
       "3": 1,
@@ -66,9 +65,9 @@
     },
     "open": 10,
     "open_by_priority": {
-      "Critical": 6,
-      "High": 2,
-      "Medium": 2
+      "Critical": 4,
+      "High": 3,
+      "Medium": 3
     },
     "oldest": {
       "vac": "Бизнес-ассистент",

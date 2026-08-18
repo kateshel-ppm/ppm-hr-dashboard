@@ -484,8 +484,8 @@ function renderWeeklyTasks(){
     return `<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #F3F4F6">
       <div style="width:20px;height:20px;border-radius:50%;background:#DCFAE6;color:#12B76A;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-weight:800;font-size:13px">+</div>
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.4">${p.name}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">${p.role||'—'}${p.date?' · '+p.date:''}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.4">${p.role||'—'}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">${p.name}</div>
       </div>
     </div>`;
   }).join('') : `<div style="padding:14px 0;font-size:12.5px;color:var(--micro)">За эту неделю выходов не было.</div>`;

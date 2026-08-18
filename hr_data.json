@@ -65,14 +65,14 @@
     },
     "open": 10,
     "open_by_priority": {
-      "Critical": 4,
-      "High": 3,
-      "Medium": 3
+      "High": 4,
+      "Medium": 3,
+      "Critical": 3
     },
     "oldest": {
       "vac": "Бизнес-ассистент",
       "dept": "Управление",
-      "pri": "Critical",
+      "pri": "High",
       "rec": "Соня",
       "open": "20.7",
       "age": 29
@@ -81,7 +81,7 @@
       {
         "vac": "Бизнес-ассистент",
         "dept": "Управление",
-        "pri": "Critical",
+        "pri": "High",
         "rec": "Соня",
         "open": "20.7",
         "age": 29

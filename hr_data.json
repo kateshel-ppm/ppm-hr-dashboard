@@ -56,21 +56,21 @@
     }
   },
   "vacancies": {
-    "total_rows": 177,
+    "total_rows": 178,
     "status_counts": {
       "finished": 143,
-      "in progress": 18,
+      "in progress": 19,
       "отказ от оффера": 7,
       "freeze": 7,
       "увольнение на ис": 1,
       "принят оффер": 1
     },
-    "open": 18,
+    "open": 19,
     "open_by_priority": {
-      "Medium": 4,
-      "High": 5,
+      "Medium": 5,
+      "High": 4,
       "Critical": 8,
-      "Low": 1
+      "Low": 2
     },
     "oldest": {
       "vac": "Специалист отдела заботы",
@@ -88,14 +88,6 @@
         "rec": "Саша",
         "open": "23.04",
         "age": 131
-      },
-      {
-        "vac": "Manual QA",
-        "dept": "ИТ",
-        "pri": "Medium",
-        "rec": "Лена",
-        "open": "09.06",
-        "age": 84
       },
       {
         "vac": "Бизнес-ассистент",
@@ -128,6 +120,14 @@
         "rec": "София",
         "open": "27.7",
         "age": 36
+      },
+      {
+        "vac": "CTO",
+        "dept": "ИТ",
+        "pri": "Critical",
+        "rec": "Лена",
+        "open": "29.07",
+        "age": 34
       }
     ],
     "tto_median": 8.0,

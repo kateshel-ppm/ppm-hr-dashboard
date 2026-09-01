@@ -56,18 +56,18 @@
     }
   },
   "vacancies": {
-    "total_rows": 180,
+    "total_rows": 177,
     "status_counts": {
-      "finished": 133,
-      "in progress": 28,
-      "freeze": 10,
+      "finished": 143,
+      "in progress": 18,
       "отказ от оффера": 7,
+      "freeze": 7,
       "увольнение на ис": 1,
       "принят оффер": 1
     },
-    "open": 28,
+    "open": 18,
     "open_by_priority": {
-      "Medium": 14,
+      "Medium": 4,
       "High": 5,
       "Critical": 8,
       "Low": 1
@@ -131,10 +131,10 @@
       }
     ],
     "tto_median": 8.0,
-    "tto_mean": 15.7,
+    "tto_mean": 15.0,
     "tth_median": 13.0,
     "tth_mean": 19.6,
-    "offers_made_jo": 128,
+    "offers_made_jo": 127,
     "started": 139
   },
   "sources_top": {

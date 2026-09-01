@@ -1,98 +1,117 @@
 {
-  "as_of": "2026-08-18",
+  "as_of": "2026-09-01",
   "headcount": {
     "active": 147,
     "plan": 157,
     "staffing_pct": 93.6,
-    "managers": 34,
-    "ic": 113,
-    "on_probation": 29,
+    "managers": 33,
+    "ic": 114,
+    "on_probation": 26,
     "by_dept": {
-      "Забота": 63,
+      "Забота": 54,
       "ИТ": 27,
       "Маркетинг": 13,
       "Продукт": 9,
+      "Отдел контроля качества": 8,
       "HR": 8,
       "Партнеры": 7,
+      "Фин": 5,
       "АУП": 5,
-      "Фин": 4,
       "АХО": 3,
       "Рефералы": 3,
-      "Продажи": 2,
       "PR": 2,
+      "Продажи": 2,
       "ЮО": 1
     },
     "by_format": {
-      "офис": 62,
+      "офис": 61,
       "гибрид": 13,
-      "удаленно": 72
+      "удаленно": 73
     }
   },
   "hires_by_month": {
     "1": 4,
-    "2": 16,
+    "2": 17,
     "3": 16,
     "4": 28,
     "5": 21,
     "6": 6,
     "7": 14,
-    "8": 9
+    "8": 9,
+    "9": 1
   },
   "turnover": {
-    "ytd_count": 24,
+    "ytd_count": 26,
     "voluntary": null,
     "involuntary": null,
-    "rate_simple_pct": 16.3,
-    "early_probation": 14,
+    "rate_simple_pct": 17.7,
+    "early_probation": 16,
     "by_month": {
       "3": 1,
       "4": 5,
       "5": 7,
       "6": 3,
       "7": 6,
-      "8": 2
+      "8": 4
     }
   },
   "vacancies": {
-    "total_rows": 160,
+    "total_rows": 180,
     "status_counts": {
-      "finished": 129,
-      "in progress": 10,
+      "finished": 133,
+      "in progress": 28,
       "freeze": 10,
-      "отказ от оффера": 6,
-      "принят оффер": 4,
-      "увольнение на ис": 1
+      "отказ от оффера": 7,
+      "увольнение на ис": 1,
+      "принят оффер": 1
     },
-    "open": 10,
+    "open": 28,
     "open_by_priority": {
-      "High": 4,
-      "Medium": 3,
-      "Critical": 3
+      "Medium": 14,
+      "High": 5,
+      "Critical": 8,
+      "Low": 1
     },
     "oldest": {
-      "vac": "Бизнес-ассистент",
-      "dept": "Управление",
-      "pri": "High",
-      "rec": "Соня",
-      "open": "20.7",
-      "age": 29
+      "vac": "Специалист отдела заботы",
+      "dept": "Забота",
+      "pri": "Medium",
+      "rec": "Саша",
+      "open": "23.04",
+      "age": 131
     },
     "top_aging": [
+      {
+        "vac": "Специалист отдела заботы",
+        "dept": "Забота",
+        "pri": "Medium",
+        "rec": "Саша",
+        "open": "23.04",
+        "age": 131
+      },
+      {
+        "vac": "Manual QA",
+        "dept": "ИТ",
+        "pri": "Medium",
+        "rec": "Лена",
+        "open": "09.06",
+        "age": 84
+      },
       {
         "vac": "Бизнес-ассистент",
         "dept": "Управление",
         "pri": "High",
         "rec": "Соня",
         "open": "20.7",
-        "age": 29
+        "age": 43
       },
       {
         "vac": "DevSec",
         "dept": "ИТ",
-        "pri": "High",
+        "pri": "Critical",
         "rec": "Лена",
         "open": "27.07",
-        "age": 22
+        "age": 36
       },
       {
         "vac": "AI Product manager",
@@ -100,47 +119,31 @@
         "pri": "High",
         "rec": "София",
         "open": "27.07",
-        "age": 22
+        "age": 36
       },
       {
         "vac": "Product Analyst",
         "dept": "Продукт",
-        "pri": "Medium",
+        "pri": "High",
         "rec": "София",
         "open": "27.7",
-        "age": 22
-      },
-      {
-        "vac": "CTO",
-        "dept": "ИТ",
-        "pri": "Critical",
-        "rec": "София, Лена",
-        "open": "29.07",
-        "age": 20
-      },
-      {
-        "vac": "Team Lead",
-        "dept": "ИТ",
-        "pri": "Critical",
-        "rec": "София, Лена",
-        "open": "31.07",
-        "age": 18
+        "age": 36
       }
     ],
     "tto_median": 8.0,
     "tto_mean": 15.7,
     "tth_median": 13.0,
     "tth_mean": 19.6,
-    "offers_made_jo": 124,
-    "started": 129
+    "offers_made_jo": 128,
+    "started": 139
   },
   "sources_top": {
     "hh.ru": 66,
-    "реферал": 17,
+    "реферал": 25,
     "холодный поиск": 16,
-    "hh": 10,
-    "hh поиск": 4,
-    "кадровое агентство": 3,
-    "закрыта заказчиком": 1
+    "hh": 11,
+    "hh поиск": 5,
+    "хх": 4,
+    "кадровое агентство": 3
   }
 }

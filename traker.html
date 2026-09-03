@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="auth-gate.js"></script>
+<script src="secure-lib.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR · Трекер вакансий — Плати по миру</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F2F3F7;--card:#FFF;--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--shadow-hover:0 4px 16px rgba(0,0,0,.1);
+  --primary:#3B6FE0;--primary-light:#EBF1FD;--success:#12B76A;--success-light:#DCFAE6;--warning:#F79009;--warning-light:#FEF6E7;
+  --danger:#F04438;--danger-light:#FEE4E2;--border:#E5E7EB;--text:#0A0B0D;--muted:#6B7280;--micro:#9CA3AF;--radius:14px}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 48px}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(242,243,247,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:12px 24px}
+.topbar-in{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-size:16px;font-weight:800;letter-spacing:-.2px}.brand .accent{color:var(--primary)}
+.tag{font-size:11px;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--border);padding:3px 10px;border-radius:20px}
+.tag.live{color:var(--success);border-color:var(--success-light);background:var(--success-light)}
+.spacer{flex:1}
+.tabs{display:flex;gap:3px;background:#EBEBF0;border-radius:9px;padding:3px;flex-wrap:wrap}
+.tab{border:none;background:transparent;font-family:inherit;font-size:12px;font-weight:600;color:var(--muted);padding:6px 13px;border-radius:7px;cursor:pointer;white-space:nowrap;text-decoration:none}
+.tab.active{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tab:not(.active):hover{color:var(--text)}
+.main{max-width:1280px;margin:0 auto;padding:18px 24px 0}
+.section-cap{display:flex;align-items:baseline;gap:10px;margin:2px 0 12px}
+.section-cap h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.section-cap .hint{font-size:11.5px;color:var(--micro)}
+.kpi-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:900px){.kpi-row{grid-template-columns:repeat(5,1fr)}}
+.kpi-card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--micro)}
+.kpi-card.c::before{background:var(--danger)}.kpi-card.w::before{background:var(--warning)}.kpi-card.s::before{background:var(--success)}
+.kpi-lbl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--micro);margin-bottom:7px;min-height:24px}
+.kpi-val{font-size:26px;font-weight:800;line-height:1}.kpi-val .u{font-size:14px;color:var(--muted)}
+.kpi-sub{font-size:10.5px;color:var(--micro);margin-top:6px}
+.grid-2{display:grid;grid-template-columns:1fr 1.4fr;gap:14px;margin-bottom:14px}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}.kpi-row{grid-template-columns:repeat(2,1fr)}}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.ch h3{font-size:13.5px;font-weight:700}
+.badge{font-size:11px;font-weight:600;color:var(--muted);background:#F3F4F6;padding:2px 9px;border-radius:20px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:12.5px}
+.bar-name{width:110px;flex-shrink:0;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:8px;background:#F3F4F6;border-radius:5px;overflow:hidden}.bar-fill{height:100%;border-radius:5px;background:var(--primary)}
+.bar-cnt{width:26px;text-align:right;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid #F3F4F6;white-space:nowrap}
+th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--micro);position:sticky;top:0;background:#fff}
+td.r,th.r{text-align:right}
+tbody tr:hover{background:#FAFAFB}
+.pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.p-Critical{background:var(--danger-light);color:var(--danger)}.p-High{background:var(--warning-light);color:var(--warning)}
+.p-Medium{background:var(--primary-light);color:var(--primary)}.p-Low{background:var(--success-light);color:var(--success)}
+.age{font-weight:700;padding:2px 8px;border-radius:20px}
+.foot{max-width:1280px;margin:16px auto 0;padding:0 24px;font-size:11px;color:var(--micro);line-height:1.6}
+.tbl-wrap{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in">
+  <div class="brand">HR&nbsp;Executive · <span class="accent">Плати по миру</span></div>
+  <span class="tag live">● трекер вакансий на <span class="js-asof">—</span></span>
+  <div class="spacer"></div>
+  <div class="tabs">
+    <a class="tab" href="index.html">Обзор</a>
+    <a class="tab" href="rekruting.html">Рекрутинг</a>
+    <a class="tab" href="detali.html">Детали</a>
+    <a class="tab" href="struktura.html">Структура 2.0</a>
+    <a class="tab" href="stoimost.html">Стоимость</a>
+    <a class="tab active" href="traker.html">Трекер вакансий</a>
+  </div>
+</div></div>
+
+<div class="main">
+  <div class="section-cap"><h2>Трекер открытых вакансий</h2><span class="hint" id="hint">—</span></div>
+  <div class="kpi-row" id="kpis"></div>
+  <div class="grid-2">
+    <div class="card"><div class="ch"><h3>По приоритету</h3><span class="badge" id="pri-total">—</span></div><div style="position:relative;height:210px"><canvas id="ch-pri"></canvas></div></div>
+    <div class="card"><div class="ch"><h3>По отделам</h3><span class="badge">открытые</span></div><div id="dept-bars"></div></div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Открытые вакансии</h3><span class="badge" id="tbl-badge">—</span></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Приоритет</th><th>Вакансия</th><th>Отдел</th><th>Рекрутёр</th><th class="r">Дней</th><th>Открыта</th><th>Город</th><th>Руководитель</th><th>Грейд</th><th class="r">Ед.</th></tr></thead>
+      <tbody id="tbody"><tr><td colspan="10" style="text-align:center;color:var(--micro);padding:20px">Загрузка…</td></tr></tbody>
+    </table></div>
+  </div>
+</div>
+<div class="foot" id="foot">Источник: таблица «Вакансии» (открытые, in&nbsp;progress). Срок открытия считается от даты «Открыта» на дату среза. Данные зашифрованы — видны после входа.</div>
+
+<script>
+var PCOL={Critical:'#F04438',High:'#F79009',Medium:'#3B6FE0',Low:'#12B76A','—':'#9CA3AF'};
+var PORD=['Critical','High','Medium','Low','—'];
+function esc(s){return String(s==null?'':s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+function ageColor(d){return d>=90?'#F04438':d>=45?'#F79009':d>=21?'#F59E0B':'#12B76A'}
+function fdate(s){var p=String(s||'').split('-');return p.length===3?p[2]+'.'+p[1]+'.'+p[0]:s}
+
+window.ppmLoad('secure/traker.enc').then(function(d){
+  document.querySelectorAll('.js-asof').forEach(function(el){el.textContent=fdate(d.as_of)});
+  var k=d.kpi, pr=k.by_priority||{};
+  document.getElementById('hint').textContent='источник: таблица «Вакансии» · '+fdate(d.as_of);
+  // KPI
+  var card=function(cls,lbl,val,sub){return '<div class="kpi-card '+cls+'"><div class="kpi-lbl">'+lbl+'</div><div class="kpi-val">'+val+'</div><div class="kpi-sub">'+(sub||'')+'</div></div>'};
+  document.getElementById('kpis').innerHTML=
+    card('','Открытых позиций',k.open_positions,k.open_rows+' вакансий')+
+    card('c','Critical',(pr.Critical||0),'высший приоритет')+
+    card('w','Старейшая',k.oldest_days+'<span class="u">д</span>','цель ≤ 45д')+
+    card('','Медиана возраста',k.median_days+'<span class="u">д</span>','средн. '+k.avg_days+'д')+
+    card((k.over45>0?'w':'s'),'Висят > 45 дней',k.over45,'из '+k.open_rows);
+  // донат по приоритету
+  document.getElementById('pri-total').textContent=k.open_positions+' ед.';
+  var labels=PORD.filter(function(p){return pr[p]}), data=labels.map(function(p){return pr[p]});
+  new Chart(document.getElementById('ch-pri'),{type:'doughnut',
+    data:{labels:labels,datasets:[{data:data,backgroundColor:labels.map(function(p){return PCOL[p]}),borderWidth:0}]},
+    options:{maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{font:{family:'Inter',size:12},boxWidth:9,usePointStyle:true,padding:9}}}}});
+  // бары по отделам
+  var dep=k.by_dept||{}, mx=Math.max.apply(null,Object.values(dep).concat([1]));
+  document.getElementById('dept-bars').innerHTML=Object.keys(dep).map(function(nm){
+    return '<div class="bar-row"><span class="bar-name" title="'+esc(nm)+'">'+esc(nm)+'</span><div class="bar-track"><div class="bar-fill" style="width:'+(dep[nm]/mx*100)+'%"></div></div><span class="bar-cnt">'+dep[nm]+'</span></div>';
+  }).join('');
+  // таблица
+  document.getElementById('tbl-badge').textContent=d.vacancies.length+' вакансий';
+  document.getElementById('tbody').innerHTML=d.vacancies.map(function(v){
+    return '<tr>'+
+      '<td><span class="pill p-'+esc(v.pri)+'">'+esc(v.pri)+'</span></td>'+
+      '<td style="font-weight:600;white-space:normal;min-width:200px">'+esc(v.vac)+'</td>'+
+      '<td style="color:var(--muted)">'+esc(v.dept)+'</td>'+
+      '<td>'+esc(v.rec)+'</td>'+
+      '<td class="r"><span class="age" style="color:'+ageColor(v.days)+';background:'+ageColor(v.days)+'1A">'+v.days+'</span></td>'+
+      '<td style="color:var(--muted)">'+esc(v.open)+'</td>'+
+      '<td style="color:var(--muted)">'+esc(v.city)+'</td>'+
+      '<td style="color:var(--muted)">'+esc(v.boss)+'</td>'+
+      '<td style="color:var(--muted)">'+esc(v.grade)+'</td>'+
+      '<td class="r">'+(v.units>1?'×'+v.units:'1')+'</td>'+
+    '</tr>';
+  }).join('');
+}).catch(function(e){
+  document.getElementById('tbody').innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--micro);padding:20px">Нет доступа к данным — нужен вход по коду.</td></tr>';
+});
+</script>
+<script src="refresh-button.js"></script>
+</body>
+</html>

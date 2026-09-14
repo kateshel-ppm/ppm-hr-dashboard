@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ru"><meta charset="utf-8">
+<title>Шаблон слайда отдела — 6 блоков</title>
+<style>
+  body{margin:0;background:#e9edee;display:flex;justify-content:center;padding:24px;font-family:Arial,Helvetica,sans-serif}
+  .slide{position:relative;width:1279.7px;height:720.0px;background:#fff;box-shadow:0 2px 18px rgba(0,0,0,.12)}
+  .dept{position:absolute;left:48.0px;top:36.5px;font-family:Georgia,'Times New Roman',serif;
+        font-size:26pt;font-weight:700;color:#2B3A55;line-height:52.8px}
+  .sub{position:absolute;right:48.0px;top:43.2px;font-size:9pt;color:#6B7785;line-height:38.4px}
+  .card{position:absolute;border-radius:14px;box-sizing:border-box;padding:24.0px}
+  .head{display:flex;gap:11.5px;align-items:flex-start;height:49.9px}
+  .badge{flex:0 0 auto;width:28.8px;height:28.8px;border-radius:50%;color:#fff;
+         font-size:11pt;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .ct{font-size:11pt;font-weight:700;color:#2B3A55;line-height:1.05}
+  .body{margin-top:11.5px;position:relative}
+  .r{display:flex;align-items:center;justify-content:space-between;height:28.8px}
+  .r.fact{justify-content:flex-start}
+  .mn{font-size:9pt;color:#6B7785;flex:0 0 42%}
+  .r:not(.fact) .mn{flex:0 0 52%}
+  .vl{font-size:9.5pt;font-weight:700}
+  .r:not(.fact) .vl{flex:1;text-align:right}
+  .r.fact .vl{flex:0 0 30%}
+  .stt{font-size:9.5pt;font-weight:700;color:#2B3A55;flex:1;text-align:right}
+  .driver{position:absolute;left:0;right:0;bottom:0}
+  .dl{font-size:7.5pt;font-weight:700;letter-spacing:.06em;line-height:19.2px}
+  .dt{font-size:9.5pt;color:#2B3A55;line-height:1.05}
+  .li{font-size:9.5pt;color:#2B3A55;line-height:1.05;height:42.2px;padding-left:14px;position:relative}
+  .li::before{content:'•';position:absolute;left:0;color:#2B3A55}
+  .li.empty{height:49.9px}
+</style>
+<div class="slide">
+  <div class="dept">Х отдел</div>
+  <div class="sub">Руководитель отдела &middot; факт: 25.08–15.09.2026 &middot; цель — на квартал, до 30.09.2026</div>
+  <div class="card" style="left:48.0px;top:120.0px;width:376.6px;height:283.2px;background:#EDF1FB">
+      <div class="head">
+        <span class="badge" style="background:#2B4C8C">1</span>
+        <span class="ct">Цель квартала</span>
+      </div>
+      <div class="body" style="height:173.8px"><div class="r"><span class="mn">Метрика</span><span class="vl" style="color:#2B4C8C">значение</span></div><div class="r"><span class="mn">Метрика</span><span class="vl" style="color:#2B4C8C">значение</span></div><div class="r"><span class="mn">Метрика</span><span class="vl" style="color:#2B4C8C">значение</span></div><div class="r"><span class="mn">Метрика</span><span class="vl" style="color:#2B4C8C">значение</span></div></div>
+    </div><div class="card" style="left:451.5px;top:120.0px;width:376.6px;height:283.2px;background:#EAF2EC">
+      <div class="head">
+        <span class="badge" style="background:#3E7D5A">2</span>
+        <span class="ct">Результаты на 15.09 и главный драйвер</span>
+      </div>
+      <div class="body" style="height:173.8px"><div class="r fact"><span class="mn">Метрика</span>
+           <span class="vl" style="color:#3E7D5A">значение</span>
+           <span class="stt">статус</span></div><div class="r fact"><span class="mn">Метрика</span>
+           <span class="vl" style="color:#3E7D5A">значение</span>
+           <span class="stt">статус</span></div><div class="r fact"><span class="mn">Метрика</span>
+           <span class="vl" style="color:#3E7D5A">значение</span>
+           <span class="stt">статус</span></div><div class="r fact"><span class="mn">Метрика</span>
+           <span class="vl" style="color:#3E7D5A">значение</span>
+           <span class="stt">статус</span></div>
+      <div class="driver">
+        <div class="dl" style="color:#3E7D5A">ГЛАВНЫЙ ДРАЙВЕР</div>
+        <div class="dt">что именно вытянуло результат</div>
+      </div></div>
+    </div><div class="card" style="left:855.0px;top:120.0px;width:376.6px;height:283.2px;background:#E6F0F2">
+      <div class="head">
+        <span class="badge" style="background:#2F7382">3</span>
+        <span class="ct">Что сделано за 3 недели</span>
+      </div>
+      <div class="body" style="height:173.8px"><div class="li">Задача — результат</div><div class="li">Задача — результат</div><div class="li">Задача — результат</div><div class="li">Задача — результат</div></div>
+    </div><div class="card" style="left:48.0px;top:430.1px;width:376.6px;height:241.9px;background:#FBEDEB">
+      <div class="head">
+        <span class="badge" style="background:#C0554A">4</span>
+        <span class="ct">Что не сделано, что ограничивает цель и где узкое горлышко</span>
+      </div>
+      <div class="body" style="height:132.5px"><div class="li empty">&nbsp;</div><div class="li empty">&nbsp;</div><div class="li empty">&nbsp;</div></div>
+    </div><div class="card" style="left:451.5px;top:430.1px;width:376.6px;height:241.9px;background:#EDEBF7">
+      <div class="head">
+        <span class="badge" style="background:#5B4E9E">5</span>
+        <span class="ct">Гипотезы и решения</span>
+      </div>
+      <div class="body" style="height:132.5px"><div class="li empty">&nbsp;</div><div class="li empty">&nbsp;</div><div class="li empty">&nbsp;</div></div>
+    </div><div class="card" style="left:855.0px;top:430.1px;width:376.6px;height:241.9px;background:#FBF3E4">
+      <div class="head">
+        <span class="badge" style="background:#C08420">6</span>
+        <span class="ct">Приоритеты на 2 недели</span>
+      </div>
+      <div class="body" style="height:132.5px"><div class="li empty">&nbsp;</div><div class="li empty">&nbsp;</div><div class="li empty">&nbsp;</div></div>
+    </div>
+</div>
+</html>

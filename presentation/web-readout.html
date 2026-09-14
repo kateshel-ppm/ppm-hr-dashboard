@@ -1,0 +1,383 @@
+<title>Трекер ППМ Q3 2026</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  /* Палитра дашборда ППМ (traker.html): синий акцент, холодные нейтрали */
+  :root{
+    --ground:#EEF1F2;
+    --surface:#FFFFFF;
+    --panel:#F6F8F8;
+    --panel-hot:#F4F7FE;
+    --hair:#E2E8E9;
+    --hair-hot:#D6E2FB;
+    --ink:#1B2A33;
+    --muted:#7C8A91;
+    --accent:#3B6FE0;
+    --accent-soft:#EAF1FE;
+    --ok:#0E9C5C;
+    --warn:#C97A06;
+    --bad:#D8362B;
+    --shadow:0 1px 2px rgba(27,42,51,.06), 0 8px 24px rgba(27,42,51,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#0E1317;
+      --surface:#151C21;
+      --panel:#1A2228;
+      --panel-hot:#18222F;
+      --hair:#263138;
+      --hair-hot:#2E425F;
+      --ink:#E6EDF1;
+      --muted:#8B9AA2;
+      --accent:#7CA0F2;
+      --accent-soft:#1D2A40;
+      --ok:#3DD68C;
+      --warn:#F0A93B;
+      --bad:#F2695E;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0E1317;
+    --surface:#151C21;
+    --panel:#1A2228;
+    --panel-hot:#18222F;
+    --hair:#263138;
+    --hair-hot:#2E425F;
+    --ink:#E6EDF1;
+    --muted:#8B9AA2;
+    --accent:#7CA0F2;
+    --accent-soft:#1D2A40;
+    --ok:#3DD68C;
+    --warn:#F0A93B;
+    --bad:#F2695E;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    font-size:15px;
+    line-height:1.45;
+    padding:0 16px;
+  }
+  .wrap{max-width:1400px;margin:0 auto;padding-block:32px 56px;display:flex;flex-direction:column;gap:20px}
+
+  header.top{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px 20px;padding-bottom:4px}
+  h1{margin:0;font-size:clamp(26px,3.4vw,38px);font-weight:700;letter-spacing:-.02em;text-wrap:balance}
+  .period{font-size:15px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+  .top .note{flex:1 1 100%;margin:0;color:var(--muted);font-size:13px;max-width:70ch}
+
+  .legend{display:flex;flex-wrap:wrap;gap:6px 8px;padding:14px 16px;background:var(--surface);
+          border:1px solid var(--hair);border-radius:10px}
+  .legend b{font-weight:600;font-size:12.5px}
+  .legend span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+  .legend .n{min-width:18px;height:18px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
+             display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+
+  section.dept{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+               box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:16px}
+  .dept-head h2{margin:0;font-size:21px;font-weight:700;letter-spacing:-.01em}
+  .dept-head p{margin:3px 0 0;color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
+  .tag{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;background:var(--accent-soft);
+       color:var(--accent);font-size:11px;font-weight:600;vertical-align:middle}
+
+  .blocks{display:grid;gap:12px;grid-template-columns:1fr}
+  @media (min-width:720px){ .blocks{grid-template-columns:repeat(2,1fr)} }
+  @media (min-width:1020px){ .blocks{grid-template-columns:repeat(3,1fr)} }
+  @media (min-width:1320px){ .blocks{grid-template-columns:repeat(6,1fr)} }
+
+  .block{background:var(--panel);border:1px solid var(--hair);border-radius:10px;padding:14px;
+         display:flex;flex-direction:column;gap:10px}
+  .block.hot{background:var(--panel-hot);border-color:var(--hair-hot)}
+  .block h3{margin:0;display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:600;line-height:1.25}
+  .n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
+     display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+  .hot .n{background:var(--accent);color:var(--surface)}
+
+  .metric{display:flex;flex-direction:column;gap:1px;padding-block:4px}
+  .metric + .metric{border-top:1px solid var(--hair);padding-top:8px}
+  .metric .name{font-size:11.5px;color:var(--muted)}
+  .metric .val{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .metric .st{font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)} .none{color:var(--muted)}
+
+  .stamp{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  .pair{display:flex;flex-direction:column;gap:2px}
+  .pair + .pair{margin-top:10px}
+  .pair .t{font-size:13px;font-weight:600;line-height:1.3}
+  .pair .d{font-size:12px;color:var(--muted);line-height:1.35}
+  ul.plain{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:12.5px;line-height:1.35}
+  .todo{color:var(--muted);font-style:italic}
+
+  footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--hair);padding-top:16px;max-width:80ch}
+  footer code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+  a{color:var(--accent)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+  @media (prefers-reduced-motion:no-preference){ section.dept{transition:box-shadow .2s ease} }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Промежуточные результаты</h1>
+    <span class="period">Q3 2026 · 38 неделя</span>
+    <p class="note">Веб-версия презентации. Каждый отдел разбирается по шести блокам — от цели квартала до приоритетов на следующие две недели.</p>
+  </header>
+
+  <nav class="legend" aria-label="Структура разбора">
+    <b>Структура:</b>
+    <span><i class="n">1</i> Цель квартала</span>
+    <span><i class="n">2</i> Результат на 15.09</span>
+    <span><i class="n">3</i> Что сделал и драйвер</span>
+    <span><i class="n">4</i> Что не сделал и узкое горлышко</span>
+    <span><i class="n">5</i> Гипотезы и решения</span>
+    <span><i class="n">6</i> Приоритеты на 2 недели</span>
+  </nav>
+
+  <!-- Коммерческий блок -->
+  <section class="dept">
+    <div class="dept-head">
+      <h2>Коммерческий блок</h2>
+      <p>факт: 25.08–15.09.2026 · цель — на квартал, до 30.09.2026</p>
+    </div>
+    <div class="blocks">
+      <div class="block">
+        <h3><i class="n">1</i> Цель квартала</h3>
+        <div>
+          <div class="metric"><span class="name">Чистая прибыль</span><span class="val">411 млн ₽</span></div>
+          <div class="metric"><span class="name">Contribution</span><span class="val">580 млн ₽</span></div>
+          <div class="metric"><span class="name">GP</span><span class="val">861 млн ₽</span></div>
+          <div class="metric"><span class="name">Новые клиенты</span><span class="val">127 тыс</span></div>
+          <div class="metric"><span class="name">Карты без перевыпуска</span><span class="val">126 тыс</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <h3><i class="n">2</i> Результат на 15.09</h3>
+        <div>
+          <div class="metric"><span class="name">Чистая прибыль</span><span class="val">368 млн ₽</span><span class="st ok">90%, опережаем</span></div>
+          <div class="metric"><span class="name">Contribution</span><span class="val">528 млн ₽</span><span class="st ok">91%, опережаем</span></div>
+          <div class="metric"><span class="name">GP</span><span class="val">769 млн ₽</span><span class="st ok">89%, опережаем</span></div>
+          <div class="metric"><span class="name">Новые клиенты</span><span class="val">90,5 тыс</span><span class="st bad">71%, отстаём</span></div>
+          <div class="metric"><span class="name">Карты без перевыпуска</span><span class="val">98,7 тыс</span><span class="st bad">78%, отстаём</span></div>
+        </div>
+      </div>
+      <div class="block hot">
+        <h3><i class="n">3</i> Что сделал и что помогло (драйвер)</h3>
+        <div class="stamp" style="color:var(--accent)">факт: 25.08 → 15.09</div>
+        <p class="todo" style="margin:0;font-size:12.5px">Не заполнено: в исходной презентации списка сделанного за три недели не было. Каждая строка — задача, результат и драйвер: что именно позволило её закрыть.</p>
+      </div>
+      <div class="block hot">
+        <h3><i class="n">4</i> Что не сделал и узкое горлышко</h3>
+        <div class="stamp warn">ключевая сложность</div>
+        <div>
+          <div class="pair"><span class="t">Привлечение просело</span><span class="d">приток новых 34,6 тыс к концу сентября против плана 44,5</span></div>
+          <div class="pair"><span class="t">Воронка</span><span class="d">визит → рег 2,1% при цели 2,3%, провал на переходе к выпуску карты</span></div>
+          <div class="pair"><span class="t">Деньги держат премиум и переезд</span><span class="d">а не новые клиенты</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <h3><i class="n">5</i> Гипотезы и решения</h3>
+        <ul class="plain">
+          <li>Дофинансирование: +52 млн бюджета дают +26 млн прибыли (0,5 ₽ на рубль)</li>
+          <li>Рассылка по 45 тыс регистраций без карты — до 1 300 карт</li>
+          <li>Партнёрка и рефка конвертят 54% и 78% — растить их долю</li>
+        </ul>
+      </div>
+      <div class="block">
+        <h3><i class="n">6</i> Приоритеты на 2 недели</h3>
+        <ul class="plain">
+          <li>Открутить остаток бюджета: 61 млн за 17 дней</li>
+          <li>Починить переход со страницы карт на выпуск</li>
+          <li>Закрыть август по koko и перекалибровать переезд на сентябрьский PL</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Юридический департамент -->
+  <section class="dept">
+    <div class="dept-head">
+      <h2>Юридический департамент</h2>
+      <p>Руководитель юрдепартамента · факт: 25.08–15.09.2026 · цель — на квартал, до 30.09.2026</p>
+    </div>
+    <div class="blocks">
+      <div class="block">
+        <h3><i class="n">1</i> Цель квартала</h3>
+        <div>
+          <div class="metric"><span class="name">Аудит группы компаний</span><span class="val">Светофор</span></div>
+          <div class="metric"><span class="name">Топ-риск по матрице</span><span class="val">Снять 1</span></div>
+          <div class="metric"><span class="name">Риск ПДн</span><span class="val">Закрыть</span></div>
+          <div class="metric"><span class="name">Второй риск</span><span class="val">Закрыть</span></div>
+          <div class="metric"><span class="name">Документооборот</span><span class="val">10 шаблонов</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <h3><i class="n">2</i> Результат на 15.09</h3>
+        <div>
+          <div class="metric"><span class="name">Аудит группы компаний</span><span class="val">Светофор</span><span class="st ok">по плану</span></div>
+          <div class="metric"><span class="name">Топ-риск по матрице</span><span class="val">Снят</span><span class="st ok">по плану</span></div>
+          <div class="metric"><span class="name">Риск ПДн</span><span class="val">К 30.09</span><span class="st warn">риск</span></div>
+          <div class="metric"><span class="name">Второй риск</span><span class="val">Агенты Claude</span><span class="st warn">риск</span></div>
+          <div class="metric"><span class="name">Документооборот</span><span class="val">SLA 2 р.д.</span><span class="st ok">по плану</span></div>
+        </div>
+      </div>
+      <div class="block hot">
+        <h3><i class="n">3</i> Что сделал и что помогло (драйвер)</h3>
+        <div class="stamp" style="color:var(--accent)">факт: 25.08 → 15.09</div>
+        <div>
+          <div class="pair"><span class="t">Матрица рисков по группе</span><span class="d">светофор, топ-риск № 1 снят</span></div>
+          <div class="pair"><span class="t">Документооборот</span><span class="d">Яндекс Трекер, 10 шаблонов, SLA 2 р.д.</span></div>
+          <div class="pair"><span class="t">Прецедент Банк 131</span><span class="d">договор поручения в двух редакциях</span></div>
+          <div class="pair"><span class="t">НСПК</span><span class="d">реестр v19, проект Соглашения вместо суда</span></div>
+          <div class="pair"><span class="t">28 договоров с правками</span><span class="d">NDA Сбербанк, ТБанк, МТС, Т2</span></div>
+        </div>
+      </div>
+      <div class="block hot">
+        <h3><i class="n">4</i> Что не сделал и узкое горлышко</h3>
+        <div class="stamp warn">ключевая сложность</div>
+        <div>
+          <div class="pair"><span class="t">Второй риск</span><span class="d">закроется полностью только когда Банк заберёт услугу под ключ</span></div>
+          <div class="pair"><span class="t">Риск ПДн</span><span class="d">ждём картину фактических потоков данных от продукта и разработки</span></div>
+          <div class="pair"><span class="t">28 договоров за 10 рабочих дней</span><span class="d">при одном юристе в отделе</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <h3><i class="n">5</i> Гипотезы и решения</h3>
+        <ul class="plain">
+          <li>Агенты в Claude запускаются при каждом согласовании договора</li>
+          <li>KYC/AML закрываем партнёрством с Банком 131, а не своим штатом</li>
+          <li>Одна дверь для договоров: Яндекс Трекер, 10 шаблонов, SLA 2 р.д.</li>
+        </ul>
+      </div>
+      <div class="block">
+        <h3><i class="n">6</i> Приоритеты на 2 недели</h3>
+        <ul class="plain">
+          <li>25.09 — КТ-3 прецедента: договор Банка 131 вычитан, миграция описана</li>
+          <li>30.09 — ПДн-комплект, аудит рисков, AML, KPI-сверка № 1</li>
+          <li>01.10 — все договоры идут через одну дверь</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- IT отдел -->
+  <section class="dept">
+    <div class="dept-head">
+      <h2>IT отдел</h2>
+      <p>факт: 25.08–15.09.2026 · цель — на квартал, до 30.09.2026</p>
+    </div>
+    <div class="blocks">
+      <div class="block">
+        <h3><i class="n">1</i> Цель квартала</h3>
+        <div>
+          <div class="metric"><span class="name">SLO</span><span class="val">99,8%</span></div>
+          <div class="metric"><span class="name">Sprint Predictability</span><span class="val">0,85</span></div>
+          <div class="metric"><span class="name">Lead Time for Changes</span><span class="val">2 недели</span></div>
+          <div class="metric"><span class="name">Change Failure Rate</span><span class="val">&lt; 30%</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <h3><i class="n">2</i> Результат на 15.09</h3>
+        <div>
+          <div class="metric"><span class="name">SLO</span><span class="val">99,81%</span><span class="st warn">риск</span></div>
+          <div class="metric"><span class="name">Sprint Predictability</span><span class="val">не подсчитать</span><span class="st none">нет данных</span></div>
+          <div class="metric"><span class="name">Lead Time for Changes</span><span class="val">4,73 дн</span><span class="st ok">норма</span></div>
+          <div class="metric"><span class="name">Change Failure Rate</span><span class="val">20%</span><span class="st ok">норма</span></div>
+        </div>
+      </div>
+      <div class="block hot">
+        <h3><i class="n">3</i> Что сделал и что помогло (драйвер)</h3>
+        <div class="stamp" style="color:var(--accent)">факт: 25.08 → 15.09</div>
+        <p class="todo" style="margin:0;font-size:12.5px">Не заполнено: в исходной презентации списка сделанного за три недели не было.</p>
+      </div>
+      <div class="block hot">
+        <h3><i class="n">4</i> Что не сделал и узкое горлышко</h3>
+        <div class="stamp warn">ключевая сложность</div>
+        <div>
+          <div class="pair"><span class="t">Яндекс Трекер</span><span class="d">ограничивает работу с задачами</span></div>
+          <div class="pair"><span class="t">SLO</span><span class="d">упирается в переезд на Яндекс Клауд</span></div>
+          <div class="pair"><span class="t">Тестировщики</span><span class="d">найм не закрыт</span></div>
+          <div class="pair"><span class="t">Sprint Predictability не считается</span><span class="d">77–100% задач добавлено после старта спринта</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <h3><i class="n">5</i> Гипотезы и решения</h3>
+        <ul class="plain">
+          <li>Sprint Predictability — вопрос планирования</li>
+          <li>JIRA решит больше вопросов и не даст манипулировать метрикой</li>
+          <li>Чёткое планирование на месяц</li>
+        </ul>
+      </div>
+      <div class="block">
+        <h3><i class="n">6</i> Приоритеты на 2 недели</h3>
+        <ul class="plain">
+          <li>Переезд на Яндекс Клауд — постепенно</li>
+          <li>Провайдер ZVX</li>
+          <li>Планы продуктового отдела не известны — синхронизироваться</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Шаблон -->
+  <section class="dept">
+    <div class="dept-head">
+      <h2>Х отдел <span class="tag">шаблон</span></h2>
+      <p>Руководитель отдела · факт: 25.08–15.09.2026 · цель — на квартал, до 30.09.2026</p>
+    </div>
+    <div class="blocks">
+      <div class="block">
+        <h3><i class="n">1</i> Цель квартала</h3>
+        <div>
+          <div class="metric"><span class="name">Метрика</span><span class="val">цель Х</span></div>
+          <div class="metric"><span class="name">Метрика</span><span class="val">цель Х</span></div>
+          <div class="metric"><span class="name">Метрика</span><span class="val">цель Х</span></div>
+          <div class="metric"><span class="name">Метрика</span><span class="val">цель Х</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <h3><i class="n">2</i> Результат на 15.09</h3>
+        <div>
+          <div class="metric"><span class="name">Метрика</span><span class="val">значение</span><span class="st ok">по плану</span></div>
+          <div class="metric"><span class="name">Метрика</span><span class="val">значение</span><span class="st warn">риск</span></div>
+          <div class="metric"><span class="name">Метрика</span><span class="val">значение</span><span class="st bad">не в плане</span></div>
+          <div class="metric"><span class="name">Метрика</span><span class="val">значение</span><span class="st ok">по плану</span></div>
+        </div>
+      </div>
+      <div class="block hot">
+        <h3><i class="n">3</i> Что сделал и что помогло (драйвер)</h3>
+        <div class="stamp" style="color:var(--accent)">факт: 25.08 → 15.09</div>
+        <div>
+          <div class="pair"><span class="t">Задача — результат</span><span class="d">драйвер: что помогло</span></div>
+          <div class="pair"><span class="t">Задача — результат</span><span class="d">драйвер: что помогло</span></div>
+          <div class="pair"><span class="t">Задача — результат</span><span class="d">драйвер: что помогло</span></div>
+          <div class="pair"><span class="t">Задача — результат</span><span class="d">драйвер: что помогло</span></div>
+        </div>
+      </div>
+      <div class="block hot">
+        <h3><i class="n">4</i> Что не сделал и узкое горлышко</h3>
+        <div class="stamp warn">ключевая сложность</div>
+        <div>
+          <div class="pair"><span class="t">Задача — почему не сделана</span><span class="d">узкое горлышко: что мешает</span></div>
+          <div class="pair"><span class="t">Задача — почему не сделана</span><span class="d">узкое горлышко: что мешает</span></div>
+          <div class="pair"><span class="t">Задача — почему не сделана</span><span class="d">узкое горлышко: что мешает</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <h3><i class="n">5</i> Гипотезы и решения</h3>
+        <ul class="plain"><li>—</li><li>—</li><li>—</li></ul>
+      </div>
+      <div class="block">
+        <h3><i class="n">6</i> Приоритеты на 2 недели</h3>
+        <ul class="plain"><li>—</li><li>—</li><li>—</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Содержимое отделов перенесено из презентации «Трекер ППМ Q3 2026». Файл для показа —
+    <code>ppm-q3-w38.pptx</code>, собирается скриптом <code>presentation/build-deck.js</code>.
+    Слайд IT собран из сплошного текста исходника: распределение пунктов между блоками 5 и 6 стоит перепроверить.
+  </footer>
+</div>

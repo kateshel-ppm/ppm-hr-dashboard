@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru"><meta charset="utf-8">
+<title>Шаблон слайда отдела — Трекер ППМ Q3 2026</title>
+<style>
+  body{margin:0;background:#e9edee;display:flex;justify-content:center;padding:24px;font-family:Arial,Helvetica,sans-serif}
+  .slide{position:relative;width:1279.7px;height:720.0px;background:#fff;box-shadow:0 2px 18px rgba(0,0,0,.12)}
+  .dept{position:absolute;left:40.3px;top:32.6px;font-size:28pt;font-weight:700;color:#1B2A33;line-height:44.2px}
+  .sub{position:absolute;left:40.3px;top:74.9px;font-size:10pt;color:#9AA6A5;line-height:28.8px}
+  .wk{position:absolute;right:40.3px;top:32.6px;font-size:11pt;color:#9AA6A5;line-height:44.2px}
+  .col{position:absolute;top:117.1px}
+  .head{display:flex;gap:9.6px;align-items:flex-start;height:59.5px}
+  .badge{flex:0 0 auto;width:30.7px;height:30.7px;border-radius:50%;background:#EAF1FE;color:#3B6FE0;
+         font-size:11pt;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .badge-new{background:#3B6FE0;color:#fff;font-size:8pt}
+  .title{font-size:11.5pt;font-weight:700;color:#1B2A33;line-height:1.05}
+  .card{position:absolute;top:67.2px;left:0;right:0;height:424.3px;
+        box-sizing:border-box;padding:13.4px;border:1px solid #E4E9E9;border-radius:6px;background:#F6F8F8}
+  .card-new{background:#F4F7FE;border-color:#D6E2FB}
+  .row{height:96.0px}
+  .m{font-size:9pt;color:#9AA6A5;line-height:19.2px}
+  .v{font-size:14pt;font-weight:700;color:#1B2A33;line-height:28.8px}
+  .vline{display:flex;align-items:baseline;justify-content:space-between;height:28.8px}
+  .st{font-size:8.5pt;font-weight:700}
+  .period{font-size:8.5pt;font-weight:700;color:#3B6FE0;line-height:21.1px;margin-bottom:7.7px}
+  .task{height:73.0px}
+  .task .t{font-size:10.5pt;font-weight:700;color:#1B2A33;line-height:21.1px}
+  .task .d{font-size:9pt;color:#9AA6A5;line-height:21.1px}
+  .dash{font-size:10.5pt;color:#1B2A33;margin-bottom:34.6px}
+</style>
+<div class="slide">
+  <div class="dept">Х отдел</div>
+  <div class="sub">Руководитель отдела &middot; факт: 25.08–15.09.2026 &middot; цель — на квартал, до 30.09.2026</div>
+  <div class="wk">Q3 2026 &middot; 38 неделя</div>
+  
+    <div class="col" style="left:40.3px;width:168.0px">
+      <div class="head">
+        <span class="badge">1</span>
+        <span class="title">Цель квартала</span>
+      </div>
+      <div class="card"><div class="row"><div class="m">Метрика</div><div class="v">цель Х</div></div><div class="row"><div class="m">Метрика</div><div class="v">цель Х</div></div><div class="row"><div class="m">Метрика</div><div class="v">цель Х</div></div><div class="row"><div class="m">Метрика</div><div class="v">цель Х</div></div></div>
+    </div>
+    <div class="col" style="left:219.8px;width:206.4px">
+      <div class="head">
+        <span class="badge">2</span>
+        <span class="title">Результат на 15.09</span>
+      </div>
+      <div class="card"><div class="row"><div class="m">Метрика</div><div class="vline"><span class="v">значение</span><span class="st" style="color:#12B76A">по плану</span></div></div><div class="row"><div class="m">Метрика</div><div class="vline"><span class="v">значение</span><span class="st" style="color:#F79009">риск</span></div></div><div class="row"><div class="m">Метрика</div><div class="vline"><span class="v">значение</span><span class="st" style="color:#F04438">не в плане</span></div></div><div class="row"><div class="m">Метрика</div><div class="vline"><span class="v">значение</span><span class="st" style="color:#12B76A">по плану</span></div></div></div>
+    </div>
+    <div class="col" style="left:437.8px;width:225.6px">
+      <div class="head">
+        <span class="badge badge-new">2.1</span>
+        <span class="title">Что было сделано<br>за 3 недели</span>
+      </div>
+      <div class="card card-new"><div class="period">25.08 → 15.09</div><div class="task"><div class="t">Задача</div><div class="d">описание / результат</div></div><div class="task"><div class="t">Задача</div><div class="d">описание / результат</div></div><div class="task"><div class="t">Задача</div><div class="d">описание / результат</div></div><div class="task"><div class="t">Задача</div><div class="d">описание / результат</div></div><div class="task"><div class="t">Задача</div><div class="d">описание / результат</div></div></div>
+    </div>
+    <div class="col" style="left:674.9px;width:177.6px">
+      <div class="head">
+        <span class="badge">3</span>
+        <span class="title">Что ограничивает цель</span>
+      </div>
+      <div class="card"><div class="dash">—</div><div class="dash">—</div><div class="dash">—</div></div>
+    </div>
+    <div class="col" style="left:864.0px;width:187.2px">
+      <div class="head">
+        <span class="badge">4</span>
+        <span class="title">Гипотезы и решения</span>
+      </div>
+      <div class="card"><div class="dash">—</div><div class="dash">—</div><div class="dash">—</div></div>
+    </div>
+    <div class="col" style="left:1062.7px;width:177.6px">
+      <div class="head">
+        <span class="badge">5</span>
+        <span class="title">Приоритеты на 2 недели</span>
+      </div>
+      <div class="card"><div class="dash">—</div><div class="dash">—</div><div class="dash">—</div></div>
+    </div>
+</div>
+</html>

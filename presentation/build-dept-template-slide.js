@@ -5,7 +5,11 @@
  * «2 Результат на 15.09» добавлен блок «2.1 Что было сделано за 3 недели».
  *
  * Запуск:  npm i pptxgenjs && node presentation/build-dept-template-slide.js
- * Результат: presentation/dept-template-slide.pptx
+ * Результат: presentation/dept-template-slide.pptx (титульный слайд + шаблон отдела)
+ *            presentation/dept-template-slide.html (превью в браузере)
+ *
+ * pptxgenjs пишет zip без сжатия (~100 КБ). Чтобы ужать до ~20 КБ:
+ *   python3 presentation/recompress-pptx.py presentation/dept-template-slide.pptx
  */
 
 const path = require('path');
@@ -46,6 +50,25 @@ const TOP = 1.22; // верх колонок
 const CARD_TOP = 1.92;
 const CARD_H = 4.42;
 const PAD = 0.14;
+
+// ── Титульный слайд ─────────────────────────────────────────────────────────
+const cover = pres.addSlide();
+cover.background = { color: 'FFFFFF' };
+cover.addText('Промежуточные результаты', {
+  x: MARGIN, y: 2.55, w: 9.5, h: 0.8,
+  fontFace: FONT, fontSize: 40, bold: true, color: INK,
+  isTextBox: true, margin: 0, valign: 'middle',
+});
+cover.addText('Q3 2026  ·  38 неделя', {
+  x: MARGIN, y: 3.42, w: 9.5, h: 0.45,
+  fontFace: FONT, fontSize: 18, color: ACCENT,
+  isTextBox: true, margin: 0, valign: 'middle',
+});
+cover.addText('Шаблон слайда отдела: 1 → 2 → 2.1 → 3 → 4 → 5', {
+  x: MARGIN, y: 4.05, w: 9.5, h: 0.35,
+  fontFace: FONT, fontSize: 11, color: MUTED,
+  isTextBox: true, margin: 0, valign: 'middle',
+});
 
 const slide = pres.addSlide();
 slide.background = { color: 'FFFFFF' };

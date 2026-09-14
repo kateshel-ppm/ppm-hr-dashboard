@@ -1,8 +1,9 @@
 /**
  * Шаблон слайда отдела для презентации «Трекер ППМ Q3 2026».
  *
- * Отличие от текущего шаблона в презентации: рядом с блоком
- * «2 Результат на 15.09» добавлен блок «2.1 Что было сделано за 3 недели».
+ * Отличие от текущего шаблона в презентации: сквозная нумерация 1–6,
+ * блок 3 «Что сделал и что помогло (драйвер)» добавлен после «Результата на 15.09»,
+ * а бывший блок «Что ограничивает цель» стал блоком 4 «Что не сделал и узкое горлышко».
  *
  * Запуск:  npm i pptxgenjs && node presentation/build-dept-template-slide.js
  * Результат: presentation/dept-template-slide.pptx (титульный слайд + шаблон отдела)
@@ -36,15 +37,18 @@ const SLIDE_W = 13.33;
 const MARGIN = 0.42;
 const GAP = 0.12;
 
-// Шесть блоков: 1, 2, 2.1, 3, 4, 5
+// Шесть блоков со сквозной нумерацией 1–6
 const COLS = [
-  { n: '1', title: 'Цель квартала', w: 1.75, kind: 'goal' },
-  { n: '2', title: 'Результат на 15.09', w: 2.15, kind: 'fact' },
-  { n: '2.1', title: 'Что было сделано\nза 3 недели', w: 2.35, kind: 'done' },
-  { n: '3', title: 'Что ограничивает цель', w: 1.85, kind: 'list' },
-  { n: '4', title: 'Гипотезы и решения', w: 1.95, kind: 'list' },
-  { n: '5', title: 'Приоритеты на 2 недели', w: 1.85, kind: 'list' },
+  { n: '1', title: 'Цель квартала', w: 1.70, kind: 'goal' },
+  { n: '2', title: 'Результат на 15.09', w: 2.05, kind: 'fact' },
+  { n: '3', title: 'Что сделал\nи что помогло (драйвер)', w: 2.35, kind: 'done' },
+  { n: '4', title: 'Что не сделал\nи узкое горлышко', w: 2.30, kind: 'blocked' },
+  { n: '5', title: 'Гипотезы и решения', w: 1.80, kind: 'list' },
+  { n: '6', title: 'Приоритеты на 2 недели', w: 1.70, kind: 'list' },
 ];
+
+// Блоки 3 и 4 — разбор «сделал / не сделал», выделены цветом
+const ACCENTED = ['3', '4'];
 
 const TOP = 1.22; // верх колонок
 const CARD_TOP = 1.92;
@@ -64,7 +68,7 @@ cover.addText('Q3 2026  ·  38 неделя', {
   fontFace: FONT, fontSize: 18, color: ACCENT,
   isTextBox: true, margin: 0, valign: 'middle',
 });
-cover.addText('Шаблон слайда отдела: 1 → 2 → 2.1 → 3 → 4 → 5', {
+cover.addText('Шаблон слайда отдела: 1 → 2 → 3 → 4 → 5 → 6', {
   x: MARGIN, y: 4.05, w: 9.5, h: 0.35,
   fontFace: FONT, fontSize: 11, color: MUTED,
   isTextBox: true, margin: 0, valign: 'middle',
@@ -94,7 +98,7 @@ slide.addText('Q3 2026  ·  38 неделя', {
 let x = MARGIN;
 
 for (const col of COLS) {
-  const isNew = col.n === '2.1';
+  const isNew = ACCENTED.indexOf(col.n) !== -1;
   const badgeD = 0.32;
 
   // номер блока в круге
@@ -105,7 +109,7 @@ for (const col of COLS) {
   });
   slide.addText(col.n, {
     x: x - 0.06, y: TOP, w: badgeD + 0.12, h: badgeD,
-    fontFace: FONT, fontSize: col.n.length > 1 ? 8 : 11, bold: true,
+    fontFace: FONT, fontSize: 11, bold: true,
     color: isNew ? 'FFFFFF' : ACCENT, align: 'center', valign: 'middle',
     isTextBox: true, margin: 0,
   });
@@ -166,24 +170,29 @@ for (const col of COLS) {
       });
       cy += 1.0;
     }
-  } else if (col.kind === 'done') {
-    // что сделано за 3 недели: задача + пояснение
-    slide.addText('25.08 → 15.09', {
+  } else if (col.kind === 'done' || col.kind === 'blocked') {
+    // 3 — что сделал + драйвер; 4 — что не сделал + узкое горлышко
+    const done = col.kind === 'done';
+    slide.addText(done ? '25.08 → 15.09' : 'ключевая сложность', {
       x: cx, y: cy, w: cw, h: 0.22,
-      fontFace: FONT, fontSize: 8.5, bold: true, color: ACCENT,
+      fontFace: FONT, fontSize: 8.5, bold: true, color: done ? ACCENT : AMBER,
       isTextBox: true, margin: 0, valign: 'middle',
     });
     cy += 0.3;
-    for (let i = 0; i < 5; i++) {
-      slide.addText('Задача', {
-        x: cx, y: cy, w: cw, h: 0.22,
-        fontFace: FONT, fontSize: 10.5, bold: true, color: INK, isTextBox: true, margin: 0, valign: 'middle',
+    const rows = done ? 4 : 3;
+    const pitch = done ? 0.96 : 1.28;
+    for (let i = 0; i < rows; i++) {
+      slide.addText(done ? 'Задача — результат' : 'Задача — почему не сделана', {
+        x: cx, y: cy, w: cw, h: 0.42,
+        fontFace: FONT, fontSize: 10.5, bold: true, color: INK,
+        isTextBox: true, margin: 0, valign: 'top', lineSpacingMultiple: 1.05,
       });
-      slide.addText('описание / результат', {
-        x: cx, y: cy + 0.21, w: cw, h: 0.22,
-        fontFace: FONT, fontSize: 9, color: MUTED, isTextBox: true, margin: 0, valign: 'middle',
+      slide.addText(done ? 'драйвер: что помогло' : 'узкое горлышко: что мешает', {
+        x: cx, y: cy + 0.44, w: cw, h: 0.42,
+        fontFace: FONT, fontSize: 9, color: MUTED,
+        isTextBox: true, margin: 0, valign: 'top', lineSpacingMultiple: 1.05,
       });
-      cy += 0.76;
+      cy += pitch;
     }
   } else {
     // списки: 3 пункта
@@ -205,8 +214,9 @@ for (const col of COLS) {
 }
 
 slide.addNotes(
-  'Шаблон слайда отдела. Блок 2.1 «Что было сделано за 3 недели» — перечень завершённых ' +
-  'задач за период 25.08–15.09: название задачи + краткий результат (цифра или факт).'
+  'Шаблон слайда отдела, сквозная нумерация 1–6. Блок 3 «Что сделал и что помогло» — ' +
+  'завершённые задачи за 25.08–15.09 и драйвер по каждой (что позволило сделать). ' +
+  'Блок 4 «Что не сделал и узкое горлышко» — незакрытые задачи и ключевая сложность по каждой.'
 );
 
 const out = path.join(__dirname, 'dept-template-slide.pptx');
@@ -228,17 +238,22 @@ function colBody(col) {
       `<div class="vline"><span class="v">значение</span>` +
       `<span class="st" style="color:#${c}">${t}</span></div></div>`).join('');
   }
-  if (col.kind === 'done') {
-    return `<div class="period">25.08 → 15.09</div>` +
-      Array.from({ length: 5 }, () =>
-        `<div class="task"><div class="t">Задача</div><div class="d">описание / результат</div></div>`).join('');
+  if (col.kind === 'done' || col.kind === 'blocked') {
+    const done = col.kind === 'done';
+    const cls = done ? 'period' : 'period period-warn';
+    const rows = done ? 4 : 3;
+    const cell = done ? 'task' : 'task task-wide';
+    return `<div class="${cls}">${done ? '25.08 → 15.09' : 'ключевая сложность'}</div>` +
+      Array.from({ length: rows }, () =>
+        `<div class="${cell}"><div class="t">${done ? 'Задача — результат' : 'Задача — почему не сделана'}</div>` +
+        `<div class="d">${done ? 'драйвер: что помогло' : 'узкое горлышко: что мешает'}</div></div>`).join('');
   }
   return `<div class="dash">—</div><div class="dash">—</div><div class="dash">—</div>`;
 }
 
 let cx = MARGIN;
 const colsHtml = COLS.map((col) => {
-  const isNew = col.n === '2.1';
+  const isNew = ACCENTED.indexOf(col.n) !== -1;
   const html = `
     <div class="col" style="left:${px(cx)};width:${px(col.w)}">
       <div class="head">
@@ -275,8 +290,10 @@ const html = `<!doctype html>
   .vline{display:flex;align-items:baseline;justify-content:space-between;height:${px(0.3)}}
   .st{font-size:8.5pt;font-weight:700}
   .period{font-size:8.5pt;font-weight:700;color:#${ACCENT};line-height:${px(0.22)};margin-bottom:${px(0.08)}}
-  .task{height:${px(0.76)}}
-  .task .t{font-size:10.5pt;font-weight:700;color:#${INK};line-height:${px(0.22)}}
+  .period-warn{color:#${AMBER}}
+  .task{height:${px(0.96)}}
+  .task-wide{height:${px(1.28)}}
+  .task .t{font-size:10.5pt;font-weight:700;color:#${INK};line-height:${px(0.22)};height:${px(0.44)}}
   .task .d{font-size:9pt;color:#${MUTED};line-height:${px(0.22)}}
   .dash{font-size:10.5pt;color:#${INK};margin-bottom:${px(0.36)}}
 </style>

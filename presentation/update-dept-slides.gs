@@ -1,25 +1,31 @@
 /**
- * Добавляет блок «2.1 Что было сделано за 3 недели» на слайды-шаблоны
- * презентации «Трекер ППМ Q3 2026» — сразу справа от блока
- * «2 Результат на 15.09».
+ * Перестраивает слайды-шаблоны презентации «Трекер ППМ Q3 2026»
+ * под сквозную нумерацию 1–6:
+ *
+ *   1  Цель квартала                        (без изменений)
+ *   2  Результат на 15.09                   (без изменений)
+ *   3  Что сделал и что помогло (драйвер)   ← новый блок
+ *   4  Что не сделал и узкое горлышко       ← бывший «Что ограничивает цель»
+ *   5  Гипотезы и решения                   (перенумерован с 4)
+ *   6  Приоритеты на 2 недели               (перенумерован с 5)
  *
  * Как запустить:
  *   1. script.google.com → «Новый проект», вставить этот файл целиком.
- *   2. Запустить функцию addBlock21 и разрешить доступ (Slides + Drive).
+ *   2. Запустить функцию updateDeptSlides и разрешить доступ (Slides + Drive).
  *   3. В логе (Ctrl+Enter) будет ссылка на результат.
  *
  * По умолчанию скрипт работает НА КОПИИ презентации — оригинал не меняется.
- * Когда результат устроит, поставьте WORK_ON_COPY = false и запустите ещё раз,
- * чтобы правка легла в исходный файл.
+ * Когда результат устроит, поставьте WORK_ON_COPY = false и запустите ещё раз.
  *
  * Что делает на каждом слайде-шаблоне:
  *   - находит блоки «2 Результат на 15.09» и «3 Что ограничивает цель»;
  *   - считает шаг колонки и ужимает все блоки по горизонтали так, чтобы
- *     вместо пяти колонок поместилось шесть (пропорции и шрифты не трогаются);
- *   - в освободившееся место справа от блока 2 копирует оформление блока 3
- *     (кружок с номером, заголовок, тело) и подставляет новый текст.
+ *     вместо пяти колонок поместилось шесть (шрифты не трогаются);
+ *   - в освободившееся место справа от блока 2 копирует оформление
+ *     соседнего блока и подставляет текст нового блока 3;
+ *   - переписывает заголовок бывшего блока 3 и перенумеровывает 3→4, 4→5, 5→6.
  *
- * Скрипт идемпотентный: слайд, на котором блок 2.1 уже есть, пропускается.
+ * Скрипт идемпотентный: уже перестроенный слайд пропускается.
  */
 
 // ── Настройки ───────────────────────────────────────────────────────────────
@@ -29,28 +35,49 @@ var DECK_URL = 'https://docs.google.com/presentation/d/1y9VZJlVc4xM_WjlryUWqAmcQ
 var WORK_ON_COPY = true;   // true — править копию, false — оригинал
 var DRY_RUN = false;       // true — только показать в логе, что будет сделано
 
-var ANCHOR_2 = 'Результат на 15.09';   // текст заголовка блока 2
-var ANCHOR_3 = 'ограничивает';         // часть заголовка блока 3
-var BADGE_3 = '3';                     // номер блока 3 (кружок)
+// Опорные тексты существующего шаблона
+var ANCHOR_2 = 'Результат на 15.09';   // заголовок блока 2
+var ANCHOR_3 = 'ограничивает';         // заголовок блока 3 (станет блоком 4)
+var ANCHOR_4 = 'Гипотезы';             // заголовок блока 4 (станет блоком 5)
+var ANCHOR_5 = 'Приоритеты';           // заголовок блока 5 (станет блоком 6)
 
-var NEW_BADGE = '2.1';
-var NEW_TITLE = 'Что было сделано за 3 недели';
+// Новый блок 3
+var NEW_TITLE = 'Что сделал и что помогло (драйвер)';
 var NEW_BODY = [
   'Задача — результат',
+  'драйвер: что помогло',
+  '',
   'Задача — результат',
+  'драйвер: что помогло',
+  '',
   'Задача — результат',
+  'драйвер: что помогло',
+  '',
   'Задача — результат',
-  'Задача — результат'
+  'драйвер: что помогло'
+].join('\n');
+
+// Бывший блок 3 → блок 4
+var TITLE_4 = 'Что не сделал и узкое горлышко';
+var BODY_4 = [
+  'Задача — почему не сделана',
+  'узкое горлышко: что мешает',
+  '',
+  'Задача — почему не сделана',
+  'узкое горлышко: что мешает',
+  '',
+  'Задача — почему не сделана',
+  'узкое горлышко: что мешает'
 ].join('\n');
 
 // ── Точка входа ─────────────────────────────────────────────────────────────
 
-function addBlock21() {
+function updateDeptSlides() {
   var srcId = DECK_URL.match(/[-\w]{25,}/)[0];
   var deckId = srcId;
 
   if (WORK_ON_COPY && !DRY_RUN) {
-    var copy = DriveApp.getFileById(srcId).makeCopy('Трекер ППМ Q3 2026 — с блоком 2.1');
+    var copy = DriveApp.getFileById(srcId).makeCopy('Трекер ППМ Q3 2026 — блоки 1–6');
     deckId = copy.getId();
     Logger.log('Работаем на копии: https://docs.google.com/presentation/d/' + deckId + '/edit');
   }
@@ -60,8 +87,7 @@ function addBlock21() {
   var changed = 0;
 
   for (var i = 0; i < slides.length; i++) {
-    var res = processSlide(slides[i], i + 1);
-    if (res) changed++;
+    if (processSlide(slides[i], i + 1)) changed++;
   }
 
   Logger.log('Готово. Слайдов обработано: ' + changed + ' из ' + slides.length +
@@ -79,8 +105,8 @@ function processSlide(slide, num) {
   var title2 = findByText(els, ANCHOR_2);
   if (!title2) return false;                       // не слайд-шаблон
 
-  if (findByText(els, NEW_TITLE)) {
-    Logger.log('Слайд ' + num + ': блок 2.1 уже есть — пропускаем.');
+  if (findByText(els, NEW_TITLE) || findByText(els, TITLE_4)) {
+    Logger.log('Слайд ' + num + ': уже перестроен — пропускаем.');
     return false;
   }
 
@@ -89,9 +115,13 @@ function processSlide(slide, num) {
     Logger.log('Слайд ' + num + ': не найден блок «Что ограничивает цель» — пропускаем.');
     return false;
   }
+  var title4 = findByText(els, ANCHOR_4);
+  var title5 = findByText(els, ANCHOR_5);
 
   var badge2 = findBadge(els, '2', title2);
-  var badge3 = findBadge(els, BADGE_3, title3);
+  var badge3 = findBadge(els, '3', title3);
+  var badge4 = title4 ? findBadge(els, '4', title4) : null;
+  var badge5 = title5 ? findBadge(els, '5', title5) : null;
 
   var col2Left = badge2 ? Math.min(badge2.getLeft(), title2.getLeft()) : title2.getLeft();
   var col3Left = badge3 ? Math.min(badge3.getLeft(), title3.getLeft()) : title3.getLeft();
@@ -117,7 +147,7 @@ function processSlide(slide, num) {
              ' pt, сжатие до ' + Math.round(f * 100) + '%.');
   if (DRY_RUN) return true;
 
-  // Элементы колонки 3 запоминаем до трансформации
+  // Элементы колонки 3 запоминаем до трансформации — с них снимем оформление
   var col3Els = [];
   for (var j = 0; j < els.length; j++) {
     var l = els[j].getLeft();
@@ -143,8 +173,8 @@ function processSlide(slide, num) {
     }
   }
 
-  // 2. Копируем оформление блока 3 на освободившееся место
-  var dx = pitch * f;                              // на столько сдвигаем копии влево
+  // 2. Новый блок 3 — копия оформления соседнего блока, сдвинутая влево
+  var dx = pitch * f;
   for (var m = 0; m < col3Els.length; m++) {
     var src = col3Els[m];
     var dup = src.duplicate();
@@ -154,12 +184,29 @@ function processSlide(slide, num) {
     dup.setHeight(src.getHeight());
 
     if (badge3 && src.getObjectId() === badge3.getObjectId()) {
-      setText(dup, NEW_BADGE);
+      setText(dup, '3');
     } else if (src.getObjectId() === title3.getObjectId()) {
       setText(dup, NEW_TITLE);
     } else if (textOf(src).replace(/\s/g, '') !== '') {
       setText(dup, NEW_BODY);
     }
+  }
+
+  // 3. Сквозная нумерация: бывшие 3, 4, 5 становятся 4, 5, 6
+  setText(title3, TITLE_4);
+  if (badge3) setText(badge3, '4');
+  if (badge4) setText(badge4, '5');
+  if (badge5) setText(badge5, '6');
+  if (!badge4 || !badge5) {
+    Logger.log('  · номера блоков 4/5 найти не удалось — проверьте нумерацию вручную.');
+  }
+
+  // 4. Тело бывшего блока 3 — под новый смысл «что не сделал»
+  for (var n = 0; n < col3Els.length; n++) {
+    var e3 = col3Els[n];
+    if (badge3 && e3.getObjectId() === badge3.getObjectId()) continue;
+    if (e3.getObjectId() === title3.getObjectId()) continue;
+    if (textOf(e3).replace(/\s/g, '') !== '') setText(e3, BODY_4);
   }
 
   return true;

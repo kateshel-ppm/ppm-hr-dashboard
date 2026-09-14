@@ -25,7 +25,13 @@
  *     соседнего блока и подставляет текст нового блока 3;
  *   - переписывает заголовок бывшего блока 3 и перенумеровывает 3→4, 4→5, 5→6.
  *
- * Скрипт идемпотентный: уже перестроенный слайд пропускается.
+ * Две ветки:
+ *   - если блок «2.1» уже добавлен вручную — скрипт только перенумеровывает
+ *     (2.1→3, 3→4, 4→5, 5→6) и меняет заголовки, геометрию не трогает;
+ *   - если блоков пять — вставляет новый блок 3 и перенумеровывает остальные.
+ *
+ * Тексты внутри заполненных блоков не перезаписываются: подставляются только
+ * пустые места шаблона. Скрипт идемпотентный: перестроенный слайд пропускается.
  */
 
 // ── Настройки ───────────────────────────────────────────────────────────────
@@ -40,6 +46,7 @@ var ANCHOR_2 = 'Результат на 15.09';   // заголовок блок
 var ANCHOR_3 = 'ограничивает';         // заголовок блока 3 (станет блоком 4)
 var ANCHOR_4 = 'Гипотезы';             // заголовок блока 4 (станет блоком 5)
 var ANCHOR_5 = 'Приоритеты';           // заголовок блока 5 (станет блоком 6)
+var ANCHOR_21 = 'сделано за 3 недели'; // блок «2.1», если он уже добавлен вручную
 
 // Новый блок 3
 var NEW_TITLE = 'Что сделал и что помогло (драйвер)';
@@ -123,6 +130,24 @@ function processSlide(slide, num) {
   var badge4 = title4 ? findBadge(els, '4', title4) : null;
   var badge5 = title5 ? findBadge(els, '5', title5) : null;
 
+  // Ветка А: блок 2.1 уже добавлен вручную — только перенумеровать и переназвать,
+  // геометрию и тексты внутри блоков не трогаем.
+  var title21 = findByText(els, ANCHOR_21);
+  if (title21) {
+    Logger.log('Слайд ' + num + ': блок 2.1 уже есть — только перенумерация 2.1→3, 3→4, 4→5, 5→6.');
+    if (DRY_RUN) return true;
+
+    var badge21 = findBadge(els, '2.1', title21);
+    setText(title21, NEW_TITLE);
+    if (badge21) {
+      setText(badge21, '3');
+    } else {
+      Logger.log('  · кружок «2.1» не найден — поправьте номер вручную.');
+    }
+    renumber(badge3, badge4, badge5, title3);
+    return true;
+  }
+
   var col2Left = badge2 ? Math.min(badge2.getLeft(), title2.getLeft()) : title2.getLeft();
   var col3Left = badge3 ? Math.min(badge3.getLeft(), title3.getLeft()) : title3.getLeft();
 
@@ -193,23 +218,34 @@ function processSlide(slide, num) {
   }
 
   // 3. Сквозная нумерация: бывшие 3, 4, 5 становятся 4, 5, 6
-  setText(title3, TITLE_4);
-  if (badge3) setText(badge3, '4');
-  if (badge4) setText(badge4, '5');
-  if (badge5) setText(badge5, '6');
-  if (!badge4 || !badge5) {
-    Logger.log('  · номера блоков 4/5 найти не удалось — проверьте нумерацию вручную.');
-  }
+  renumber(badge3, badge4, badge5, title3);
 
-  // 4. Тело бывшего блока 3 — под новый смысл «что не сделал»
+  // 4. Тело бывшего блока 3 — под новый смысл «что не сделал».
+  //    Заполненные блоки не трогаем: там реальный текст отдела.
   for (var n = 0; n < col3Els.length; n++) {
     var e3 = col3Els[n];
     if (badge3 && e3.getObjectId() === badge3.getObjectId()) continue;
     if (e3.getObjectId() === title3.getObjectId()) continue;
-    if (textOf(e3).replace(/\s/g, '') !== '') setText(e3, BODY_4);
+    if (isPlaceholder(textOf(e3))) setText(e3, BODY_4);
   }
 
   return true;
+}
+
+/** Бывшие блоки 3, 4, 5 становятся 4, 5, 6; заголовок блока 3 меняет смысл. */
+function renumber(badge3, badge4, badge5, title3) {
+  setText(title3, TITLE_4);
+  if (badge3) setText(badge3, '4');
+  if (badge4) setText(badge4, '5');
+  if (badge5) setText(badge5, '6');
+  if (!badge3 || !badge4 || !badge5) {
+    Logger.log('  · часть номеров найти не удалось — проверьте нумерацию вручную.');
+  }
+}
+
+/** Пустой блок шаблона: ничего, кроме пробелов и прочерков. */
+function isPlaceholder(text) {
+  return text.replace(/[\s\u2014\u2013-]/g, '') === '';
 }
 
 // ── Вспомогательное ─────────────────────────────────────────────────────────

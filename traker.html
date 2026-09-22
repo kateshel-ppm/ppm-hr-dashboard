@@ -91,7 +91,7 @@ tbody tr:hover{background:var(--teal-light)}
     </table></div>
   </div>
 </div>
-<div class="foot" id="foot">Источник: таблица «Вакансии» (открытые, in&nbsp;progress). Срок открытия считается от даты «Открыта» на дату среза. Данные зашифрованы — видны после входа.</div>
+<div class="foot" id="foot">Источник: таблица «Вакансии» (статусы in&nbsp;progress и «принят оффер»). Срок открытия считается от даты «Открыта» на дату среза. Одинаковые позиции схлопнуты в одну строку (Ед.&nbsp;×N). Сборка: <code>build_traker.py</code>. Данные зашифрованы — видны после входа.</div>
 
 <script>
 var PCOL={Critical:'#F04438',High:'#F79009',Medium:'#3B6FE0',Low:'#12B76A','—':'#9CA3AF'};
@@ -104,23 +104,26 @@ function fdate(s){var p=String(s||'').split('-');return p.length===3?p[2]+'.'+p[
 window.ppmLoad('secure/traker.enc').then(function(d){
   document.querySelectorAll('.js-asof').forEach(function(el){el.textContent=fdate(d.as_of)});
   var k=d.kpi, pr=k.by_priority||{};
-  document.getElementById('hint').textContent='источник: таблица «Вакансии» · '+fdate(d.as_of);
+  document.getElementById('hint').textContent='источник: таблица «Вакансии» · '+fdate(d.as_of)+(d.huntflow===false?' · статусы Huntflow не подтянуты':'');
   // KPI
   var card=function(cls,lbl,val,sub){return '<div class="kpi-card '+cls+'"><div class="kpi-lbl">'+lbl+'</div><div class="kpi-val">'+val+'</div><div class="kpi-sub">'+(sub||'')+'</div></div>'};
   document.getElementById('kpis').innerHTML=
     card('','Открытых позиций',k.open_positions,k.open_rows+' вакансий')+
     card('c','Critical',(pr.Critical||0),'высший приоритет')+
-    card('w','Старейшая',k.oldest_days+'<span class="u">д</span>','цель ≤ 45д')+
+    card('w','Старейшая',k.oldest_days+'<span class="u">д</span>',k.oldest_vac?esc(k.oldest_vac)+' · цель ≤ 45д':'цель ≤ 45д')+
     card('','Медиана возраста',k.median_days+'<span class="u">д</span>','средн. '+k.avg_days+'д')+
     card((k.over45>0?'w':'s'),'Висят > 45 дней',k.over45,'из '+k.open_rows)+
-    card((k.no_active>0?'c':'s'),'Без кандидатов',k.no_active,'нет активных в воронке')+
-    card('s','На финале',k.in_final,'кандидат на оффере');
+    (k.no_active==null
+      ? card('','Без кандидатов','—','нет данных Huntflow')
+      : card((k.no_active>0?'c':'s'),'Без кандидатов',k.no_active,'нет активных в воронке'))+
+    card('s','На финале',k.in_final,'оффер принят, ждём выхода');
   // донат по приоритету
   document.getElementById('pri-total').textContent=k.open_positions+' ед.';
   var labels=PORD.filter(function(p){return pr[p]}), data=labels.map(function(p){return pr[p]});
-  new Chart(document.getElementById('ch-pri'),{type:'doughnut',
+  if(window.Chart) new Chart(document.getElementById('ch-pri'),{type:'doughnut',
     data:{labels:labels,datasets:[{data:data,backgroundColor:labels.map(function(p){return PCOL[p]}),borderWidth:0}]},
     options:{maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{font:{family:'Inter',size:12},boxWidth:9,usePointStyle:true,padding:9}}}}});
+  else document.getElementById('ch-pri').parentNode.innerHTML='<div style="font-size:12px;color:var(--micro);padding:8px">'+labels.map(function(p){return p+': '+pr[p]}).join(' · ')+'</div>';
   // бары по отделам
   var dep=k.by_dept||{}, mx=Math.max.apply(null,Object.values(dep).concat([1]));
   document.getElementById('dept-bars').innerHTML=Object.keys(dep).map(function(nm){
@@ -134,7 +137,7 @@ window.ppmLoad('secure/traker.enc').then(function(d){
       '<td style="font-weight:600;white-space:normal;min-width:200px">'+esc(v.vac)+'</td>'+
       '<td style="color:var(--muted)">'+esc(v.dept)+'</td>'+
       '<td>'+esc(v.rec)+'</td>'+
-      '<td>'+(function(){var s=SKIND[v.status_kind]||SKIND.none;return '<span style="font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:8px;background:'+s.b+';color:'+s.c+'">'+esc(v.status)+'</span>'+(v.hf_in_work!=null?'<div style="font-size:10px;color:var(--micro);margin-top:3px">интервью за мес: '+v.hf_int+(v.hf_cand?' · '+esc(v.hf_cand):'')+'</div>':'')})()+'</td>'+
+      '<td>'+(function(){var s=SKIND[v.status_kind]||SKIND.none;return '<span style="font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:8px;background:'+s.b+';color:'+s.c+'">'+esc(v.status)+'</span>'+(v.hf_in_work!=null?'<div style="font-size:10px;color:var(--micro);margin-top:3px">интервью за мес: '+v.hf_int+(v.hf_cand?' · '+esc(v.hf_cand):'')+'</div>':(v.hf_cand?'<div style="font-size:10px;color:var(--micro);margin-top:3px">'+esc(v.hf_cand)+'</div>':''))})()+'</td>'+
       '<td class="r"><span class="age" style="color:'+ageColor(v.days)+';background:'+ageColor(v.days)+'1A">'+v.days+'</span></td>'+
       '<td style="color:var(--muted)">'+esc(v.open)+'</td>'+
       '<td style="color:var(--muted)">'+esc(v.city)+'</td>'+
@@ -144,7 +147,7 @@ window.ppmLoad('secure/traker.enc').then(function(d){
     '</tr>';
   }).join('');
 }).catch(function(e){
-  document.getElementById('tbody').innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--micro);padding:20px">Нет доступа к данным — нужен вход по коду.</td></tr>';
+  document.getElementById('tbody').innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--micro);padding:20px">Нет доступа к данным — нужен вход по коду.</td></tr>';
 });
 </script>
 <script src="refresh-button.js"></script>

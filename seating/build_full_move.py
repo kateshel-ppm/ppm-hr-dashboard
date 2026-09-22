@@ -17,6 +17,7 @@ from collections import Counter, defaultdict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from sheets_write import access_token, call, get_tabs, load_credentials, quote  # noqa: E402
+from stay_rules import FIO, GRADE, POS, DEP, ST, FMT, CITY, MGR, rules, vac  # noqa: E402,F401
 
 SID = "1Th3VjPok7vwOGWgipxAUBp0czCAyUTJNmW0xUIPCIOI"
 # Вариант 2 (`--marketing-stays`): маркетинг целиком остаётся на Остоженке.
@@ -25,40 +26,9 @@ TAB = ("Рассадка — новый офис (без маркетинга)" 
        else "Рассадка — новый офис (полный переезд)")
 NCOLS = 5
 
-FIO, GRADE, POS, DEP, ST, FMT, CITY, MGR = 3, 5, 6, 7, 8, 9, 10, 11
 EXCLUDED = set()
-# Не переезжают целыми отделами: офис-менеджеры, MAZE и ВЭД.
-STAYING = {"АХО": "офис-менеджеры не переезжают",
-           "MAZE": "MAZE не переезжает",
-           "ВЭД": "ВЭД не переезжает"}
-# Не переезжают поимённо — список заказчика от 22.09.2026: гендиректор,
-# коммерческий директор, финансы целиком, юристы, PR (кроме Ермохина),
-# Смелова, два медиабайера маркетинга и вакансия директора по орг развитию.
-STAY_NAMES = {
-    "Чермошенцев Вадим", "Смелова Наталья", "Платохин Александр",
-    "Барбашов Александр", "Борецкий Илья", "Чернышева Екатерина",
-    "Липцина Маргарита", "Белов Павел", "Соболев Станислав",
-    "Зеленцов Александр", "Абдулганиева Зарема", "Гладкова Елена",
-    "Домокурова Юлия", "Кирюшина Елизавета", "Топчий Анастасия",
-    "Анна Зырянова",                 # строка вакансии директора по орг развитию
-}
-STAY_VAC = {("PR", "Менеджер по развитию"), ("HR", "Директор по орг развитию")}
-STAY_REASON = "по списку заказчика остаётся на Остоженке"
-if MARKETING_STAYS:
-    STAYING["Маркетинг"] = "маркетинг остаётся целиком"
-    STAY_NAMES.add("Ермохин Максим")      # по штатке PR, работает с маркетингом
-    STAY_NAMES.add("Лопатина Александра")  # продажи, указание заказчика
-    STAYING["Партнеры"] = "партнёры остаются"
-    STAYING["Рефералы"] = "рефералы остаются"
-
-
-def stays(r):
-    d, f, p = r[DEP].strip(), r[FIO].strip(), r[POS].strip()
-    return d in STAYING or f in STAY_NAMES or (vac(r) and (d, p) in STAY_VAC)
-
-
-def why_stays(r):
-    return STAYING.get(r[DEP].strip(), STAY_REASON)
+# Кто не переезжает — единый список в stay_rules.py (общий с build_stay.py).
+STAYING, STAY_NAMES, STAY_VAC, stays, why_stays = rules(MARKETING_STAYS)
 
 # (кабинет, площадь, мест по плану, где на плане)
 ROOMS = [

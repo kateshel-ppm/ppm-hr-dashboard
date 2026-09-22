@@ -318,6 +318,12 @@ function updateMainChart(){
 function buildWeeklyHC(){
   if(hcChart){ hcChart.destroy(); hcChart=null; }
   const ctx=document.getElementById('ch-whc').getContext('2d');
+  // сводка над графиком — из данных недель (старт / сейчас / прирост / диапазон недель)
+  if(W_HC_DATA.length){
+    const first=W_HC_DATA[0], last=W_HC_DATA[W_HC_DATA.length-1];
+    setTxt('hc-start',first); setTxt('hc-now',last); setTxt('hc-delta',(last-first>=0?'+':'')+(last-first));
+    setTxt('hc-badge',W_HC_LABELS[0].replace('Нед. ','Недели ')+' — '+W_HC_LABELS[W_HC_LABELS.length-1].replace('Нед. ',''));
+  }
 
   // Point colors: highlight selected week
   const pointColors=W_HC_WEEKS.map(w=>
@@ -600,7 +606,7 @@ function initRoles(){
   if(!document.getElementById('ch-roles')) return;
   new Chart(document.getElementById('ch-roles').getContext('2d'),{
     type:'doughnut',
-    data:{labels:['Руководители','Сотрудники'],datasets:[{data:[23,107],backgroundColor:['#3B6FE0','#E5E7EB'],borderWidth:0,hoverOffset:4}]},
+    data:{labels:['Руководители','Сотрудники'],datasets:[{data:__D.STAFF?[__D.STAFF.managers,__D.STAFF.ic]:[23,107],backgroundColor:['#3B6FE0','#E5E7EB'],borderWidth:0,hoverOffset:4}]},
     options:{responsive:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`${c.label}: ${c.raw}`}}},animation:{duration:700}},
   });
 }
@@ -730,9 +736,9 @@ function animateBars(){ renderDeptBars(); }
 // ══════════════════════════════════════════════════════════
 function renderOpenList(){
   if(!document.getElementById('open-list')) return;
-  const PRI_ORDER={Critical:0,High:1,Medium:2};
+  const PRI_ORDER={Critical:0,High:1,Medium:2,Low:3};
   const sorted=[...OPEN_VAC].sort((a,b)=>{
-    const pd=PRI_ORDER[a.p]-PRI_ORDER[b.p];
+    const pd=(PRI_ORDER[a.p]??4)-(PRI_ORDER[b.p]??4);
     return pd!==0?pd:b.days-a.days;
   });
   const tc=v=>v.p==='Critical'?'tc':v.p==='High'?'th':'tm';
@@ -869,14 +875,22 @@ document.querySelectorAll('.vtog').forEach(btn=>{
 // QUALITY OF HIRE + WORK FORMAT + REFERRALS
 // ══════════════════════════════════════════════════════════
 function initQoH(){
+  // испытательный срок — из ШТАТКИ («Окончание испыт срока» против даты среза)
+  const Q=__D.QOH||{passed:64,on:60,nodata:8};
+  setTxt('qoh-passed',Q.passed); setTxt('qoh-on',Q.on); setTxt('qoh-nodata',Q.nodata);
+  const early=Q.early||0, pct=Q.passed+early?Math.round(Q.passed/(Q.passed+early)*100):100;
+  setTxt('qoh-pct',pct+'%');
+  setTxt('qoh-note',`Из ${Q.passed+Q.on} действующих сотрудников с датой окончания ИС у ${Q.passed} срок истёк — они его прошли. `+
+    (early?`Уволились до конца ИС в этом году: ${early} (QoH = прошли / (прошли + ушли на ИС)).`:'Увольнений на ИС в этом году не было.'));
   new Chart(document.getElementById('ch-qoh').getContext('2d'),{
     type:'doughnut',
-    data:{labels:['Прошли ИС','На ИС','Нет данных'],datasets:[{data:[64,60,8],backgroundColor:['#12B76A','#F79009','#E5E7EB'],borderWidth:2,borderColor:'#fff',hoverOffset:6}]},
+    data:{labels:['Прошли ИС','На ИС','Нет данных'],datasets:[{data:[Q.passed,Q.on,Q.nodata],backgroundColor:['#12B76A','#F79009','#E5E7EB'],borderWidth:2,borderColor:'#fff',hoverOffset:6}]},
     options:{responsive:false,cutout:'68%',plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`${c.label}: ${c.raw}`}}},animation:{duration:700}},
   });
 }
 
-const FMT_DATA = [
+// формат работы — из живой ШТАТКИ (build_detali.py); статика только как fallback
+const FMT_DATA = (__D.FMT && __D.FMT.length) ? __D.FMT : [
   {label:'Удалённо',     count:76, color:'#3B6FE0'},
   {label:'Офис Москва',  count:24, color:'#10B981'},
   {label:'Офис СПб',     count:22, color:'#8B5CF6'},
@@ -890,6 +904,7 @@ function initWorkFormat(){
     options:{responsive:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>`${c.label}: ${c.raw} чел.`}}},animation:{duration:700}},
   });
   const total=FMT_DATA.reduce((s,d)=>s+d.count,0);
+  setTxt('fmt-total',total);
   document.getElementById('fmt-legend').innerHTML=FMT_DATA.map(d=>`
     <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">
       <div style="width:8px;height:8px;border-radius:50%;background:${d.color};flex-shrink:0"></div>
@@ -910,6 +925,11 @@ function removeSkeleton(){
 
 setTimeout(()=>{
   removeSkeleton();
+  if(__D.as_of){ const p=String(__D.as_of).split('-'); setTxt('page-updated',p.length===3?p[2]+'.'+p[1]+'.'+p[0]:__D.as_of); }
+  // фильтр по рекрутёрам в таблице открытых вакансий — из данных
+  const rf=document.getElementById('hf-rec-filter');
+  if(rf){ [...new Set(HF_OPEN_VACS.map(v=>v.recruiter).filter(r=>r&&r!=='—'))].sort().forEach(r=>{
+    const b=document.createElement('button'); b.className='rfbtn'; b.dataset.rec=r; b.textContent=r; rf.appendChild(b); }); }
   buildPeriodPills();
   buildMainChart();
   initSources();
@@ -1086,6 +1106,7 @@ function initHuntflowCharts(){
   if(!pf.length){ cv.parentElement.innerHTML='<div style="font-size:12px;color:var(--micro);padding:20px 0">нет данных</div>'; return; }
   const pfB=document.getElementById('hf-pf-badge');
   if(pfB) pfB.textContent='факт '+pf.reduce((s,p)=>s+(p.fact||0),0)+' из '+pf.reduce((s,p)=>s+(p.plan||0),0);
+  if(HF.plan_fact_label) S('hf-pf-title','Интервью с рекрутером — план/факт, '+HF.plan_fact_label.toLowerCase());
   new Chart(cv.getContext('2d'),{
     type:'bar',
     data:{

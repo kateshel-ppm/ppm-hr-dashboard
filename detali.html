@@ -289,7 +289,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <!-- Dynamic period pills -->
     <div class="period-pills" id="period-pills"></div>
     <div class="bar-sep"></div>
-    <span style="font-size:11px;color:var(--micro);white-space:nowrap;flex-shrink:0">Обновлено: 01.09.2026</span>
+    <span style="font-size:11px;color:var(--micro);white-space:nowrap;flex-shrink:0">Обновлено: <span id="page-updated">—</span></span>
   </div>
 </div>
 
@@ -424,26 +424,24 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div style="position:relative;flex-shrink:0">
           <canvas id="ch-qoh" width="130" height="130" style="width:130px;height:130px"></canvas>
           <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
-            <div style="font-size:22px;font-weight:800;color:var(--success)">100%</div>
+            <div style="font-size:22px;font-weight:800;color:var(--success)" id="qoh-pct">—</div>
             <div style="font-size:9px;color:var(--muted);margin-top:1px">QoH</div>
           </div>
         </div>
         <div style="flex:1">
           <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#DCFAE6;border-radius:10px;margin-bottom:7px">
             <span style="font-size:12px;font-weight:500;color:#065F46">✅ Прошли испытательный срок</span>
-            <span style="font-size:18px;font-weight:800;color:#12B76A">64</span>
+            <span style="font-size:18px;font-weight:800;color:#12B76A" id="qoh-passed">—</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#FEF6E7;border-radius:10px;margin-bottom:7px">
             <span style="font-size:12px;font-weight:500;color:#92400E">⏳ На испытательном сроке</span>
-            <span style="font-size:18px;font-weight:800;color:#F79009">60</span>
+            <span style="font-size:18px;font-weight:800;color:#F79009" id="qoh-on">—</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#F3F4F6;border-radius:10px">
             <span style="font-size:12px;font-weight:500;color:var(--muted)">— Нет данных о сроке</span>
-            <span style="font-size:18px;font-weight:800;color:var(--micro)">8</span>
+            <span style="font-size:18px;font-weight:800;color:var(--micro)" id="qoh-nodata">—</span>
           </div>
-          <div style="margin-top:10px;font-size:11px;color:var(--micro);line-height:1.5">
-            Из 124 сотрудников с данными об испытательном сроке — все 64, чей срок истёк, успешно его прошли.
-          </div>
+          <div style="margin-top:10px;font-size:11px;color:var(--micro);line-height:1.5" id="qoh-note"></div>
         </div>
       </div>
     </div>
@@ -454,7 +452,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div style="position:relative;flex-shrink:0">
           <canvas id="ch-fmt" width="130" height="130" style="width:130px;height:130px"></canvas>
           <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
-            <div style="font-size:18px;font-weight:800;color:var(--text)">132</div>
+            <div style="font-size:18px;font-weight:800;color:var(--text)" id="fmt-total">—</div>
             <div style="font-size:9px;color:var(--muted)">сотрудников</div>
           </div>
         </div>
@@ -476,6 +474,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <button class="mtab" data-m="5">Май <span id="ctab-5" style="opacity:.55;font-size:10px"></span></button>
         <button class="mtab" data-m="6">Июнь <span id="ctab-6" style="opacity:.55;font-size:10px"></span></button>
         <button class="mtab" data-m="7">Июль <span id="ctab-7" style="opacity:.55;font-size:10px"></span></button>
+        <button class="mtab" data-m="8">Август <span id="ctab-8" style="opacity:.55;font-size:10px"></span></button>
+        <button class="mtab" data-m="9">Сентябрь <span id="ctab-9" style="opacity:.55;font-size:10px"></span></button>
       </div>
       <div class="closed-scroll">
         <table class="closed-table">
@@ -501,17 +501,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="card p20 skeleton" id="cc7">
       <div class="ch mb0">
         <span class="lbl mb0" id="lbl-w-hc">Рост штата</span>
-        <span class="badge">Недели 6 — 22</span>
+        <span class="badge" id="hc-badge">по неделям</span>
       </div>
       <div style="display:flex;gap:20px;margin:10px 0 14px" id="hc-summary">
         <div class="ws-item" style="flex:none;padding:0;border:none;text-align:left">
-          <div class="ws-lbl">Старт</div><div class="ws-val" style="color:var(--muted);font-size:18px">68</div>
+          <div class="ws-lbl">Старт</div><div class="ws-val" style="color:var(--muted);font-size:18px" id="hc-start">—</div>
         </div>
         <div class="ws-item" style="flex:none;padding:0;border:none;text-align:left">
-          <div class="ws-lbl">Сейчас</div><div class="ws-val" style="color:var(--primary);font-size:18px">132</div>
+          <div class="ws-lbl">Сейчас</div><div class="ws-val" style="color:var(--primary);font-size:18px" id="hc-now">—</div>
         </div>
         <div class="ws-item" style="flex:none;padding:0;border:none;text-align:left">
-          <div class="ws-lbl">Прирост</div><div class="ws-val" style="color:var(--success);font-size:18px">+64</div>
+          <div class="ws-lbl">Прирост</div><div class="ws-val" style="color:var(--success);font-size:18px" id="hc-delta">—</div>
         </div>
       </div>
       <div style="height:200px;position:relative"><canvas id="ch-whc"></canvas></div>
@@ -602,7 +602,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <!-- План-факт интервью -->
     <div class="card p20">
       <div class="ch">
-        <span class="lbl mb0">Интервью с рекрутером — план/факт августа</span>
+        <span class="lbl mb0" id="hf-pf-title">Интервью с рекрутером — план/факт</span>
         <span class="badge" id="hf-pf-badge"></span>
       </div>
       <div style="height:200px;position:relative"><canvas id="ch-ttf"></canvas></div>
@@ -624,10 +624,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
     <div class="rec-filter" id="hf-rec-filter">
       <button class="rfbtn active" data-rec="all">Все</button>
-      <button class="rfbtn" data-rec="Соня">Соня</button>
-      <button class="rfbtn" data-rec="Лена">Лена</button>
-      <button class="rfbtn" data-rec="София">София</button>
-      <button class="rfbtn" data-rec="Саша">Саша</button>
     </div>
     <div style="overflow-y:auto;max-height:420px;margin:0 -20px">
       <table style="width:100%;border-collapse:collapse" id="hf-open-table">
